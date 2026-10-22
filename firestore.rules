@@ -1,0 +1,146 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function me() { return request.auth.uid; }
+    function inList(owner, other) { return exists(/databases/$(database)/documents/friends/$(owner)/list/$(other)); }
+    function isFriend(a, b) { return inList(a, b) && inList(b, a); }
+    function blocked(owner, other) { return exists(/databases/$(database)/documents/blocks/$(owner)/list/$(other)); }
+    function prefsOf(uid) { return /databases/$(database)/documents/prefs/$(uid); }
+    function dmAllowed(to, k) {
+      return !exists(prefsOf(to)) || get(prefsOf(to)).data.dm == 'all' || (get(prefsOf(to)).data.dm == 'quick' && k == 'q');
+    }
+    function safeText(x) {
+      return x is string && x.size() > 0 && x.size() <= 120
+        && !x.matches('(?is).*(https?:|www[.]|[.](com|net|org|gg|io|co|me|tv|xyz|ly)|@).*')
+        && !x.matches('(?s).*[0-9]([^0-9]*[0-9]){6}.*');
+    }
+    function quickOk(k, x) {
+      return k == 't' || x in ["Hey!", "Nice shot!", "Wanna play?", "Good game!", "Let's go!", "Wow!", "Thanks!", "Be right back"];
+    }
+    function rateOk() {
+      return getAfter(/databases/$(database)/documents/rate/$(me())).data.t == request.time
+        && (!exists(/databases/$(database)/documents/rate/$(me()))
+            || request.time > get(/databases/$(database)/documents/rate/$(me())).data.t + duration.value(2, 's'));
+    }
+    function inboxEntryOk(v) {
+      return v.keys().hasOnly(['t', 'n', 'k', 'c', 'm']) && v.t == request.time && v.k in ['msg', 'acc', 'chal', 'ans'];
+    }
+
+    match /saves/{uid} { allow read, write: if signedIn() && me() == uid; }
+    match /leaderboard/{uid} { allow read: if true; allow write: if signedIn() && me() == uid; }
+    match /presence/{id} {
+      allow read: if true;
+      allow create, update: if request.resource.data.keys().hasOnly(['seen', 'exp']) && request.resource.data.seen is timestamp && request.resource.data.exp is timestamp;
+    }
+
+    // Public player profiles: name, level and quick match wins. Only the owner can write theirs.
+    match /profiles/{uid} {
+      allow read: if true;
+      allow create, update: if signedIn() && me() == uid && request.resource.data.keys().hasOnly(['n', 'lv', 'qm', 't'])
+        && request.auth.token.email == request.resource.data.n.lower() + '@streetkings.game'
+        && request.resource.data.lv is int && request.resource.data.lv >= 1 && request.resource.data.lv <= 100
+        && request.resource.data.qm is int && request.resource.data.qm >= 0
+        && request.resource.data.t == request.time;
+    }
+
+    // Main menu polls: one vote per account (the document id is the voter), and players can change their vote.
+    match /votes/{pollId}/v/{uid} {
+      allow read: if true;
+      allow create, update: if signedIn() && me() == uid && request.resource.data.keys().hasOnly(['c', 't'])
+        && request.resource.data.c in ['story', 'ranked'] && request.resource.data.t == request.time;
+      allow delete: if signedIn() && me() == uid;
+    }
+
+    // Online status for the leaderboards and friends list.
+    match /status/{uid} {
+      allow read: if true;
+      allow create, update: if signedIn() && me() == uid && request.resource.data.keys().hasOnly(['seen', 'n'])
+        && request.resource.data.seen == request.time && request.resource.data.n is string && request.resource.data.n.size() <= 12;
+      allow delete: if signedIn() && me() == uid;
+    }
+
+    // Player name -> account, so friends can be added by name. Only the account that owns the name can claim it.
+    match /names/{name} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && request.resource.data.keys().hasOnly(['uid']) && request.resource.data.uid == me()
+        && request.auth.token.email == name.lower() + '@streetkings.game';
+    }
+
+    // Privacy settings: who can message me and whether I take friend requests.
+    match /prefs/{uid} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && me() == uid && request.resource.data.keys().hasOnly(['dm', 'fr'])
+        && request.resource.data.dm in ['all', 'quick', 'off'] && request.resource.data.fr is bool;
+    }
+
+    // Friend requests. Blocked players and people who turned requests off cannot be sent one.
+    match /freq/{rid} {
+      allow read: if signedIn() && (resource.data.from == me() || resource.data.to == me());
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['from', 'to', 'fn', 'tn', 't'])
+        && request.resource.data.from == me() && request.resource.data.to != me()
+        && rid == me() + '_' + request.resource.data.to
+        && request.resource.data.t == request.time
+        && request.resource.data.fn is string && request.resource.data.fn.size() <= 12
+        && request.resource.data.tn is string && request.resource.data.tn.size() <= 12
+        && !blocked(request.resource.data.to, me())
+        && (!exists(prefsOf(request.resource.data.to)) || get(prefsOf(request.resource.data.to)).data.fr == true);
+      allow delete: if signedIn() && (resource.data.from == me() || resource.data.to == me());
+    }
+
+    // Each player keeps their own friends list. A friendship counts only when both lists have each other.
+    match /friends/{uid}/list/{other} {
+      allow read: if signedIn() && (me() == uid || me() == other);
+      allow create, update: if signedIn() && me() == uid && other != uid && request.resource.data.keys().hasOnly(['n', 't'])
+        && request.resource.data.n is string && request.resource.data.n.size() <= 12;
+      allow delete: if signedIn() && (me() == uid || me() == other);
+    }
+
+    match /blocks/{uid}/list/{other} {
+      allow read, delete: if signedIn() && me() == uid;
+      allow create, update: if signedIn() && me() == uid && request.resource.data.keys().hasOnly(['n', 't']);
+    }
+
+    // Notifications (new message, accepted request, challenges). Only people on your friends list can write, and only their own entry.
+    match /inbox/{uid} {
+      allow read, delete: if signedIn() && me() == uid;
+      allow create: if signedIn() && me() != uid && request.resource.data.keys().hasOnly([me()])
+        && inboxEntryOk(request.resource.data[me()]) && inList(uid, me()) && !blocked(uid, me());
+      allow update: if signedIn() && (me() == uid || (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([me()])
+        && inboxEntryOk(request.resource.data[me()]) && inList(uid, me()) && !blocked(uid, me())));
+    }
+
+    // One message every 2 seconds per player.
+    match /rate/{uid} {
+      allow read: if signedIn() && me() == uid;
+      allow create, update: if signedIn() && me() == uid && request.resource.data.keys().hasOnly(['t']) && request.resource.data.t == request.time;
+    }
+
+    // Direct messages: friends only, filtered on the server too, rate limited, and they respect the other player's settings.
+    match /dm/{pair}/m/{mid} {
+      allow read, delete: if signedIn() && me() in pair.split('_');
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['f', 'to', 'k', 'x', 't'])
+        && request.resource.data.f == me()
+        && request.resource.data.to != me()
+        && (pair == me() + '_' + request.resource.data.to || pair == request.resource.data.to + '_' + me())
+        && request.resource.data.t == request.time
+        && request.resource.data.k in ['q', 't']
+        && safeText(request.resource.data.x)
+        && quickOk(request.resource.data.k, request.resource.data.x)
+        && isFriend(me(), request.resource.data.to)
+        && !blocked(request.resource.data.to, me())
+        && dmAllowed(request.resource.data.to, request.resource.data.k)
+        && rateOk();
+    }
+
+    // Reports go to the game owner (read them in the Firebase console). Players can only create them.
+    match /reports/{id} {
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['by', 'byName', 'who', 'whoName', 'why', 'msgs', 't'])
+        && request.resource.data.by == me() && request.resource.data.t == request.time
+        && request.resource.data.why in ['bullying', 'language', 'personal', 'spam', 'other']
+        && request.resource.data.msgs is list && request.resource.data.msgs.size() <= 10;
+    }
+  }
+}
