@@ -52,6 +52,37 @@ service cloud.firestore {
       allow delete: if signedIn() && me() == uid;
     }
 
+    // Quick match queue: a waiting player lists a room code. Another player may only claim it (open -> taken, by = themselves).
+    match /mm/{uid} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && me() == uid && request.resource.data.keys().hasOnly(['n', 'code', 't', 'st', 'by'])
+        && request.resource.data.st in ['open', 'taken'] && request.resource.data.code is string && request.resource.data.code.size() <= 8;
+      allow update: if signedIn() && me() != uid && resource.data.st == 'open'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['st', 'by'])
+        && request.resource.data.st == 'taken' && request.resource.data.by == me();
+      allow delete: if signedIn() && me() == uid;
+    }
+
+    // Game admins: add a document here in the Firebase console whose ID is your account's User UID (see Authentication).
+    function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/$(me())); }
+    match /admins/{uid} { allow get: if signedIn() && me() == uid; }
+
+    // Dev codes made by admins. Document ID is the scrambled code, so players can only look one up if they know it.
+    match /devcodes/{h} {
+      allow get: if signedIn();
+      allow list, delete: if isAdmin();
+      allow create, update: if isAdmin() && request.resource.data.keys().hasOnly(['c', 'note', 'exp', 't', 'by'])
+        && request.resource.data.exp is timestamp && request.resource.data.by == me();
+    }
+
+    // Dev build login log: every attempt (right or wrong code) by a signed-in player. Admins can read it in the game or the console.
+    match /devlog/{id} {
+      allow get, list: if isAdmin();
+      allow create: if signedIn() && request.resource.data.keys().hasOnly(['by', 'n', 'ok', 'code', 'v', 't'])
+        && request.resource.data.by == me() && request.resource.data.ok is bool
+        && request.resource.data.n is string && request.resource.data.n.size() <= 12 && request.resource.data.t == request.time;
+    }
+
     // Online status for the leaderboards and friends list.
     match /status/{uid} {
       allow read: if true;
