@@ -306,6 +306,43 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 .codeRow span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .codeRow .x{color:#ff8a8a}.codeRow .ok{color:#3dffa8}
 @media (max-width:700px){.ccgrid{grid-template-columns:1fr}}
+
+/* ===== MyPLAYER builder (2K style) ===== */
+#cc .card{max-width:min(1180px,96%);padding:1.2cqw 1.6cqw}
+.mp{display:grid;grid-template-columns:30% 1fr;gap:1.6cqw;text-align:left}
+.mpL{background:linear-gradient(160deg,#141a33,#0a0d1c);border:1px solid var(--line);border-radius:1.2cqw;padding:1cqw;display:flex;flex-direction:column;align-items:center}
+#mpCv{width:100%;aspect-ratio:3/4;display:block}
+.ovr{display:flex;align-items:baseline;gap:.6cqw;margin-top:.4cqw}
+.ovr b{font:900 clamp(30px,5.4cqw,74px)/1 Impact,"Arial Black",sans-serif;color:var(--gold)}
+.ovr span{font-weight:900;letter-spacing:.12em;color:var(--muted);font-size:clamp(10px,1.2cqw,15px)}
+#mpTag{font:900 clamp(13px,1.8cqw,24px) Impact,"Arial Black",sans-serif;letter-spacing:.04em;color:var(--ink);text-align:center}
+#mpSub{font-size:clamp(10px,1.2cqw,15px);color:var(--muted);text-align:center;margin:.2cqw 0}
+.mpTabs{display:flex;gap:.3cqw;border-bottom:2px solid var(--line);margin-bottom:.8cqw}
+.mpTabs button{background:none;border:0;border-bottom:3px solid transparent;margin:0 0 -2px;padding:.5cqw 1cqw;color:var(--muted);font:900 clamp(11px,1.4cqw,18px) Arial,sans-serif;letter-spacing:.06em;cursor:pointer;text-transform:uppercase}
+.mpTabs button.sel{color:var(--ink);border-bottom-color:var(--gold)}
+.mpPane{min-height:22cqw}
+.attr{display:grid;grid-template-columns:9em 2.4em 1fr 2em 2em;gap:.5cqw;align-items:center;font-size:clamp(10px,1.3cqw,17px);margin:.25cqw 0}
+.attr b{font-variant-numeric:tabular-nums;color:var(--gold);text-align:right}
+.abar{position:relative;height:.9em;border-radius:.45em;background:rgba(255,255,255,.08);overflow:hidden}
+.abar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#17d6ff,#3dffa8);border-radius:.45em}
+.abar em{position:absolute;top:-2px;bottom:-2px;width:3px;background:#ff5a5a}
+.attr button{margin:0;padding:0;min-width:0;height:1.6em;font-weight:900}
+.agrp{font:900 clamp(10px,1.15cqw,15px) Arial,sans-serif;letter-spacing:.14em;color:var(--muted);margin:.6cqw 0 .1cqw}
+.arch{display:grid;grid-template-columns:repeat(3,1fr);gap:.6cqw}
+.arch button{margin:0;text-align:left;padding:.7cqw .9cqw;border:2px solid var(--line);border-radius:1cqw;background:rgba(255,255,255,.04);color:var(--ink);cursor:pointer}
+.arch button.sel{border-color:var(--gold);background:rgba(255,209,102,.1)}
+.arch button b{display:block;font-size:clamp(11px,1.4cqw,18px)}
+.arch button small{display:block;color:var(--muted);font-size:clamp(9px,1.1cqw,14px)}
+.badges{display:grid;grid-template-columns:repeat(2,1fr);gap:.5cqw}
+.badges button{margin:0;display:flex;gap:.6cqw;align-items:center;text-align:left;padding:.5cqw .8cqw;border:2px solid var(--line);border-radius:1cqw;background:rgba(255,255,255,.04);color:var(--ink);cursor:pointer}
+.badges button.sel{border-color:#ffd166;background:rgba(255,209,102,.12)}
+.badges button i{flex:none;width:2.2em;height:2.2em;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:900;background:#2a2f45;color:#9aa3c7}
+.badges button.sel i{background:linear-gradient(135deg,#ffd166,#ff9a3d);color:#1a1200}
+.badges button b{display:block;font-size:clamp(10px,1.3cqw,17px)}
+.badges button small{display:block;color:var(--muted);font-size:clamp(9px,1.05cqw,13px)}
+.prow{display:grid;grid-template-columns:8em 1fr 6em;gap:.8cqw;align-items:center;margin:.5cqw 0;font-size:clamp(11px,1.35cqw,18px)}
+.prow b{color:var(--gold);text-align:right}
+@media (max-width:700px){.mp{grid-template-columns:1fr}.arch{grid-template-columns:1fr}.badges{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -644,8 +681,8 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     </div></div>
 
 
-  <div id="devDlg" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(22px,4.5cqw,60px)">DEV BUILD</h1>
-      <p>Unreleased content for testers. Enter the dev code to get in. Every attempt is logged with your account name.</p>
+  <div id="devDlg" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(22px,4.5cqw,60px)">ACCESS</h1>
+      <p>Enter your access code. Every attempt is logged with your account name.</p>
       <div class="row"><input id="devIn" maxlength="24" autocomplete="off" spellcheck="false" aria-label="Dev code" style="width:20cqw"><button class="go" id="devGo" style="margin-top:0">Enter</button></div>
       <p class="tag" id="devMsg" role="status"></p>
       <div class="row"><button class="go back" id="devBack">Back</button></div>
@@ -662,20 +699,18 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     </div></div>
   <div id="stTxt" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 id="stTitle" style="font-size:clamp(20px,4cqw,54px)"></h1><div id="stBody"></div><div class="row"><button class="go" id="stGo">Continue</button></div></div></div>
   <div id="cc" class="ov hide"><div class="card scr wide">
-      <h1 style="font-size:clamp(22px,4.6cqw,62px)">CREATE YOUR PLAYER</h1>
-      <div class="ccgrid">
-        <div class="ccrow"><span>Name</span><input id="ccName" maxlength="10" autocomplete="off" spellcheck="false" aria-label="Player name" style="flex:1;min-width:0"></div>
-        <div class="ccrow"><span>Number</span><input id="ccNum" type="number" min="0" max="99" aria-label="Jersey number" style="width:5em"></div>
-        <div class="ccrow"><span>Position</span><div class="seg" id="ccPos"><button data-v="PG">Point guard</button><button data-v="SG">Shooting guard</button><button data-v="C">Center</button></div></div>
-        <div class="ccrow"><span>Skin tone</span><div class="sw" id="ccSkin"></div></div>
-        <div class="ccrow"><span>Height</span><input id="ccH" type="range" aria-label="Height" style="flex:1"><b id="ccHv"></b></div>
-        <div class="ccrow"><span>Points left</span><b id="ccLeft" style="color:var(--gold)"></b></div>
+      <h1 style="font-size:clamp(20px,3.6cqw,48px);margin:0 0 .4cqw">MyPLAYER BUILDER</h1>
+      <div class="mp">
+        <div class="mpL"><canvas id="mpCv" width="300" height="400" aria-label="Player preview"></canvas>
+          <div class="ovr"><b id="mpOvr">60</b><span>OVR</span></div>
+          <div id="mpTag"></div><div id="mpSub"></div></div>
+        <div>
+          <div class="mpTabs" id="mpTabs"><button data-t="info" class="sel">Info</button><button data-t="body">Body</button><button data-t="attr">Attributes</button><button data-t="badge">Badges</button><button data-t="ab">Takeover</button></div>
+          <div class="mpPane" id="mpPane"></div>
+          <p class="tag" id="ccMsg" role="status"></p>
+          <div class="row"><button class="go" id="ccSave">Save player</button><button class="go back" id="ccBack">Back</button></div>
+        </div>
       </div>
-      <div class="ccgrid" id="ccStats" style="margin-top:.6cqw"></div>
-      <div class="ccrow" style="margin-top:.6cqw"><span>Special ability</span><select id="ccAb" aria-label="Special ability" style="flex:1"></select></div>
-      <p id="ccAbDesc"></p><p id="ccSum"></p>
-      <p class="tag" id="ccMsg" role="status"></p>
-      <div class="row"><button class="go" id="ccSave">Save player</button><button class="go back" id="ccBack">Back</button></div>
     </div></div>
   <div id="devAdm" class="ov hide"><div class="card scr wide">
       <h1 style="font-size:clamp(22px,4.6cqw,62px)">DEV CODES</h1>
@@ -905,13 +940,13 @@ function renderSettings(){
       const h1=add('button','How to play','sbtn');h1.onclick=()=>{hideEl('settings');$('tutBtn').click();};
       const h2=add('button','Practice court','sbtn');h2.onclick=()=>{hideEl('settings');$('pracBtn').click();};
     }
-    add('p','Game version '+GAME_VER+(devOn?' (dev build)':'')+'.','tag');
-    if(devAdmin){const da=add('button','Manage dev codes','sbtn');da.onclick=openDevAdmin;}
-    if(!devOn){const dv=add('button','Dev build','sbtn');dv.onclick=()=>{hideEl('settings');$('devMsg').textContent='';show('devDlg');$('devIn').focus();};}
+    const vl=add('p','Game version '+GAME_VER+(devOn?' (dev build)':'')+'.','tag');
+    if(!devOn){vl.style.userSelect='none';vl.onclick=()=>{const n=Date.now();devTaps=(n-devTapT<1500)?devTaps+1:1;devTapT=n;if(devTaps>=7){devTaps=0;hideEl('settings');$('devMsg').textContent='';show('devDlg');$('devIn').focus();}};}
     else{
       add('h2','Dev build');
       add('p','Unreleased content. Turn features on or off to test them. Nothing here changes your saved progress.','tag');
       DEV_FEATURES.forEach(f=>{const r=document.createElement('div');r.className='srow';const l=document.createElement('span');l.textContent=f.name;l.title=f.desc;const c=document.createElement('input');c.type='checkbox';c.checked=!!devX[f.id];c.setAttribute('aria-label',f.name);c.onchange=()=>{devX[f.id]=c.checked;devApply();};r.append(l,c);body.appendChild(r);const d=add('p',f.desc,'tag');d.style.marginTop='0';});
+      if(devAdmin&&devMaster){const da=add('button','Manage dev codes','sbtn');da.onclick=openDevAdmin;}
       const lv=add('button','Leave dev build','sbtn');lv.onclick=()=>{devLeave();renderSettings();};
     }
     const h3=add('button',"What's new",'sbtn');h3.onclick=()=>showDevlog();
@@ -1039,7 +1074,7 @@ Object.assign(ABIL,{
 let coins=300,owned=['DIME','BLAZE','MOOSE'];
 let squad={PG:2,SG:1,C:0},teamCol=0,teamName='NEON';
 let user='';
-function defaults(){tourSave=null;if(typeof custom!=='undefined'){custom=null;storyDone=0;}wantFull=false;acctShots=[0,0,0];acctQmWins=0;lbShow=true;acctXp=0;coins=300;owned=['DIME','BLAZE','MOOSE'];squad={PG:2,SG:1,C:0};teamCol=0;teamName='NEON';oppIdx=0;gameLen=240;titles=0;gm=3;pk1='DIME';pk2='BLAZE';redeemed=[];}
+function defaults(){tourSave=null;if(typeof custom!=='undefined'){custom=null;customRaw=null;storyDone=0;}wantFull=false;acctShots=[0,0,0];acctQmWins=0;lbShow=true;acctXp=0;coins=300;owned=['DIME','BLAZE','MOOSE'];squad={PG:2,SG:1,C:0};teamCol=0;teamName='NEON';oppIdx=0;gameLen=240;titles=0;gm=3;pk1='DIME';pk2='BLAZE';redeemed=[];}
 function applyCfg(cfg){
   defaults();
   if(!cfg||typeof cfg!=='object')return;
@@ -1060,7 +1095,8 @@ function applyCfg(cfg){
     if(Array.isArray(cfg.redeemed))redeemed=cfg.redeemed.filter(x=>typeof x==='string').slice(0,200);
     if([1,2,3].indexOf(cfg.gm)>=0)gm=cfg.gm;
     tourSave=validTour(cfg.tr);
-    if(typeof validCustom==='function'){custom=validCustom(cfg.cc);storyDone=clamp(Math.floor(+cfg.stp||0),0,4);}
+    if(typeof validCustom==='function'){customRaw=cfg.cc||null;custom=validCustom(cfg.cc);storyDone=clamp(Math.floor(+cfg.stp||0),0,4);}
+    if(!(typeof devOn!=='undefined'&&devOn)&&(cfg.cc||cfg.stp)){devStash(cfg.cc,cfg.stp);custom=null;customRaw=null;storyDone=0;}
     if(typeof cfg.pk1==='string')pk1=cfg.pk1;
     if(typeof cfg.pk2==='string')pk2=cfg.pk2;
     SLOTS.forEach(s=>{if(owned.indexOf(POOL[s][squad[s]].name)<0)squad[s]=POOL[s].findIndex(o=>owned.indexOf(o.name)>=0);});
@@ -1068,7 +1104,7 @@ function applyCfg(cfg){
     if(owned.indexOf(pk2)<0||pk2===pk1)pk2=owned.find(n=>n!==pk1);
   }catch(e){}
 }
-function curCfg(){return {squad:squad,teamCol:teamCol,teamName:teamName,oppIdx:oppIdx,gameLen:gameLen,coins:coins,titles:titles,redeemed:redeemed,gm:gm,pk1:pk1,pk2:pk2,owned:(typeof devRealOwned!=='undefined'&&devRealOwned)?devRealOwned:owned,xp:acctXp,qmw:acctQmWins,full:wantFull,sh:acctShots,lb:lbShow,tr:tourSave?JSON.stringify(tourSave):null,cc:(typeof custom!=='undefined'&&custom)?JSON.stringify(custom):null,stp:(typeof storyDone!=='undefined')?storyDone:0,ts:Date.now()};}
+function curCfg(){return {squad:squad,teamCol:teamCol,teamName:teamName,oppIdx:oppIdx,gameLen:gameLen,coins:coins,titles:titles,redeemed:redeemed,gm:gm,pk1:pk1,pk2:pk2,owned:(typeof devRealOwned!=='undefined'&&devRealOwned)?devRealOwned:owned,xp:acctXp,qmw:acctQmWins,full:wantFull,sh:acctShots,lb:lbShow,tr:tourSave?JSON.stringify(tourSave):null,cc:(typeof custom!=='undefined'&&custom)?JSON.stringify(custom):((typeof customRaw!=='undefined'&&customRaw)||null),stp:(typeof storyDone!=='undefined')?storyDone:0,ts:Date.now()};}
 function readAccts(){try{return JSON.parse(localStorage.getItem('sk_accts')||'{}')||{};}catch(e){return {};}}
 function writeAccts(a){try{localStorage.setItem('sk_accts',JSON.stringify(a));}catch(e){}}
 try{
@@ -1210,11 +1246,11 @@ function contest(p){
     const dd=dst(p.x,p.y,d.x,d.y);if(dd>2.4)continue;
     const base=1-dd/2.4,hx=HX-p.x,hy=HY-p.y,hl=Math.hypot(hx,hy)||1;
     const dot=((d.x-p.x)*hx+(d.y-p.y)*hy)/(hl*(dd||1));
-    let v=base*(dot>0.2?1:0.55)*(0.6+0.4*d.arch.block);
+    let v=base*(dot>0.2?1:0.55)*(0.6+0.4*d.arch.block)*(d.arch.bClamps?1.3:1);
     if(d.blocking>0||d.z>0.25)v*=1.45;
     if(v>c)c=v;
   }
-  return clamp(c,0,1);
+  return clamp(c*(p.arch.bDeadeye?0.65:1),0,1);
 }
 function rangeBonus(p,dh){
   const r=p.arch.rng;if(!r||dh<3.2)return 0;
@@ -1271,7 +1307,7 @@ function setCtrl(p,lock){if(p.team===ctxTeam){ctrl=p;ctrlLock=lock;}else if(pvp)
 function skillOf(p){return clamp(p.arch.shoot*(isCPU(p)?DIFF[diffIdx].cpuShoot*ST.shoot:1)*(p.arch.adapt?adk(p):1)*(p.arch.heat?1+0.05*(p.heat||0):1)*rallyK(p),p.arch.adapt?0.1:0.3,1);}
 function zoneHalf(p){
   const dh=dst(p.x,p.y,HX,HY),c=contest(p);
-  return 0.032*adSoft(p)*(p.arch.heat?1+0.12*(p.heat||0):1)*(0.7+0.6*skillOf(p))*(dh<2.4?p.arch.pz:1)*rangeZone(p,dh)*(p.arch.zk||1)*fxv(p,'zone',1)*(1-0.5*c)*(isCPU(p)?1:DIFF[diffIdx].forgive);
+  return 0.032*adSoft(p)*(p.arch.heat?1+0.12*(p.heat||0):1)*(0.7+0.6*skillOf(p))*(dh<2.4?p.arch.pz:1)*rangeZone(p,dh)*(p.arch.zk||1)*(p.arch.bRange&&dh>=ARC-0.05?1.2:1)*fxv(p,'zone',1)*(1-0.5*c)*(isCPU(p)?1:DIFF[diffIdx].forgive);
 }
 function computeHelper(){
   helperId=-1;if(ball.state!=='held')return;
@@ -1292,6 +1328,7 @@ function giveBall(p,how){
     if(p.team!==b.shooterTeam){teams[p.team].needClear=!FULL;shotClock=SC;popup('REBOUND','#ffffff',p);}
     else{shotClock=Math.max(shotClock,8);popup('PUTBACK CHANCE','#ffd166',p);}
   }
+  if(how==='pass'&&b.passer&&b.passer.arch.bDimer&&b.passer.team===p.team)addFx(p,'zone',4,1.3);
   if(how==='steal'&&!p.adDashSteal)adGain(p,10,'STEAL');
   if(how==='pass'&&b.passer&&b.passer.arch.adapt&&b.passer.team===p.team&&tNow-(b.passer.adPassT||-9)>1.5){b.passer.adPassT=tNow;adGain(b.passer,5,'ASSIST');}
   if(how==='steal'){stealLock.team=1-p.team;stealLock.until=tNow+1.6;p.stats.stl++;shotClock=SC;sfx.steal();addVfx('snatch',p.x,p.y,1.1,0,0.5);shake=Math.max(shake,0.2);
@@ -2665,7 +2702,7 @@ function renderOpp(){
   $('segLen').querySelectorAll('button').forEach(b=>b.classList.toggle('sel',+b.dataset.v===gameLen));
 }
 renderOpp();
-function saveCfg(){try{const c=curCfg();if(cloudUser){cacheSet(cloudUser.uid,c);pushCloud();}else if(user&&!cloudOn){const ac=readAccts();if(ac[user]){ac[user].c=c;writeAccts(ac);}}else localStorage.setItem('sk_cfg',JSON.stringify(c));}catch(e){}}
+function saveCfg(){if(typeof devOn!=='undefined'&&devOn){devSaveNow();return;}try{const c=curCfg();if(cloudUser){cacheSet(cloudUser.uid,c);pushCloud();}else if(user&&!cloudOn){const ac=readAccts();if(ac[user]){ac[user].c=c;writeAccts(ac);}}else localStorage.setItem('sk_cfg',JSON.stringify(c));}catch(e){}}
 function renderSquad(){
   SLOTS.forEach(s=>{
     $('seg'+s).innerHTML=POOL[s].map((o,i)=>owned.indexOf(o.name)<0?'':'<button data-v="'+i+'" class="'+(squad[s]===i?'sel':'')+'" style="box-shadow:inset 0 -3px 0 '+rarCol(o.name)+'">'+o.name+'</button>').join('');
@@ -2908,7 +2945,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.1.11';
+const GAME_VER='2.1.13';
 const DEV_VER='2.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -2987,8 +3024,7 @@ function mergeCfg(R,L,B){
   const uni=(a,b)=>{const s=(Array.isArray(a)?a:[]).slice();(Array.isArray(b)?b:[]).forEach(x=>{if(s.indexOf(x)<0)s.push(x);});return s;};
   o.owned=uni(R.owned,L.owned);o.redeemed=uni(R.redeemed,L.redeemed);
   const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
-  o.stp=Math.max(num(R.stp),num(L.stp));
-  ['squad','teamCol','teamName','oppIdx','gameLen','gm','pk1','pk2','full','lb','tr','cc'].forEach(k=>{
+  ['squad','teamCol','teamName','oppIdx','gameLen','gm','pk1','pk2','full','lb','tr','cc','stp'].forEach(k=>{
     if(!B||!same(L[k],B[k]))o[k]=L[k]===undefined?R[k]:L[k];
   });
   o.ts=Math.max(num(R.ts),num(L.ts));
@@ -3002,7 +3038,7 @@ function applyMerged(m){
   if(JSON.stringify(curCfg(),(k,v)=>k==='ts'?0:v)!==before){try{refreshAll();}catch(e){}}
 }
 function pushCloud(now){
-  if(!cloudUser||!fb)return;
+  if(!cloudUser||!fb||(typeof devOn!=='undefined'&&devOn))return;
   clearTimeout(pushT);
   const uid=cloudUser.uid;
   const run=async()=>{
@@ -3028,7 +3064,7 @@ function pushCloud(now){
   pushT=setTimeout(run,800);
 }
 function pushLb(){
-  if(!cloudUser||!fb||!lbShow)return Promise.resolve();
+  if(!cloudUser||!fb||!lbShow||(typeof devOn!=='undefined'&&devOn))return Promise.resolve();
   return fb.fs.setDoc(fb.fs.doc(fb.db,'leaderboard',cloudUser.uid),{name:user,xp:acctXp,level:lvInfo(acctXp).L,coins:coins,titles:titles,qmwins:acctQmWins,ts:Date.now()}).catch(()=>{});
 }
 async function cloudPull(){
@@ -3050,7 +3086,7 @@ function watchSave(uid){
   if(saveUnsub){try{saveUnsub();}catch(e){}saveUnsub=null;}
   if(!cloudUser||!fb)return;
   saveUnsub=fb.fs.onSnapshot(saveRef(),snap=>{
-    if(!cloudUser||cloudUser.uid!==uid||!snap.exists())return;
+    if(!cloudUser||cloudUser.uid!==uid||!snap.exists()||(typeof devOn!=='undefined'&&devOn))return;
     const d=snap.data();
     if(!d.cfg||d.w===myW||JSON.stringify(d.cfg)===JSON.stringify(cloudBase))return;
     const m=cleanCfg(mergeCfg(d.cfg,curCfg(),baseGet(uid)));
@@ -3073,6 +3109,7 @@ async function cloudInit(){
   }catch(e){fb=null;acctMsg('Cloud saves are unavailable right now.');maybeTutorial();}
 }
 async function acCreate(){
+  if(typeof devOn!=='undefined'&&devOn)devLeave();
   const n=cleanName($('acName').value),pw=$('acPw').value;
   if(n.length<3){acctMsg('Pick a name with 3 to 12 letters, numbers or underscores.');return;}
   if(cloudOn){
@@ -3089,6 +3126,7 @@ async function acCreate(){
   $('acPw').value='';acctMsg('Account created. Your current progress is saved to it.');refreshAll();tryInvite();
 }
 async function acLogin(){
+  if(typeof devOn!=='undefined'&&devOn)devLeave();
   const n=cleanName($('acName').value),pw=$('acPw').value;
   if(cloudOn){
     try{acctMsg('Logging in...');const f=await fbLoad();await f.au.signInWithEmailAndPassword(f.a,mailOf(n),pw);$('acPw').value='';acctMsg('Welcome back, '+n+'.');}
@@ -3101,6 +3139,7 @@ async function acLogin(){
   applyCfg(r.c);$('acPw').value='';acctMsg('Welcome back, '+n+'.');refreshAll();tryInvite();
 }
 async function acLogout(){
+  if(typeof devOn!=='undefined'&&devOn)devLeave();
   if(cloudOn&&cloudUser){try{await pushCloud(true);await fb.fs.deleteDoc(fb.fs.doc(fb.db,'status',cloudUser.uid)).catch(()=>{});socStop();if(saveUnsub){try{saveUnsub();}catch(e){}saveUnsub=null;}await fb.au.signOut(fb.a);}catch(e){}cloudUser=null;}
   user='';try{localStorage.removeItem('sk_user');}catch(e){}
   applyCfg(guestCfg());acctMsg('Logged out. You are playing as a guest.');refreshAll();
@@ -4312,6 +4351,29 @@ $('ffBtn').onclick=()=>{
 $('setBack').onclick=()=>{capture=null;hideEl('settings');if(settingsFrom==='pause'){if(phase==='paused'||guestPaused)showPauseMenu();}else show('menu');};
 applyAudio();applyVis();
 
+/* ===== dev build save sandbox: nothing done in the dev build touches the real save ===== */
+var devRealCfg=null;
+function devSaveKey(){try{return 'sk_devsave_'+(cloudUser?cloudUser.uid:(user||'guest'));}catch(e){return 'sk_devsave_guest';}}
+function devSaveGet(){try{return JSON.parse(localStorage.getItem(devSaveKey())||'null');}catch(e){return null;}}
+function devSaveNow(){try{localStorage.setItem(devSaveKey(),JSON.stringify(curCfg()));}catch(e){}}
+/* older versions stored story progress and the custom player in the real save; move them into the dev save */
+function devStash(cc,stp){
+  try{const d=devSaveGet()||{};if(cc&&!d.cc)d.cc=cc;if(stp&&!(d.stp>=stp))d.stp=stp;localStorage.setItem(devSaveKey(),JSON.stringify(d));}catch(e){}
+}
+function devSandboxIn(){
+  devRealCfg=curCfg();
+  const d=devSaveGet();
+  const start=Object.assign({},devRealCfg,{tr:null,cc:null,stp:0});
+  applyCfg(d&&d.owned?Object.assign({},start,d):Object.assign({},start,d?{cc:d.cc||null,stp:d.stp||0}:{}));
+  devSaveNow();
+}
+function devSandboxOut(){
+  devSaveNow();
+  const real=devRealCfg;devRealCfg=null;devRealOwned=null;
+  if(real)applyCfg(real);
+  try{refreshAll();}catch(e){}
+  if(cloudOn&&cloudUser&&fb)cloudPull();
+}
 /* ===== dev build: unreleased content behind a code, with every attempt logged ===== */
 const DEV_HASH='11cal5ouw9s';
 /* Unreleased content lives here. Each entry is a toggle in the dev build (Settings, Help). */
@@ -4320,7 +4382,7 @@ const DEV_FEATURES=[
   {id:'story',name:'Story mode: Velocity Break',desc:'A four-chapter campaign with the Ash Hounds, from the cracked courts of the Lower Sprawl to the Sovereigns on the threshold, plus a custom player creator. Find it in Play, Offline.',on:true},
   {id:'blaze',name:'Blaze shooting fix',desc:'Inside his zone, a release that misses the green tops out at 55% so green (65%) is always best, and his shots close to the rim are no longer capped at 30%.',on:true}
 ];
-var devOn=false,devX={},devRealOwned=null,devTries=[];
+var devTaps=0,devTapT=0,devMaster=false,devOn=false,devX={},devRealOwned=null,devTries=[];
 function devFeat(id){return devOn&&!!devX[id];}
 function devLog(ok,code){
   if(!(cloudOn&&cloudUser&&fb))return;
@@ -4349,13 +4411,13 @@ async function devEnter(){
   }
   devLog(ok,ok||expired?label:'wrong');
   if(!ok){uiSnd('uiBad');msg.textContent=expired?'That dev code has expired. Ask for a new one.':'That dev code is not valid. This attempt was logged.';return;}
-  devOn=true;DEV_FEATURES.forEach(f=>{devX[f.id]=f.on;});
+  devOn=true;devSandboxIn();devMaster=(hh===DEV_HASH);DEV_FEATURES.forEach(f=>{devX[f.id]=f.on;});
   try{sessionStorage.setItem('sk_devb','1');}catch(e){}
   $('devIn').value='';uiSnd('uiGood');hideEl('devDlg');devApply();
   toast('Welcome to the dev build'+(devExp?' (your code expires '+new Date(devExp).toLocaleString()+')':'')+'. Online play is off while you are in it.');
   setTab='help';openSettings('menu');
 }
-function devLeave(){devOn=false;devX={};try{sessionStorage.removeItem('sk_devb');}catch(e){}devApply();toast('You left the dev build.');}
+function devLeave(){if(devOn)devSaveNow();devOn=false;devMaster=false;devX={};try{sessionStorage.removeItem('sk_devb');}catch(e){}devSandboxOut();devApply();toast('You left the dev build. Your real progress is back.');}
 $('devGo').onclick=devEnter;$('devIn').addEventListener('keydown',e=>{if(e.key==='Enter')devEnter();});
 $('devBack').onclick=()=>{hideEl('devDlg');openSettings(settingsFrom==='pause'?'pause':'menu');};
 /* ===== story mode: Velocity Break, The King's Gambit (dev build) ===== */
@@ -4386,7 +4448,7 @@ const STORY=[
    pre:["The final match of the Gauntlet isn't played in the slums. It's played on the threshold, a pristine court halfway up the skyline, surrounded by elite scouts and King League sponsors looking down at the street rats.","The Sovereigns are a King League farm team: genetically optimized, kinetic-assist gear, mathematically flawless defense. Blaze wipes blood from a busted lip.","Dime looks up at the floating stadium. \"We don't play clean,\" he whispers. \"Drag them down to the Sprawl.\""],
    post:["The buzzer sounds. The stadium falls dead silent, then erupts. The Hounds stand in a shower of shattered backboard glass.","The King League's manager steps onto the court holding out golden digital contracts. Dime takes his, but he doesn't look grateful. He looks up at the floating stadiums with a smirk.","They aren't just here to play. They're here to take over.","TO BE CONTINUED"]}
 ];
-var story=null,storyDone=0,custom=null;
+var story=null,storyDone=0,custom=null,customRaw=null;
 function storyHaz(){return story&&story.live&&story.zones?story.zones:null;}
 function storyZones(h){
   if(!h)return null;const z=[];
@@ -4412,17 +4474,6 @@ function drawHazards(){
   }
   ctx.restore();
 }
-function ccRoster(c){
-  const base=ARCH[c.pos],pt=k=>(c.s[k]||0)-2,hd=(c.h-base.h)/0.1;
-  const m={h:c.h,abKey:c.ab,custom:true,
-    spd:+(base.spd+pt('spd')*0.2-hd*0.12).toFixed(2),
-    shoot:+clamp(base.shoot+pt('sht')*0.05,0.35,0.92).toFixed(3),
-    handle:+(base.handle*(1+pt('hdl')*0.12)).toFixed(2),pass:+(base.pass*(1+pt('hdl')*0.1)).toFixed(2),
-    steal:+(base.steal*(1+pt('def')*0.15)).toFixed(2),block:+(base.block*(1+pt('def')*0.12+hd*0.05)).toFixed(2),
-    reb:+(base.reb*(1+pt('ins')*0.12+hd*0.05)).toFixed(2),dunk:+(base.dunk+pt('ins')*0.25+hd*0.08).toFixed(2)};
-  if(c.pos==='SG'){m.rng='all';m.sureP=0.7;}
-  return [c.pos,c.name,c.num,c.skin,m];
-}
 function storyMine(){
   const hounds={PG:findChar('DIME'),SG:findChar('BLAZE'),C:findChar('MOOSE')};
   return SLOTS.map(sl=>custom&&custom.pos===sl?ccRoster(custom):[sl,hounds[sl].o.name,hounds[sl].o.num,hounds[sl].o.skin,hounds[sl].o.mod]);
@@ -4436,7 +4487,7 @@ function storyShowText(title,paras,btn,fn){
 function storyRender(){
   const h=$('stHero');h.innerHTML='';
   const info=document.createElement('div');
-  if(custom){const r=ccRoster(custom);info.innerHTML='';const b=document.createElement('b');b.textContent=custom.name+'  #'+custom.num+'  ('+ARCH[custom.pos].n+')';const sm=document.createElement('small');sm.textContent='Joins the Ash Hounds in place of '+({PG:'Dime',SG:'Blaze',C:'Moose'})[custom.pos]+' on court. Ability: '+((ABIL[custom.ab]||{}).name||'none')+'.';info.append(b,sm);}
+  if(custom){const r=ccRoster(custom);info.innerHTML='';const b=document.createElement('b');b.textContent=custom.name+'  #'+custom.num+'  ·  '+ccOvr(custom)+' OVR  ·  '+archOf(custom).n;const sm=document.createElement('small');sm.textContent='Joins the Ash Hounds in place of '+({PG:'Dime',SG:'Blaze',C:'Moose'})[custom.pos]+' on court. Ability: '+((ABIL[custom.ab]||{}).name||'none')+'.';info.append(b,sm);}
   else{const b=document.createElement('b');b.textContent='No player yet';const sm=document.createElement('small');sm.textContent='Create your own player to join the Ash Hounds. You can also play as Dime, Blaze and Moose.';info.append(b,sm);}
   const n=document.createElement('span');n.className='n';n.textContent=custom?custom.num:'?';
   const e=document.createElement('button');e.className='sbtn';e.textContent=custom?'Edit player':'Create player';e.style.margin='0';e.onclick=()=>openCC();
@@ -4474,50 +4525,169 @@ function storyContinue(){
   }else{story.zones=storyZones(c.haz);startGame();}
 }
 function storyQuit(){story=null;hideEl('result');createGame();checkBall(0);phase='menu';storyRender();show('story');}
-/* ===== custom character creator ===== */
+/* ===== MyPLAYER builder (NBA 2K style) ===== */
 const CC_SKINS=['#f1c27d','#e0ac69','#c68642','#a0693a','#8d5524','#6b4423'];
-const CC_STATS=[['spd','Speed'],['sht','Shooting'],['hdl','Handles & passing'],['def','Defense'],['ins','Inside (boards, dunks)']];
 const CC_ABS=['kai','dime','flash','orbit','glove','rex','blaze','volt','haze','moose','rock','boom','atlas','dozer'];
-const CC_POINTS=12,CC_H={PG:[1.75,1.95],SG:[1.85,2.05],C:[2.0,2.2]};
-let ccEdit=null;
-function ccDefault(){return {name:(user||'ROOKIE').slice(0,10),num:7,pos:'SG',skin:CC_SKINS[2],h:1.95,s:{spd:3,sht:3,hdl:2,def:2,ins:2},ab:'rex'};}
-function ccUsed(c){return CC_STATS.reduce((a,k)=>a+(c.s[k[0]]||0),0);}
-function ccRender(){
-  const c=ccEdit;
-  $('ccPos').querySelectorAll('button').forEach(b=>b.classList.toggle('sel',b.dataset.v===c.pos));
-  $('ccSkin').querySelectorAll('button').forEach(b=>b.classList.toggle('sel',b.dataset.v===c.skin));
-  const hr=CC_H[c.pos],hi=$('ccH');hi.min=hr[0];hi.max=hr[1];hi.step=0.01;c.h=clamp(c.h,hr[0],hr[1]);hi.value=c.h;$('ccHv').textContent=c.h.toFixed(2)+' m';
-  $('ccLeft').textContent=(CC_POINTS-ccUsed(c))+' of '+CC_POINTS;
-  const g=$('ccStats');g.innerHTML='';
-  CC_STATS.forEach(k=>{
-    const r=document.createElement('div');r.className='ccrow';const l=document.createElement('span');l.textContent=k[1];
-    const p=document.createElement('div');p.className='pts';
-    const mi=document.createElement('button');mi.className='sbtn';mi.textContent='-';mi.setAttribute('aria-label','Less '+k[1]);mi.disabled=c.s[k[0]]<=0;mi.onclick=()=>{c.s[k[0]]--;ccRender();};
-    const bar=document.createElement('span');for(let i=0;i<5;i++){const q=document.createElement('i');if(i<c.s[k[0]])q.className='on';bar.appendChild(q);}
-    const pl=document.createElement('button');pl.className='sbtn';pl.textContent='+';pl.setAttribute('aria-label','More '+k[1]);pl.disabled=c.s[k[0]]>=5||ccUsed(c)>=CC_POINTS;pl.onclick=()=>{c.s[k[0]]++;ccRender();};
-    p.append(mi,bar,pl);r.append(l,p);g.appendChild(r);
+const CC_H={PG:[1.83,1.96],SG:[1.90,2.03],C:[2.06,2.21]},CC_W={PG:[170,215],SG:[185,230],C:[220,290]};
+const ATTRS=[['Finishing',[['close','Close shot'],['dunk','Driving dunk']]],['Shooting',[['mid','Mid-range shot'],['three','Three-point shot']]],['Playmaking',[['hdl','Ball handle'],['pass','Pass accuracy']]],['Defense',[['stl','Steal'],['blk','Block']]],['Physicals',[['spd','Speed'],['reb','Rebounding']]]];
+const AKEYS=ATTRS.reduce((a,g)=>a.concat(g[1].map(x=>x[0])),[]);
+const AT_POOL=640,AT_MIN=25;
+const ARCHS={
+  PG:[{id:'psc',n:'Playmaking Shot Creator',d:'Elite handles and passing with a reliable jumper.',a:{close:62,dunk:50,mid:72,three:70,hdl:86,pass:84,stl:62,blk:30,spd:84,reb:40},b:['handles','dimer']},
+      {id:'sharp',n:'Sharpshooting Point',d:'Pulls up from anywhere, runs the offense.',a:{close:55,dunk:40,mid:80,three:88,hdl:78,pass:72,stl:55,blk:28,spd:78,reb:38},b:['range','deadeye']},
+      {id:'slash',n:'Two-Way Slasher',d:'Attacks the rim and hounds ball handlers.',a:{close:80,dunk:76,mid:58,three:52,hdl:74,pass:66,stl:80,blk:40,spd:86,reb:45},b:['firststep','glove']}],
+  SG:[{id:'shooter',n:'Sharpshooter',d:'Lives behind the arc. Green goes in from deep.',a:{close:55,dunk:45,mid:84,three:92,hdl:66,pass:58,stl:55,blk:38,spd:74,reb:45},b:['range','deadeye']},
+      {id:'slashp',n:'Slashing Playmaker',d:'Creates off the dribble and finishes strong.',a:{close:82,dunk:80,mid:64,three:60,hdl:80,pass:72,stl:58,blk:40,spd:82,reb:48},b:['posterizer','firststep']},
+      {id:'3d',n:'3 and D Wing',d:'Locks up the best scorer and hits open threes.',a:{close:58,dunk:55,mid:68,three:80,hdl:60,pass:55,stl:80,blk:62,spd:76,reb:52},b:['clamps','glove']}],
+  C:[{id:'beast',n:'Paint Beast',d:'Overpowers everyone at the rim.',a:{close:88,dunk:90,mid:40,three:28,hdl:40,pass:48,stl:40,blk:78,spd:58,reb:86},b:['posterizer','chaser']},
+     {id:'lock',n:'Glass-Cleaning Lockdown',d:'Owns the boards and protects the rim.',a:{close:68,dunk:66,mid:35,three:25,hdl:35,pass:45,stl:52,blk:92,spd:56,reb:94},b:['rimpro','chaser']},
+     {id:'stretch',n:'Stretch Big',d:'Pulls bigs out of the paint with a soft jumper.',a:{close:70,dunk:60,mid:76,three:78,hdl:45,pass:55,stl:40,blk:66,spd:58,reb:72},b:['range','rimpro']}]
+};
+const BADGES=[
+  {id:'deadeye',n:'Deadeye',d:'Defenders hurt your jump shots 35% less.',ic:'DE'},
+  {id:'range',n:'Limitless Range',d:'Bigger green window from three and deeper.',ic:'LR'},
+  {id:'handles',n:'Handles for Days',d:'Crossovers recharge faster and freeze defenders more often.',ic:'HD'},
+  {id:'firststep',n:'Quick First Step',d:'Extra speed, especially on drives.',ic:'QF'},
+  {id:'dimer',n:'Dimer',d:'Teammates you pass to get a bigger green window for 4 seconds.',ic:'DM'},
+  {id:'posterizer',n:'Posterizer',d:'Longer dunk range.',ic:'PZ'},
+  {id:'glove',n:'Glove',d:'Reach farther for steals.',ic:'GL'},
+  {id:'clamps',n:'Clamps',d:'You contest shots 30% harder.',ic:'CL'},
+  {id:'rimpro',n:'Rim Protector',d:'Block reach and hand height go up.',ic:'RP'},
+  {id:'chaser',n:'Rebound Chaser',d:'Grab rebounds from farther away.',ic:'RC'}
+];
+const BADGE_SLOTS=3;
+let ccEdit=null,mpTab='info';
+const ftIn=h=>{const t=Math.round(h/0.0254);return Math.floor(t/12)+"'"+(t%12)+'"';};
+function ccCaps(c){
+  const h=(c.h-1.83)/0.38,w=(c.w-170)/120,ws=c.ws/8;
+  const cap={close:92+w*7,dunk:72+h*22+ws*5,mid:97-h*14,three:99-h*24-ws*6,hdl:99-h*42-w*8,pass:97-h*22,stl:90-h*12+ws*12,blk:52+h*40+ws*12,spd:99-h*30-w*14,reb:55+h*34+w*10+ws*6};
+  for(const k in cap)cap[k]=Math.round(clamp(cap[k],40,99));
+  return cap;
+}
+function ccFit(c){const cap=ccCaps(c);AKEYS.forEach(k=>{c.a[k]=clamp(Math.round(c.a[k]||AT_MIN),AT_MIN,cap[k]);});while(ccUsed(c)>AT_POOL){let mk=AKEYS[0];AKEYS.forEach(k=>{if(c.a[k]>c.a[mk])mk=k;});c.a[mk]--;}}
+function ccUsed(c){return AKEYS.reduce((a,k)=>a+c.a[k],0);}
+function ccOvr(c){
+  const a=c.a,W={PG:{hdl:2,pass:2,spd:1.5,three:1.5,mid:1,stl:1,close:1},SG:{three:2,mid:1.5,close:1.2,spd:1.2,stl:1,hdl:1},C:{reb:2,blk:2,close:1.5,dunk:1.2,spd:0.8}}[c.pos];
+  let s=0,t=0;for(const k in W){s+=a[k]*W[k];t+=W[k];}
+  return Math.round(clamp(s/t*0.92+AKEYS.reduce((x,k)=>x+a[k],0)/AKEYS.length*0.12,40,99));
+}
+function archOf(c){return (ARCHS[c.pos]||[]).find(x=>x.id===c.arch)||ARCHS[c.pos][0];}
+function ccDefault(pos){
+  pos=pos||'SG';const ar=ARCHS[pos][0],hr=CC_H[pos],wr=CC_W[pos];
+  const c={name:(user||'ROOKIE').slice(0,10),num:7,pos:pos,arch:ar.id,skin:CC_SKINS[2],h:+((hr[0]+hr[1])/2).toFixed(2),w:Math.round((wr[0]+wr[1])/2),ws:2,a:Object.assign({},ar.a),b:ar.b.slice(),ab:'rex'};
+  ccFit(c);return c;
+}
+const scl=(v,lo,hi)=>lo+(clamp(v,25,99)-25)/74*(hi-lo);
+function ccRoster(c){
+  const a=c.a,b=c.b||[],has=k=>b.indexOf(k)>=0;
+  const m={h:c.h,abKey:c.ab,custom:true,
+    spd:+(scl(a.spd,4.3,6.3)+(has('firststep')?0.25:0)).toFixed(2),
+    shoot:+scl((a.mid+a.three)/2,0.42,0.92).toFixed(3),
+    handle:+(scl(a.hdl,0.6,2.0)*(has('handles')?1.15:1)).toFixed(2),pass:+scl(a.pass,0.9,1.6).toFixed(2),
+    steal:+(scl(a.stl,0.4,1.5)*(has('glove')?1.2:1)).toFixed(2),block:+(scl(a.blk,0.35,1.5)*(has('rimpro')?1.2:1)).toFixed(2),
+    reb:+(scl(a.reb,0.4,1.5)*(has('chaser')?1.25:1)).toFixed(2),dunk:+(scl(a.dunk,2.0,4.0)+(has('posterizer')?0.4:0)).toFixed(2),
+    paint:+scl(a.close,0,0.28).toFixed(3),
+    bDeadeye:has('deadeye'),bRange:has('range'),bDimer:has('dimer'),bClamps:has('clamps')};
+  if(a.three>=75){m.sure=true;m.rng='all';m.sureP=+(0.45+(a.three-75)/24*0.3).toFixed(2);}
+  else{m.sure=false;m.fall=a.three<60;}
+  return [c.pos,c.name,c.num,c.skin,m];
+}
+function drawPreview(c){
+  const cv=$('mpCv');if(!cv)return;const g=cv.getContext('2d'),W=cv.width,H=cv.height;g.clearRect(0,0,W,H);
+  const fl=g.createRadialGradient(W/2,H*0.93,10,W/2,H*0.93,W*0.45);fl.addColorStop(0,'rgba(23,214,255,.35)');fl.addColorStop(1,'rgba(23,214,255,0)');g.fillStyle=fl;g.fillRect(0,0,W,H);
+  g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(W/2,H*0.93,W*0.2,H*0.025,0,0,6.283);g.fill();
+  const HP=H*0.82*(c.h/2.21),bw=0.85+(c.w-170)/120*0.45,arm=0.36+c.ws*0.006,X=W/2,Y=H*0.93,sk=c.skin;
+  g.save();g.translate(X,Y);g.lineCap='round';
+  const hipY=-HP*0.48,shY=-HP*0.8;
+  const line=(x1,y1,x2,y2,w,col)=>{g.strokeStyle=col;g.lineWidth=w;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();};
+  line(-HP*0.05*bw,hipY,-HP*0.09,-HP*0.03,HP*0.09*bw,shade(sk,-25));line(HP*0.05*bw,hipY,HP*0.09,-HP*0.03,HP*0.09*bw,sk);
+  g.fillStyle='#f5f5f5';[[-HP*0.1,-HP*0.02],[HP*0.1,-HP*0.02]].forEach(f=>{g.beginPath();g.ellipse(f[0],f[1],HP*0.07,HP*0.033,0,0,6.283);g.fill();});
+  const ah=HP*arm;line(-HP*0.12*bw,shY+HP*0.02,-HP*0.18*bw,shY+ah*0.95,HP*0.07*bw,shade(sk,-25));line(HP*0.12*bw,shY+HP*0.02,HP*0.18*bw,shY+ah*0.95,HP*0.07*bw,sk);
+  g.fillStyle='#3a3f4f';g.fillRect(-HP*0.13*bw,hipY-HP*0.09,HP*0.26*bw,HP*0.17);
+  g.fillStyle='#ff7a1a';g.fillRect(HP*0.1*bw,hipY-HP*0.09,HP*0.03*bw,HP*0.17);
+  g.fillStyle='#c9ced9';g.beginPath();g.moveTo(-HP*0.14*bw,shY-HP*0.04);g.lineTo(HP*0.14*bw,shY-HP*0.04);g.lineTo(HP*0.13*bw,hipY-HP*0.03);g.lineTo(-HP*0.13*bw,hipY-HP*0.03);g.closePath();g.fill();
+  g.fillStyle='#ff7a1a';g.font='900 '+Math.round(HP*0.14)+'px Arial';g.textAlign='center';g.textBaseline='middle';g.fillText(String(c.num),0,shY+HP*0.13);
+  const hr=HP*0.075,hy=shY-HP*0.115;
+  g.fillStyle=sk;g.beginPath();g.arc(0,hy,hr,0,6.283);g.fill();
+  g.fillStyle='#17171c';g.beginPath();g.arc(0,hy-hr*0.1,hr*1.02,Math.PI,Math.PI*2);g.fill();
+  g.fillStyle='#ff7a1a';g.fillRect(-hr,hy-hr*0.22,hr*2,hr*0.28);
+  g.restore();
+}
+function ccInfoPane(p,c){
+  const row=(lab,el)=>{const r=document.createElement('div');r.className='prow';const l=document.createElement('span');l.textContent=lab;r.append(l,el);const sp=document.createElement('span');r.appendChild(sp);p.appendChild(r);return sp;};
+  const nm=document.createElement('input');nm.maxLength=10;nm.value=c.name;nm.setAttribute('aria-label','Player name');nm.oninput=()=>{c.name=nm.value;ccHead();};row('Name',nm);
+  const no=document.createElement('input');no.type='number';no.min=0;no.max=99;no.value=c.num;no.setAttribute('aria-label','Jersey number');no.style.width='5em';no.oninput=()=>{c.num=clamp(Math.floor(+no.value||0),0,99);ccHead();};row('Jersey',no);
+  const sg=document.createElement('div');sg.className='seg';[['PG','Point guard'],['SG','Shooting guard'],['C','Center']].forEach(x=>{const b=document.createElement('button');b.textContent=x[1];b.className=c.pos===x[0]?'sel':'';b.onclick=()=>{const n=ccDefault(x[0]);n.name=c.name;n.num=c.num;n.skin=c.skin;n.ab=c.ab;ccEdit=n;ccRender();};sg.appendChild(b);});row('Position',sg);
+  const h=document.createElement('div');h.className='agrp';h.textContent='ARCHETYPE';p.appendChild(h);
+  const ar=document.createElement('div');ar.className='arch';
+  ARCHS[c.pos].forEach(x=>{const b=document.createElement('button');b.className=c.arch===x.id?'sel':'';const t=document.createElement('b');t.textContent=x.n;const d=document.createElement('small');d.textContent=x.d;b.append(t,d);b.onclick=()=>{c.arch=x.id;c.a=Object.assign({},x.a);c.b=x.b.slice();ccFit(c);ccRender();};ar.appendChild(b);});
+  p.appendChild(ar);
+}
+function ccBodyPane(p,c){
+  const sl=(lab,min,max,step,val,fmt,set)=>{const r=document.createElement('div');r.className='prow';const l=document.createElement('span');l.textContent=lab;const i=document.createElement('input');i.type='range';i.min=min;i.max=max;i.step=step;i.value=val;i.setAttribute('aria-label',lab);const v=document.createElement('b');v.textContent=fmt(val);i.oninput=()=>{set(+i.value);v.textContent=fmt(+i.value);ccFit(c);ccHead();ccCapNote();};r.append(l,i,v);p.appendChild(r);};
+  sl('Height',CC_H[c.pos][0],CC_H[c.pos][1],0.0254,c.h,v=>ftIn(v),v=>{c.h=v;});
+  sl('Weight',CC_W[c.pos][0],CC_W[c.pos][1],1,c.w,v=>v+' lbs',v=>{c.w=v;});
+  sl('Wingspan',-2,8,1,c.ws,v=>(v>=0?'+':'')+v+' in',v=>{c.ws=v;});
+  const r=document.createElement('div');r.className='prow';const l=document.createElement('span');l.textContent='Skin tone';const sw=document.createElement('div');sw.className='sw';
+  CC_SKINS.forEach(k=>{const b=document.createElement('button');b.style.background=k;b.className=c.skin===k?'sel':'';b.setAttribute('aria-label','Skin tone');b.onclick=()=>{c.skin=k;ccRender();};sw.appendChild(b);});
+  r.append(l,sw,document.createElement('span'));p.appendChild(r);
+  const n=document.createElement('p');n.id='ccCapNote';n.className='tag';p.appendChild(n);ccCapNote();
+}
+function ccCapNote(){const n=$('ccCapNote');if(!n||!ccEdit)return;const cap=ccCaps(ccEdit);n.textContent='Taller and heavier means a higher block and rebound cap but lower speed and handle caps. A longer wingspan helps steals and blocks but lowers your three-point cap. Caps now: speed '+cap.spd+', handle '+cap.hdl+', three '+cap.three+', block '+cap.blk+', rebound '+cap.reb+'.';}
+function ccAttrPane(p,c){
+  const cap=ccCaps(c);
+  const left=document.createElement('p');left.className='tag';left.id='ccPool';p.appendChild(left);
+  ATTRS.forEach(g=>{
+    const h=document.createElement('div');h.className='agrp';h.textContent=g[0].toUpperCase();p.appendChild(h);
+    g[1].forEach(x=>{
+      const k=x[0],r=document.createElement('div');r.className='attr';
+      const l=document.createElement('span');l.textContent=x[1];
+      const v=document.createElement('b');v.textContent=c.a[k];
+      const bar=document.createElement('div');bar.className='abar';const fill=document.createElement('i');fill.style.width=((c.a[k]-AT_MIN)/(99-AT_MIN)*100)+'%';const cm=document.createElement('em');cm.style.left=((cap[k]-AT_MIN)/(99-AT_MIN)*100)+'%';cm.title='Cap '+cap[k];bar.append(fill,cm);
+      const step=d=>{const nv=c.a[k]+d;if(nv<AT_MIN||nv>cap[k]||(d>0&&ccUsed(c)+d>AT_POOL))return;c.a[k]=nv;v.textContent=nv;fill.style.width=((nv-AT_MIN)/(99-AT_MIN)*100)+'%';ccPool();ccHead();};
+      const mi=document.createElement('button');mi.className='sbtn';mi.textContent='-';mi.setAttribute('aria-label','Lower '+x[1]);mi.onclick=()=>step(-1);
+      const pl=document.createElement('button');pl.className='sbtn';pl.textContent='+';pl.setAttribute('aria-label','Raise '+x[1]);pl.onclick=()=>step(1);
+      let hold=null;[mi,pl].forEach((b,i)=>{b.onpointerdown=()=>{clearInterval(hold);hold=setInterval(()=>step(i?1:-1),70);};b.onpointerup=b.onpointerleave=()=>clearInterval(hold);});
+      r.append(l,v,bar,mi,pl);p.appendChild(r);
+    });
   });
-  $('ccAb').value=c.ab;$('ccAbDesc').textContent=(ABIL[c.ab]||{}).desc||'';
-  const m=ccRoster(c)[4];$('ccSum').textContent='Speed '+m.spd+' · shooting '+Math.round(m.shoot*100)+' · handles '+m.handle+' · steals '+m.steal+' · blocks '+m.block+' · rebounds '+m.reb+(c.pos==='SG'?' · green goes in 70% from anywhere':'');
+  ccPool();
 }
-function openCC(){
-  ccEdit=JSON.parse(JSON.stringify(custom||ccDefault()));
-  $('ccName').value=ccEdit.name;$('ccNum').value=ccEdit.num;$('ccMsg').textContent='';
-  hideEl('story');ccRender();show('cc');
+function ccPool(){const e=$('ccPool');if(e&&ccEdit)e.textContent='Attribute points left: '+(AT_POOL-ccUsed(ccEdit))+'. Red marks show each cap, set by your body.';}
+function ccBadgePane(p,c){
+  const t=document.createElement('p');t.className='tag';t.textContent='Equip up to '+BADGE_SLOTS+' badges. Equipped: '+c.b.length+' of '+BADGE_SLOTS+'.';p.appendChild(t);
+  const g=document.createElement('div');g.className='badges';
+  BADGES.forEach(x=>{const on=c.b.indexOf(x.id)>=0,b=document.createElement('button');b.className=on?'sel':'';b.setAttribute('aria-pressed',on);const ic=document.createElement('i');ic.textContent=x.ic;const d=document.createElement('div');const n=document.createElement('b');n.textContent=x.n;const s2=document.createElement('small');s2.textContent=x.d;d.append(n,s2);b.append(ic,d);
+    b.onclick=()=>{const i=c.b.indexOf(x.id);if(i>=0)c.b.splice(i,1);else{if(c.b.length>=BADGE_SLOTS){$('ccMsg').textContent='Unequip a badge first. You have '+BADGE_SLOTS+' slots.';return;}c.b.push(x.id);}$('ccMsg').textContent='';ccRender();};g.appendChild(b);});
+  p.appendChild(g);
 }
+function ccAbPane(p,c){
+  const t=document.createElement('p');t.className='tag';t.textContent='Your Takeover is your special ability (press I in games).';p.appendChild(t);
+  const g=document.createElement('div');g.className='badges';
+  CC_ABS.forEach(k=>{const x=ABIL[k];if(!x)return;const b=document.createElement('button');b.className=c.ab===k?'sel':'';const ic=document.createElement('i');ic.textContent='I';const d=document.createElement('div');const n=document.createElement('b');n.textContent=x.name;const s2=document.createElement('small');s2.textContent=x.desc;d.append(n,s2);b.append(ic,d);b.onclick=()=>{c.ab=k;ccRender();};g.appendChild(b);});
+  p.appendChild(g);
+}
+function ccHead(){
+  const c=ccEdit;if(!c)return;
+  $('mpOvr').textContent=ccOvr(c);$('mpTag').textContent=(cleanName(c.name)||'ROOKIE')+'  #'+c.num;
+  $('mpSub').textContent=archOf(c).n+' · '+ftIn(c.h)+' · '+c.w+' lbs · '+(c.b.length?c.b.map(id=>(BADGES.find(x=>x.id===id)||{}).n).join(', '):'no badges');
+  drawPreview(c);
+}
+function ccRender(){
+  const c=ccEdit;$('mpTabs').querySelectorAll('button').forEach(b=>b.classList.toggle('sel',b.dataset.t===mpTab));
+  const p=$('mpPane');p.innerHTML='';
+  ({info:ccInfoPane,body:ccBodyPane,attr:ccAttrPane,badge:ccBadgePane,ab:ccAbPane})[mpTab](p,c);
+  ccHead();
+}
+function openCC(){ccEdit=validCustom(custom)||ccDefault();mpTab='info';$('ccMsg').textContent='';hideEl('story');ccRender();show('cc');}
 (function(){
-  CC_SKINS.forEach(k=>{const b=document.createElement('button');b.dataset.v=k;b.style.background=k;b.setAttribute('aria-label','Skin tone');b.onclick=()=>{ccEdit.skin=k;ccRender();};$('ccSkin').appendChild(b);});
-  CC_ABS.forEach(k=>{if(!ABIL[k])return;const o=document.createElement('option');o.value=k;o.textContent=ABIL[k].name;$('ccAb').appendChild(o);});
-  $('ccPos').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;ccEdit.pos=b.dataset.v;const hr=CC_H[ccEdit.pos];ccEdit.h=+((hr[0]+hr[1])/2).toFixed(2);ccRender();});
-  $('ccH').oninput=()=>{ccEdit.h=+$('ccH').value;$('ccHv').textContent=ccEdit.h.toFixed(2)+' m';ccRender();};
-  $('ccAb').onchange=()=>{ccEdit.ab=$('ccAb').value;ccRender();};
+  $('mpTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;mpTab=b.dataset.t;ccRender();});
   $('ccSave').onclick=()=>{
-    const nm=cleanName($('ccName').value).slice(0,10);
-    if(nm.length<2){$('ccMsg').textContent='Pick a name with at least 2 letters or numbers.';return;}
-    if(safeCheck(nm)&&safeCheck(nm)!=='Type a message first.'){$('ccMsg').textContent='Pick a different name.';return;}
+    const nm=cleanName(ccEdit.name).slice(0,10);
+    if(nm.length<2){$('ccMsg').textContent='Pick a name with at least 2 letters or numbers (Info tab).';mpTab='info';ccRender();return;}
+    const why=safeCheck(nm);if(why&&why!=='Type a message first.'){$('ccMsg').textContent='Pick a different name.';return;}
     if(SLOTS.some(sl=>POOL[sl].some(o=>o.name===nm))){$('ccMsg').textContent='That name belongs to another player. Pick your own.';return;}
-    ccEdit.name=nm;ccEdit.num=clamp(Math.floor(+$('ccNum').value||0),0,99);
-    custom=ccEdit;saveCfg();uiSnd('uiGood');hideEl('cc');storyRender();show('story');toast(nm+' joined the Ash Hounds.');
+    ccEdit.name=nm;ccFit(ccEdit);custom=JSON.parse(JSON.stringify(ccEdit));saveCfg();uiSnd('uiGood');hideEl('cc');storyRender();show('story');toast(nm+' ('+ccOvr(custom)+' OVR) joined the Ash Hounds.');
   };
   $('ccBack').onclick=()=>{hideEl('cc');storyRender();show('story');};
   $('stBack').onclick=()=>{hideEl('story');go('offline');};
@@ -4526,10 +4696,14 @@ function openCC(){
 })();
 function validCustom(c){
   try{if(typeof c==='string')c=JSON.parse(c);if(!c||typeof c!=='object'||!CC_H[c.pos])return null;
-    const s={};let tot=0;CC_STATS.forEach(k=>{s[k[0]]=clamp(Math.floor(+((c.s||{})[k[0]])||0),0,5);tot+=s[k[0]];});if(tot>CC_POINTS)return null;
-    return {name:cleanName(String(c.name||'ROOKIE')).slice(0,10)||'ROOKIE',num:clamp(Math.floor(+c.num||0),0,99),pos:c.pos,skin:CC_SKINS.indexOf(c.skin)>=0?c.skin:CC_SKINS[2],h:clamp(+c.h||CC_H[c.pos][0],CC_H[c.pos][0],CC_H[c.pos][1]),s:s,ab:CC_ABS.indexOf(c.ab)>=0?c.ab:'rex'};
+    if(!c.a){const d=ccDefault(c.pos);d.name=c.name||d.name;d.num=c.num;d.skin=c.skin;d.ab=c.ab;c=d;}
+    const o={name:cleanName(String(c.name||'ROOKIE')).slice(0,10)||'ROOKIE',num:clamp(Math.floor(+c.num||0),0,99),pos:c.pos,arch:(ARCHS[c.pos].find(x=>x.id===c.arch)||ARCHS[c.pos][0]).id,
+      skin:CC_SKINS.indexOf(c.skin)>=0?c.skin:CC_SKINS[2],h:clamp(+c.h||CC_H[c.pos][0],CC_H[c.pos][0],CC_H[c.pos][1]),w:clamp(Math.round(+c.w||CC_W[c.pos][0]),CC_W[c.pos][0],CC_W[c.pos][1]),ws:clamp(Math.round(+c.ws||0),-2,8),
+      a:{},b:(Array.isArray(c.b)?c.b:[]).filter(id=>BADGES.some(x=>x.id===id)).slice(0,BADGE_SLOTS),ab:CC_ABS.indexOf(c.ab)>=0?c.ab:'rex'};
+    AKEYS.forEach(k=>{o.a[k]=Math.round(+((c.a||{})[k])||AT_MIN);});ccFit(o);return o;
   }catch(e){return null;}
 }
+if(!custom&&customRaw)custom=validCustom(customRaw);
 /* ===== expiring dev codes (made by the game owner) ===== */
 let devAdmin=false,devExp=0,devExpT=0;
 async function devCheckAdmin(){
@@ -4572,7 +4746,7 @@ async function daMake(){
     daLoad();
   }catch(e){$('daMsg').textContent='Could not make the code. Is your account in the admins collection and are the new rules published?';}
 }
-function openDevAdmin(){hideEl('settings');$('daMsg').textContent='';show('devAdm');daLoad();}
+function openDevAdmin(){if(!(devAdmin&&devMaster&&devOn)){toast('Only the permanent dev code can manage dev codes.');return;}hideEl('settings');$('daMsg').textContent='';show('devAdm');daLoad();}
 $('daMake').onclick=daMake;$('daBack').onclick=()=>{hideEl('devAdm');setTab='help';openSettings(settingsFrom==='pause'?'pause':'menu');};
 setInterval(()=>{if(devOn&&devExp&&Date.now()>devExp){devExp=0;devLeave();toast('Your dev code expired, so you left the dev build.');}},30000);
 /* ===== update check: tell players running an old cached copy to refresh ===== */
@@ -4642,7 +4816,7 @@ document.querySelectorAll('#poll .pv').forEach(b=>b.onclick=()=>pollVote(b.datas
 pollRender();
 /* ===== player profiles ===== */
 function pushProfile(){
-  if(!cloudUser||!fb)return Promise.resolve();
+  if(!cloudUser||!fb||(typeof devOn!=='undefined'&&devOn))return Promise.resolve();
   const F=fb.fs;
   return F.setDoc(F.doc(fb.db,'profiles',cloudUser.uid),{n:user,lv:lvInfo(acctXp).L,qm:acctQmWins,t:F.serverTimestamp()}).catch(()=>{});
 }
