@@ -286,6 +286,51 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 .chap .n{font:900 clamp(18px,3cqw,40px) Impact,"Arial Black",sans-serif;color:var(--gold);min-width:2.2em;text-align:center}
 .chap.lock{opacity:.5}.chap.done .n{color:#3dffa8}
 .chap div{flex:1}
+#cine{position:absolute;inset:0;z-index:40;background:#000;overflow:hidden;user-select:none;-webkit-user-select:none;cursor:pointer;touch-action:manipulation}
+#cineCv{position:absolute;inset:0;width:100%;height:100%;display:block}
+#cine .cbar{position:absolute;left:0;right:0;height:8%;background:#000;z-index:1;transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+#cine .cbar.t{top:0;transform:translateY(-100%)}#cine .cbar.b{bottom:0;transform:translateY(100%)}#cine.bars .cbar{transform:none}
+#cTitle{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6cqw;pointer-events:none;opacity:0;transition:opacity .6s;background:radial-gradient(ellipse at center,rgba(0,0,0,.55),rgba(0,0,0,.15))}
+#cTitle.on{opacity:1}
+#cTitle small{font-weight:800;letter-spacing:.35em;color:var(--gold);font-size:clamp(10px,1.4cqw,18px)}
+#cTitle b{font:900 clamp(26px,6cqw,84px) Impact,"Arial Black",sans-serif;letter-spacing:.04em;color:#fff;text-shadow:0 .4cqw 2cqw rgba(0,0,0,.8);text-transform:uppercase;transform:translateY(10px) scale(.97);transition:transform 1.6s cubic-bezier(.2,.8,.2,1)}
+#cTitle.on b{transform:none}
+#cTitle span{color:#c8cde6;letter-spacing:.2em;font-weight:700;font-size:clamp(11px,1.6cqw,22px)}
+#cBig{position:absolute;inset:12% 12%;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .5s;pointer-events:none;text-align:center}
+#cBig.on{opacity:1}
+#cBigT{font-size:clamp(15px,2.4cqw,32px);line-height:1.55;color:#eef1ff;text-shadow:0 2px 12px #000;font-style:italic;margin:0}
+#cBig.end #cBigT{font:900 clamp(22px,4.5cqw,64px) Impact,"Arial Black",sans-serif;font-style:normal;letter-spacing:.3em;color:var(--gold)}
+#cBig i{margin-top:2cqw;color:#8a93b8;font-style:normal;font-size:clamp(9px,1.1cqw,14px);letter-spacing:.2em;opacity:0;transition:opacity .4s}
+#cBig.done i{opacity:1;animation:cpulse 1.4s infinite}
+#cBox{position:absolute;left:5%;right:5%;bottom:10%;z-index:2;min-height:20%;padding:2.4cqw 2.8cqw 2cqw;box-sizing:border-box;background:linear-gradient(180deg,rgba(10,12,26,.86),rgba(6,8,18,.95));border:1px solid rgba(255,255,255,.14);border-top:3px solid var(--c,#c8cde6);border-radius:1cqw;box-shadow:0 1.2cqw 3cqw rgba(0,0,0,.6);transition:opacity .25s,transform .25s}
+#cBox.off{opacity:0;transform:translateY(12px);pointer-events:none}
+#cName{position:absolute;top:0;left:2.4cqw;transform:translateY(-62%);padding:.45cqw 1.5cqw;background:var(--c,#c8cde6);color:#0b0d18;font-weight:900;letter-spacing:.12em;font-size:clamp(11px,1.5cqw,20px);border-radius:.5cqw;box-shadow:0 0 1.6cqw var(--c,transparent)}
+#cText{font-size:clamp(13px,2cqw,27px);line-height:1.5;color:#f4f6ff;min-height:3em;text-align:left}
+#cText.nar{font-style:italic;color:#c8cde6}
+#cText em{font-style:normal;font-weight:900;color:var(--c,#ffd166)}#cText.nar em{color:#fff}
+#cMore{position:absolute;right:1.8cqw;bottom:1cqw;color:var(--c,#fff);animation:cbob .9s infinite}
+#cCtl{position:absolute;top:calc(8% + 1cqw);right:2%;z-index:3;display:flex;gap:.5cqw}
+#cCtl button,#cLog .lh button{font:800 clamp(9px,1.1cqw,14px) inherit;font-family:inherit;color:#dfe4ff;background:rgba(10,12,26,.7);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:.45cqw 1.2cqw;cursor:pointer}
+#cCtl button.sel{background:var(--gold);color:#10131f}
+#cLog{position:absolute;inset:12% 16%;z-index:4;background:rgba(6,8,18,.96);border:1px solid rgba(255,255,255,.15);border-radius:1cqw;padding:1.6cqw;display:flex;flex-direction:column;cursor:default}
+#cLog .lh{display:flex;justify-content:space-between;align-items:center;margin-bottom:1cqw;color:#fff}
+#cLogBody{overflow:auto;flex:1}
+#cLogBody p{margin:.5cqw 0;color:#e7eaff;font-size:clamp(11px,1.4cqw,18px);line-height:1.45;text-align:left}
+#cLogBody p.nar{color:#9aa3c7;font-style:italic}
+#cMatch{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.4cqw;background:radial-gradient(ellipse at center,rgba(4,5,12,.55),rgba(0,0,0,.88));cursor:default;animation:ovIn .35s ease-out}
+#cmLbl{font-weight:800;letter-spacing:.35em;color:var(--gold);font-size:clamp(10px,1.4cqw,18px)}
+.cmv{display:flex;align-items:center;gap:2cqw}
+.cmp{min-width:24cqw;padding:1.6cqw 2cqw;border-radius:1cqw;display:flex;flex-direction:column;gap:.4cqw;box-shadow:0 1cqw 3cqw rgba(0,0,0,.55);animation:cmIn .55s cubic-bezier(.2,.8,.2,1) backwards}
+#cmB{animation-name:cmInR}
+.cmp b{font:900 clamp(16px,2.8cqw,38px) Impact,"Arial Black",sans-serif;letter-spacing:.04em}
+.cmp small{font-weight:700;opacity:.85;font-size:clamp(9px,1.2cqw,15px);letter-spacing:.08em}
+.cmv i{font:900 clamp(20px,3.6cqw,48px) Impact,"Arial Black",sans-serif;font-style:normal;color:var(--gold);text-shadow:0 0 2cqw rgba(255,209,102,.6)}
+#cmChips{display:flex;gap:.6cqw;flex-wrap:wrap;justify-content:center}
+#cmChips span{padding:.4cqw 1.1cqw;border-radius:999px;background:rgba(255,255,255,.1);color:#dfe4ff;font-weight:700;font-size:clamp(9px,1.15cqw,15px)}
+.csr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@keyframes cbob{50%{transform:translateY(4px)}}@keyframes cpulse{50%{opacity:.4}}
+@keyframes cmIn{from{transform:translateX(-40px);opacity:0}}@keyframes cmInR{from{transform:translateX(40px);opacity:0}}
+@media (max-width:600px){.cmv{flex-direction:column}.cmp{min-width:62vw}#cBox{left:3%;right:3%}}
 #stTxt .card{max-width:min(760px,94%);text-align:left}
 #stTxt p{font-size:clamp(12px,1.55cqw,19px);line-height:1.5;color:var(--ink)}
 #stTxt p.q{color:var(--gold);font-style:italic}
@@ -713,6 +758,16 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
       <div id="stList"></div>
       <div class="row"><button class="sbtn" id="stIntro">Read the intro</button><button class="go back" id="stBack">Back</button></div>
     </div></div>
+  <div id="cine" class="hide" role="dialog" aria-modal="true" aria-label="Story scene">
+    <canvas id="cineCv"></canvas><div class="cbar t"></div><div class="cbar b"></div>
+    <div id="cTitle"><small id="cTitleS"></small><b id="cTitleB"></b><span id="cTitleV"></span></div>
+    <div id="cBig"><p id="cBigT"></p><i>TAP TO CONTINUE</i></div>
+    <div id="cBox" class="off"><div id="cName"></div><div id="cText"></div><span id="cMore" class="hide">&#9660;</span></div>
+    <div id="cCtl"><button id="cAuto" type="button">Auto</button><button id="cLogBtn" type="button">Log</button><button id="cSkip" type="button">Skip &#9197;</button></div>
+    <div id="cLog" class="hide"><div class="lh"><b>Story log</b><button id="cLogClose" type="button">Close</button></div><div id="cLogBody"></div></div>
+    <div id="cMatch" class="hide"><small id="cmLbl"></small><div class="cmv"><div id="cmA" class="cmp"></div><i>VS</i><div id="cmB" class="cmp"></div></div><div id="cmChips"></div><div class="row"><button class="go" id="cmGo" type="button">Tip off</button><button class="sbtn" id="cmBack" type="button">Back to story</button></div></div>
+    <span id="cSr" class="csr" aria-live="polite"></span>
+  </div>
   <div id="stTxt" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 id="stTitle" style="font-size:clamp(20px,4cqw,54px)"></h1><div id="stBody"></div><div class="row"><button class="go" id="stGo">Continue</button></div></div></div>
   <div id="cc" class="ov hide"><div class="card scr wide">
       <h1 style="font-size:clamp(20px,3.6cqw,48px);margin:0 0 .4cqw">MyPLAYER BUILDER</h1>
@@ -1191,6 +1246,10 @@ const sfx=(()=>{
     uiSelect(){tone(440,660,0.07,'triangle',0.14);tone(660,990,0.09,'triangle',0.12,0.05);noise(0.12,0.04,'bandpass',1600,0.8);},
     uiBack(){tone(640,380,0.09,'triangle',0.13);},
     uiPop(){tone(700,1050,0.06,'sine',0.1);},
+    blip(f){tone(f,f*1.04,0.035,'square',0.026);},
+    rumble(){noise(1.8,0.3,'lowpass',140,0.8);tone(55,40,1.6,'sine',0.22);},
+    whoosh(){noise(0.45,0.1,'bandpass',700,0.7);},
+    shatter(){noise(0.7,0.35,'highpass',3500,0.6);[2600,3100,2200].forEach((f,i)=>tone(f,f*0.7,0.25,'triangle',0.05,i*0.06));},
     uiCoin(){tone(1320,1320,0.05,'square',0.05);tone(1760,1760,0.12,'square',0.05,0.06);},
     uiGood(){[523,659,784,1047].forEach((f,i)=>tone(f,f*1.01,0.16,'triangle',0.13,i*0.07));},
     uiBad(){tone(240,170,0.18,'square',0.07);},
@@ -2969,7 +3028,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.1.14';
+const GAME_VER='2.1.15';
 const DEV_VER='2.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -4450,44 +4509,223 @@ const STORY_INTRO={title:'THE LOWER SPRAWL',p:[
   "At the center of it all was a trio known as the Ash Hounds: Dime, the quiet architect who could thread a pass through the eye of a needle. Blaze, a walking stick of dynamite who wanted to embarrass the Upper City kids. Moose, the scrap-yard giant who owned the paint.",
   "Their dream was the King League, a billion-dollar 3v3 syndicate played in hovering glass stadiums above the city. The only way in was the Gauntlet, a brutal street tournament where the prize was a single golden contract.",
   "And now they have a new fourth: you. Earn your spot, survive the Sprawl, and take the Hounds all the way to the sky."]};
+/* Story dialogue. Each line is [speaker, text, effect]. Speakers: '' narrator, DIME, BLAZE, MOOSE, YOU, OPP (the other team's captain), SCOUT, MANAGER.
+   Effects: shake, flash, train, crowd, lights, buzzer, glass, end. Wrap a word in *stars* to make it pop in the speaker's colour. */
+const DLG=[
+ { /* Chapter 1: Cracked Concrete */
+  0:{pre:[["","Night in the Lower Sprawl. Rain hisses on the neon signs, and the Hounds' home court has more cracks than concrete."],
+    ["BLAZE","So *you're* the new blood. Dime says you can hoop."],["BLAZE","I say prove it."],
+    ["DIME","Ten runs on our block. Win them and we eat this month. Lose and we don't."],
+    ["MOOSE","...Stay out of my paint."],
+    ["OPP","The Hounds picked up a stray? Cute. Smog Dogs run this corner tonight."],
+    ["YOU","Check ball."]],
+   post:[["","The Smog Dogs slink off into the haze. Somebody on the fence whistles."],["BLAZE","Okay. One game. Means *nothing*."],["DIME","It means we eat tomorrow."]]},
+  1:{pre:[["","Steam pours from a burst pipe beside the court. The Pipe Rats are already warming up in it."],
+    ["OPP","Heard the Hounds lost their edge. Heard they're recruiting scrubs now."],
+    ["BLAZE","Heard you can't go *left*."],["OPP","...Who told you that?"],
+    ["DIME","Everybody. Shade them right, make them go left."],["MOOSE","Hm."]]},
+  2:{pre:[["","Last night's storm left the court flooded in patches. Puddles glint under the streetlights."],
+    ["DIME","Watch the slick spots. Plant your feet in one and you'll slide right past your man."],
+    ["YOU","So stay out of the puddles."],["DIME","No. Make *them* chase you through the puddles."],
+    ["OPP","Crows don't slip, rookie. We were born in the gutter."],
+    ["BLAZE","Then you'll feel right at home when we put you back in it."]]},
+  3:{pre:[["","A tight court boxed in by brick walls. The Alley Cats move like they own every inch of it."],
+    ["OPP","Sixty-forty, Hounds. That's the bet on the fence. *Against* you."],
+    ["BLAZE","Sixty-forty? That's insulting."],["DIME","That's free money. Somebody put our rent on us."],
+    ["YOU","Who?"],["MOOSE","Me."],["","Everyone turns to stare at Moose. He shrugs."]]},
+  4:{pre:[["BLAZE","Halfway. The Drain Kings think the Hounds are *washed*."],
+    ["OPP","Washed? We're the Drain Kings. Everything in this city washes down to us eventually."],
+    ["BLAZE","That's... actually kind of a sick line."],["DIME","Blaze."],["BLAZE","Right. Let's embarrass them."],
+    ["MOOSE","Hungry."],["BLAZE","Moose, you're *always* hungry."]],
+   post:[["","Five down. A street vendor slides the Hounds a bag of fried dough, on the house."],["MOOSE","...Best day."],["DIME","Halfway isn't done. Eat fast."]]},
+  5:{pre:[["","The next court sits inside a junkyard, rims bolted to stacked car frames. The competition just got real."],
+    ["DIME","From here on, the crews are serious. The Scrap Heaps have played together since they were nine."],
+    ["OPP","You the new one? Hope you're better than the last kid they tried."],
+    ["YOU","What happened to the last kid?"],["BLAZE","Doesn't matter."],["DIME","He quit. *You* won't."]]},
+  6:{pre:[["","Word is spreading through the Sprawl. A crowd gathers along the chain-link, and somebody's betting against you.","crowd"],
+    ["OPP","Lights out, Hounds! The Fuse Boxes blow your circuit tonight!"],
+    ["BLAZE","Did they *rehearse* that?"],
+    ["DIME","Every crew on the block wants a piece of us now. Good. Let them come."]]},
+  7:{pre:[["","Factory smoke turns the sky the colour of a bruise. The Soot Saints pray before every game."],
+    ["OPP","We'll pray for you too, Hounds. You're gonna need it."],
+    ["MOOSE","Pray loud."],["BLAZE","Ha! The big man's got *jokes*."],
+    ["DIME","Focus. Two more after this, then the Rust Rats."]]},
+  8:{pre:[["","Fires burn in steel barrels along the sideline, the only heat for blocks around."],
+    ["BLAZE","The Rust Rats are in the stands. They're scouting us."],["YOU","Let them look."],
+    ["OPP","Eyes on *us*, rookie. You don't get to the Rats without going through the fire.","flash"],
+    ["DIME","Then we go through it."]]},
+  9:{pre:[["","The Rust Rats run this whole block. They take a cut of every game played on these courts."],
+    ["OPP","Ten percent, Hounds. Every bill you've won this month? Ten percent is *ours*."],
+    ["DIME","Not anymore."],["OPP","Big words from the kid who used to fetch our water."],
+    ["BLAZE","Beat them, and nobody in the Sprawl ever looks down on us again."],
+    ["YOU","Then let's finish it.","shake"]],
+   post:[["","The fence erupts. Kids who've paid the Rats' cut for years are shouting the Hounds' name.","crowd"],
+    ["","The Rust Rats walk off empty-handed. Blaze tosses you a crumpled bill."],
+    ["BLAZE","Not bad, new blood. Don't get *comfortable*."],
+    ["DIME","Next stop: the rail line. The real money's under the trains."]]}
+ },
+ { /* Chapter 2: Hungry Week */
+  0:{pre:[["","Under the rail line, trains thunder overhead every few minutes and the court is slick with oil.","train"],
+    ["DIME","Down here they play dirty. They reach for every dribble."],["YOU","Then I protect the ball."],
+    ["DIME","Crossover, then go. They can't touch you right after a cross."],
+    ["OPP","Fresh meat from the Sprawl. The Rail Runners eat first."],["BLAZE","Not this week."]]},
+  1:{pre:[["","Sparks rain down from the tracks every time a train brakes overhead."],
+    ["OPP","Plug in, Hounds. We go full voltage from the tip."],
+    ["BLAZE","Great. Another team with a *theme*."],["MOOSE","Every team has a theme."],["BLAZE","We don't."],
+    ["DIME","We're hungry. That's our theme."]]},
+  2:{pre:[["","Black oil pools on the concrete. One wrong step and you're on your back."],
+    ["DIME","Same rule as the puddles back home. Make them chase you through it."],
+    ["OPP","You think a little grease scares us? We grew up in it."],
+    ["YOU","Then you won't mind *falling* in it."],["BLAZE","Ohhh. The rookie talks now."]]},
+  3:{pre:[["","Moose limps through warmups, wincing every time he lands."],
+    ["MOOSE","Knee hurts."],["BLAZE","You good, big man?"],["MOOSE","...Good enough."],
+    ["DIME","Rookie, crash the boards tonight. Take some weight off him."],
+    ["OPP","Your big man's hurt. We're cutting right through the middle."],["YOU","*Try* it."]]},
+  4:{pre:[["","The air down here is thick with diesel. The Iron Lungs never get tired."],
+    ["OPP","We run all night, Hounds. You'll be gasping by the second half."],
+    ["DIME","Sprint smart. Don't burn your legs early."],
+    ["BLAZE","Or just score fast so it doesn't matter."],["DIME","...That works too."]],
+   post:[["","The Iron Lungs are bent over, hands on knees. The Hounds are still standing."],["MOOSE","Knee's better."],["BLAZE","Winning fixes *everything*."]]},
+  5:{pre:[["","The Track Stars are the fastest crew under the rails. Their guards have never been caught from behind."],
+    ["OPP","Blink and we're gone, Sprawl kids."],
+    ["BLAZE","Funny. I was gonna say the same thing about your *lead*."],
+    ["DIME","Get back on defense every time. No easy buckets."]]},
+  6:{pre:[["","A stranger in a clean jacket watches from the platform. Gauntlet scout, someone whispers."],
+    ["SCOUT","..."],["BLAZE","Don't look at him. Look at the rim."],
+    ["YOU","He's writing something."],["DIME","Then give him something *worth* writing."],
+    ["OPP","He's here for us, not you."]]},
+  7:{pre:[["","The Third Rail play right beside the live tracks. The hum of electricity never stops.","train"],
+    ["OPP","Touch the rail and you fry. Touch *us* and it's worse."],
+    ["MOOSE","Loud."],["BLAZE","They're always loud down here."],
+    ["DIME","Three more, then the Chain Gang. Stay together."]]},
+  8:{pre:[["","Rain leaks through the tracks above in steady streams."],
+    ["BLAZE","I heard the Chain Gang have never lost at home. Not *once*."],
+    ["YOU","There's a first time for everything."],
+    ["OPP","You'll never get past us to find out."],
+    ["DIME","The Brake Lines slow the game down. Push the pace. Run them."]]},
+  9:{pre:[["","The Chain Gang have never lost on their court. Their hands are always in your pockets."],
+    ["OPP","Every dribble, every pass. We'll take it *all*."],
+    ["DIME","Protect the ball. Cross, then go."],["DIME","Win this, and the Gauntlet invite is ours."],
+    ["BLAZE","Let's break some chains.","shake"]],
+   post:[["","The scout steps down from the platform and hands Dime a black card stamped with a gold crown."],
+    ["SCOUT","The Gauntlet. Three days. Don't be late."],
+    ["MOOSE","*Gauntlet.*"],["","It's the most words anyone has heard Moose say all week."],
+    ["BLAZE","We're really doing this.","crowd"]]}
+ },
+ { /* Chapter 3: The Gauntlet */
+  0:{pre:[["","The Gauntlet is unregulated chaos: no refs, no mercy, and every crew in the city wants the golden contract.","crowd"],
+    ["BLAZE","Finally. *Clean rims.*"],["DIME","Cleaner courts, smarter teams. Stay sharp."],
+    ["OPP","Look at them. Sprawl kids in borrowed shoes."],["YOU","They're not borrowed."],["BLAZE","...Mine are borrowed."]]},
+  1:{pre:[["","Floodlights bounce off a glass backboard. The crowd is three rows deep."],
+    ["OPP","They call us the Glass Jaws because nobody's ever landed a punch."],
+    ["MOOSE","First time."],
+    ["DIME","Attack the rim early. Let's see how strong that glass really is."]]},
+  2:{pre:[["","The arena speakers blast so loud the floor shakes.","shake"],
+    ["OPP","HIGH! VOLTAGE! You hear that crowd? That's for *us*!"],
+    ["BLAZE","That crowd's gonna be ours by halftime."],["DIME","Let the noise go. Play our game."]]},
+  3:{pre:[["","The Night Shift only play after midnight. Half the floodlights are out.","lights"],
+    ["YOU","I can't see half the court."],["DIME","Neither can they. Talk on defense. *Loud.*"],
+    ["OPP","Lights out, Hounds. Nobody sees you go home."]]},
+  4:{pre:[["DIME","Every team here has film on us now. They know Blaze shoots. They know Moose blocks."],
+    ["YOU","Do they know about me?"],["DIME","Not yet. That's the plan."],
+    ["OPP","We studied you, Hounds. Every play."],["BLAZE","Study *this*."]],
+   post:[["","Static's coach spikes his tablet. The game plan didn't have a page for you."],["DIME","Now they'll study you too."],["YOU","Good."]]},
+  5:{pre:[["","Halfway through the bracket. Only the hungriest teams are left."],
+    ["OPP","We red-lined three crews this week. You're number four."],
+    ["BLAZE","We've been hungry our whole lives. You've been hungry for a *week*."],["MOOSE","Let's eat."]]},
+  6:{pre:[["","Echo Park mirror everything. Run a play and they run it right back at you."],
+    ["DIME","Then we don't run plays. We read and react."],
+    ["OPP","Whatever you do, we do it better."],["YOU","Copy *this*, then."]]},
+  7:{pre:[["","A King League scout writes a single word on a tablet: 'Interesting.'"],
+    ["MOOSE","They're watching."],["BLAZE","Let them watch."],
+    ["OPP","Smile for the cameras, Hounds. It's your last game on them."],
+    ["DIME","Two more. Keep your heads."]]},
+  8:{pre:[["","The Mirage throw fakes on top of fakes. Nothing they show you is real."],
+    ["OPP","Look left, we go right. Look right, we're already gone."],
+    ["DIME","Stay home on defense. Don't *bite*."],
+    ["BLAZE","The Jackals are next. I can hear their music from here."]]},
+  9:{pre:[["","The Neon Jackals are fast, flashy and shoot from everywhere. Their strobe lights sweep the court.","lights"],
+    ["OPP","Hounds! Finally. We've been saving a highlight reel just for you."],
+    ["BLAZE","Make sure you're in the background of *mine*."],
+    ["DIME","One more win and the Hounds reach the threshold."],["YOU","Last stop before the sky."]],
+   post:[["","The Jackals' lights go dark.","flash"],
+    ["","Above the court, a glass elevator slides open, waiting to carry the Hounds up the skyline."],
+    ["BLAZE","We're going up. *Actually* up."],["DIME","The threshold. Halfway to the King League."],
+    ["MOOSE","...Scared of heights."]]}
+ },
+ { /* Chapter 4: The Threshold */
+  0:{pre:[["","The threshold is a pristine court halfway up the skyline. Elite scouts and King League sponsors look down at the street rats."],
+    ["BLAZE","Smells like *money* up here."],["DIME","Smells like a trap. These farm teams play perfect basketball."],
+    ["OPP","You're lost, Sprawl. The service elevator's that way."],["MOOSE","Not lost."]]},
+  1:{pre:[["","The court is made of glass. The city lights glitter a thousand feet below."],
+    ["MOOSE","...Don't look down."],
+    ["OPP","Prism Academy, top of the class. You're the experiment, Hounds."],
+    ["DIME","Every experiment up here assumes we lose. Prove the data *wrong*."]]},
+  2:{pre:[["","Apex Labs players wear sensors on every joint. Screens on the sideline track every step."],
+    ["OPP","Our models give you a four percent chance."],["YOU","Four isn't zero."],["BLAZE","I *like* those odds."]]},
+  3:{pre:[["","Orbital pass in perfect circles and never miss a beat."],
+    ["DIME","They're a machine. Machines break when you jam the gears."],
+    ["OPP","Gravity doesn't apply to us, Hounds."],["MOOSE","It applies to *everybody*."]]},
+  4:{pre:[["","The farm teams wear kinetic-assist gear and play mathematically flawless defense."],
+    ["DIME","Clean, structured, professional. That's their game."],["YOU","So we don't play their game."],
+    ["OPP","Your game is dead, Sprawl. *This* is the future."]],
+   post:[["","The Zenith players stare at their gear like it betrayed them."],["BLAZE","The future's *overrated*."],["DIME","Halfway up. Keep climbing."]]},
+  5:{pre:[["","Sponsors in white suits sip drinks in the sky boxes, barely watching."],
+    ["BLAZE","They don't even care. They think this is a warmup."],
+    ["OPP","Smile, Hounds. You're the halftime entertainment."],["YOU","Then let's put on a *show*.","crowd"]]},
+  6:{pre:[["","Quantum's players seem to know where the ball is going before it's thrown."],
+    ["DIME","They read passing lanes. Fake the pass, then go."],
+    ["OPP","We already know how this ends."],["MOOSE","You *don't*."]]},
+  7:{pre:[["BLAZE","Two more and it's the Sovereigns."],["MOOSE","Ready."],
+    ["OPP","Everything we wear is gold. What do *you* have?"],["DIME","Each other."],
+    ["BLAZE","...That was really corny, Dime."],["DIME","Shut up and play."]]},
+  8:{pre:[["","The Crowns are the Sovereigns' practice squad. Their whole job is to look like the real thing."],
+    ["OPP","If you can't beat us, don't bother showing up tomorrow."],["YOU","We'll show up."],
+    ["DIME","One more. Then the whole city finds out who the Hounds are."]]},
+  9:{pre:[["","The Sovereigns: genetically optimized, flawless, unbeaten. Their stadium hovers above the clouds.","lights"],
+    ["OPP","You were never supposed to get this far. This ends *now*."],
+    ["BLAZE","They're too fast."],["DIME","We don't play clean. Drag them down to the Sprawl."],
+    ["YOU","Let's go home the long way.","shake"]],
+   post:[["","The buzzer sounds.","buzzer"],["","For a heartbeat the stadium is dead silent. Then it explodes.","glass"],
+    ["","The Hounds stand in a shower of shattered backboard glass."],
+    ["MANAGER","Ash Hounds. The King League has been *watching*."],
+    ["","The King League's manager steps onto the court, holding out golden digital contracts."],
+    ["DIME","We're not just here to play."],["YOU","We're here to *take over*.","shake"],
+    ["","TO BE CONTINUED","end"]]}
+ }
+];
+/* Short scenes for games without their own after-game scene, and for losses. */
+const DLG_WIN=[
+  [["BLAZE","That's how we do it!"],["MOOSE","Next."]],
+  [["DIME","Clean. Keep that energy."],["YOU","Who's next?"]],
+  [["BLAZE","Did you see my last shot? Tell me you saw it."],["DIME","We all saw it, Blaze."]],
+  [["MOOSE","Good win."],["BLAZE","Two words! He's in a *great* mood."]],
+  [["DIME","One step closer."],["BLAZE","Closer to what? *Everything.*"]]
+];
+const DLG_LOSS=[
+  [["DIME","Shake it off. We run it back."],["BLAZE","They got lucky. Watch."]],
+  [["BLAZE","No way. *No way.* Again."],["MOOSE","Again."]],
+  [["DIME","We lost the boards. Box out, then run."],["YOU","Got it. One more."]],
+  [["MOOSE","..."],["DIME","Yeah, Moose. Me too. Let's go again."]],
+  [["BLAZE","The Sprawl doesn't quit."],["DIME","Run it back."]]
+];
 const STORY=[
   {title:'Cracked Concrete',where:'The Lower Sprawl',diffs:[0,0,0,0,0,1,1,1,1,1],haz:{slick:3,crack:5},fade:0.5,
    style:{spd:0.95,shoot:0.9,steal:1.1,block:0.9,three:0.9,drive:1.1},str:[0,0.35],
    teams:[['SMOG DOGS','#7d8a6a'],['PIPE RATS','#8a6a4a'],['GUTTER CROWS','#3f4660'],['ALLEY CATS','#b56dc8'],['DRAIN KINGS','#3a9a9a'],['SCRAP HEAPS','#a07a3a'],['FUSE BOXES','#d4b23a'],['SOOT SAINTS','#555a66'],['BURN BARRELS','#d9622b'],['RUST RATS','#b5651d']],
-   dlg:{
-    0:{pre:[['','The Hounds\' home court has more cracks than concrete. Runoff puddles turn the paint into an ice rink, and the pavement kicks loose balls in random directions.'],['BLAZE','So you\'re the new blood. Dime says you can hoop. I say prove it.'],['DIME','Ten runs on our block. Win them and we eat this month. Lose and we don\'t.'],['MOOSE','...Stay out of my paint.']]},
-    2:{pre:[['DIME','Watch the slick spots. Plant your feet in them and you\'ll slide right past your man.'],['YOU','So stay out of the puddles.'],['DIME','No. Make THEM chase you through the puddles.']]},
-    4:{pre:[['BLAZE','Halfway. The Drain Kings think the Hounds are washed. Let\'s embarrass them.'],['MOOSE','Hungry.'],['BLAZE','Moose, you\'re always hungry.']]},
-    6:{pre:[['','Word is spreading through the Sprawl. A crowd gathers along the chain-link, and somebody\'s betting against you.'],['DIME','Every crew on the block wants a piece of us now. Good. Let them come.']]},
-    9:{pre:[['','The Rust Rats run this whole block. They take a cut of every game played on these courts.'],['BLAZE','Beat them, and nobody in the Sprawl ever looks down on us again.'],['YOU','Then let\'s finish it.']],
-       post:[['','The Rust Rats walk off empty-handed. Blaze tosses you a crumpled bill.'],['BLAZE','Not bad, new blood. Don\'t get comfortable.'],['DIME','Next stop: the rail line. The real money\'s under the trains.']]}}},
+   dlg:DLG[0]},
   {title:'Hungry Week',where:'Under the Rail Line',diffs:[1,1,1,1,1,1,1,2,2,2],haz:{slick:4,crack:3},fade:0.4,
    style:{spd:1,shoot:1,steal:1.3,block:1.1,three:0.95,drive:1},str:[0.3,0.6],
    teams:[['RAIL RUNNERS','#6a7d9a'],['SPARK PLUGS','#e0c23a'],['OIL SLICKS','#2b2f3a'],['BOLT CUTTERS','#9aa3b5'],['IRON LUNGS','#7a3a3a'],['TRACK STARS','#3ab5e0'],['COAL CREW','#3a3a3a'],['THIRD RAIL','#e03a3a'],['BRAKE LINES','#c87a3a'],['CHAIN GANG','#5a6272']],
-   dlg:{
-    0:{pre:[['','Under the rail line, trains thunder overhead every few minutes and the court is slick with oil.'],['DIME','Down here they play dirty. They reach for every dribble.'],['YOU','Then I protect the ball.'],['DIME','Crossover, then go. They can\'t touch you right after a cross.']]},
-    3:{pre:[['MOOSE','Knee hurts.'],['BLAZE','You good, big man?'],['MOOSE','...Good enough.']]},
-    6:{pre:[['','A stranger in a clean jacket watches from the platform. Gauntlet scout, someone whispers.'],['BLAZE','Don\'t look at him. Look at the rim.']]},
-    9:{pre:[['','The Chain Gang have never lost on their court. Their hands are always in your pockets.'],['DIME','Win this, and the Gauntlet invite is ours.']],
-       post:[['MOOSE','Gauntlet.'],['','It\'s the most words anyone has heard Moose say all week.'],['BLAZE','We\'re really doing this.']]}}},
+   dlg:DLG[1]},
   {title:'The Gauntlet',where:'Gauntlet Bracket',diffs:[2,2,2,2,2,2,2,2,3,3],haz:{slick:1,crack:1},fade:0.6,
    style:{spd:1.05,shoot:1.05,steal:1.1,block:1.05,three:1.15,drive:1.15},str:[0.55,0.8],
    teams:[['CROWN CHASERS','#d4af37'],['GLASS JAWS','#9ad4e0'],['HIGH VOLTAGE','#f0e03a'],['NIGHT SHIFT','#2a2a5a'],['STATIC','#c0c0d0'],['RED LINE','#d02a2a'],['ECHO PARK','#3ad08a'],['VELVET','#8a2a6a'],['MIRAGE','#e09a3a'],['NEON JACKALS','#ff5ee0']],
-   dlg:{
-    0:{pre:[['','The Gauntlet is unregulated chaos: no refs, no mercy, and every crew in the city wants the golden contract.'],['BLAZE','Finally. Clean rims.'],['DIME','Cleaner courts, smarter teams. Stay sharp.']]},
-    4:{pre:[['DIME','Every team here has film on us now. They know Blaze shoots, they know Moose blocks.'],['YOU','Do they know about me?'],['DIME','Not yet. That\'s the plan.']]},
-    7:{pre:[['','A King League scout writes a single word on a tablet: "Interesting."'],['MOOSE','They\'re watching.'],['BLAZE','Let them watch.']]},
-    9:{pre:[['','The Neon Jackals are fast, flashy and shoot from everywhere. One more win and the Hounds reach the threshold.'],['YOU','Last stop before the sky.']],
-       post:[['','The Jackals\' lights go dark. Above the court, a glass elevator opens, waiting to carry the Hounds up the skyline.'],['DIME','Threshold. Halfway to the King League.']]}}},
+   dlg:DLG[2]},
   {title:'The Threshold',where:'Halfway up the skyline',diffs:[2,2,2,2,3,3,3,3,3,3],haz:null,fade:1,
    style:{spd:1.06,shoot:1.1,steal:1.3,block:1.3,three:1.12,drive:1.05},str:[0.75,1],
    teams:[['ACADEMY','#e0e6f0'],['PRISM','#a0c8ff'],['APEX LABS','#3dffa8'],['ORBITAL','#5a7aff'],['ZENITH','#ffffff'],['HALO','#ffe8a0'],['QUANTUM','#7a5aff'],['GILDED','#d4af37'],['THE CROWNS','#ffd166'],['SOVEREIGNS','#f4f6ff']],
-   dlg:{
-    0:{pre:[['','The threshold is a pristine court halfway up the skyline, surrounded by elite scouts and King League sponsors looking down at the street rats.'],['BLAZE','Smells like money up here.'],['DIME','Smells like a trap. These farm teams play perfect basketball.']]},
-    4:{pre:[['','The farm teams wear kinetic-assist gear and play mathematically flawless defense.'],['DIME','They\'re playing clean, structured, professional. That\'s their game.'],['YOU','So we don\'t play their game.']]},
-    7:{pre:[['BLAZE','Two more and it\'s the Sovereigns.'],['MOOSE','Ready.']]},
-    9:{pre:[['','The Sovereigns: genetically optimized, flawless, unbeaten. For the first minutes, the Hounds are getting slaughtered.'],['BLAZE','They\'re too fast.'],['DIME','We don\'t play clean. Drag them down to the Sprawl.']],
-       post:[['','The buzzer sounds. The stadium falls dead silent, then erupts. The Hounds stand in a shower of shattered backboard glass.'],['','The King League\'s manager steps onto the court holding out golden digital contracts.'],['DIME','We\'re not just here to play.'],['YOU','We\'re here to take over.'],['','TO BE CONTINUED']]}}}
+   dlg:DLG[3]}
 ];
 const STORY_GAMES=STORY.length*10;
 const SYL=['VEX','RO','KAI','DAX','ZED','JUNO','REX','NOX','TAJ','IKE','LUX','BO','CY','DRE','FLIP','GUS','HEX','JAX','KO','MACE','NYX','OZ','PIKE','QUINN','RIOT','SAL','TANK','VOLT','WREN','YAZ'];
@@ -4535,19 +4773,7 @@ function storyMine(){
   const hounds={PG:findChar('DIME'),SG:findChar('BLAZE'),C:findChar('MOOSE')};
   return SLOTS.map(sl=>custom&&custom.pos===sl?ccRoster(custom):[sl,hounds[sl].o.name,hounds[sl].o.num,hounds[sl].o.skin,hounds[sl].o.mod]);
 }
-const SPK_COL={DIME:'#17d6ff',BLAZE:'#ff7a1a',MOOSE:'#c9a0ff',YOU:'#3dffa8'};
-function storyShowText(title,lines,btn,fn){
-  $('stTitle').textContent=title;const b=$('stBody');b.innerHTML='';
-  lines.forEach(l=>{
-    const sp=Array.isArray(l)?l[0]:'',t=Array.isArray(l)?l[1]:l,p=document.createElement('p');
-    if(t==='TO BE CONTINUED'){p.textContent=t;p.style.cssText='text-align:center;font-weight:900;color:var(--gold);letter-spacing:.2em';b.appendChild(p);return;}
-    if(sp){const who=document.createElement('b');who.textContent=(sp==='YOU'?(custom?custom.name:'YOU'):sp)+': ';who.style.color=SPK_COL[sp]||'var(--gold)';p.append(who,document.createTextNode(t));}
-    else{p.textContent=t;p.style.color='var(--muted)';p.style.fontStyle='italic';}
-    b.appendChild(p);
-  });
-  $('stGo').textContent=btn||'Continue';$('stGo').onclick=()=>{hideEl('stTxt');fn&&fn();};
-  show('stTxt');
-}
+function storyShowText(title,lines,btn,fn){cinePlay({ci:0,mode:'intro',label:'VELOCITY BREAK',title:title,sub:"The King's Gambit",lines:lines,done:fn});}
 function storyUnlocked(g){return devMaster||g<=storyDone;}
 function storyRender(){
   const h=$('stHero');h.innerHTML='';
@@ -4585,16 +4811,12 @@ function storyStart(g){
   const d=storyGame(g);if(!d||!storyUnlocked(g))return;
   hideEl('story');
   const go=()=>{story={live:true,g:g,def:d,opp:d.opp,zones:storyZones(d.haz)};startGame();};
-  const first=g>=storyDone;
-  const lines=(d.dlg&&d.dlg.pre)||null;
-  if(g===0&&first&&!devMaster){storyShowText(STORY_INTRO.title,STORY_INTRO.p.map(x=>['',x]),'Continue',()=>storyPre(d,lines,first,go));return;}
-  storyPre(d,lines,first,go);
-}
-function storyPre(d,lines,first,go){
-  const title='CHAPTER '+(d.ci+1)+' · GAME '+(d.gi+1)+(d.boss?' · FINAL':'');
-  const card=[['','vs '+d.opp.name+' · '+d.where+' · '+DIFF[d.diff].name+' · '+fmt(d.len)+(d.haz&&(d.haz.slick||d.haz.crack)?' · watch for slick spots and cracked pavement':'')]];
-  if(lines&&(first||devMaster))storyShowText(title,card.concat(lines),'Tip off',go);
-  else storyShowText(title,card,'Tip off',go);
+  const back=()=>{storyRender();show('story');};
+  const first=g>=storyDone,talk=first||devMaster;
+  const pre=(talk&&d.dlg&&d.dlg.pre)||[];
+  const scene=()=>cinePlay({ci:d.ci,d:d,label:'CHAPTER '+(d.ci+1)+' · GAME '+(d.gi+1)+(d.boss?' · FINAL':''),title:d.where,sub:'vs '+d.opp.name,lines:pre,match:true,done:go,back:back});
+  if(g===0&&talk)cinePlay({ci:0,mode:'intro',label:'VELOCITY BREAK',title:STORY_INTRO.title,sub:"The King's Gambit",lines:STORY_INTRO.p.map(x=>['',x]),done:scene});
+  else scene();
 }
 function storyXp(w){
   if(!custom)return '';
@@ -4612,16 +4834,340 @@ function storyAfter(w){
 }
 function storyContinue(){
   const st=story;if(!st)return;hideEl('result');
-  const d=st.def,first=st.g+1>=storyDone;
+  const d=st.def,first=st.g+1>=storyDone,talk=first||devMaster;
   if(st.won){
     story=null;createGame();checkBall(0);phase='menu';
-    const after=()=>{if(st.g+1<STORY_GAMES&&storyUnlocked(st.g+1)&&!(d.boss&&false))storyStart(st.g+1);else{storyRender();show('story');}};
-    const post=d.dlg&&d.dlg.post;
-    if(post&&(first||devMaster))storyShowText(d.title.toUpperCase(),post,st.g+1<STORY_GAMES?'Next game':'Back to story',after);
-    else after();
-  }else{story.zones=storyZones(d.haz);startGame();}
+    const after=()=>{if(st.g+1<STORY_GAMES&&storyUnlocked(st.g+1))storyStart(st.g+1);else{storyRender();show('story');}};
+    const post=(d.dlg&&d.dlg.post)||DLG_WIN[(st.g*7+3)%DLG_WIN.length];
+    if(talk)cinePlay({ci:d.ci,d:d,lines:post,done:after});else after();
+  }else{
+    const again=()=>{story.zones=storyZones(d.haz);startGame();};
+    if(talk)cinePlay({ci:d.ci,d:d,lines:DLG_LOSS[Math.floor(Math.random()*DLG_LOSS.length)],done:again});else again();
+  }
 }
 function storyQuit(){story=null;hideEl('result');createGame();checkBall(0);phase='menu';storyRender();show('story');}
+
+/* ===== story cutscenes: animated scene, character portraits, typed dialogue ===== */
+const CAST={
+  DIME:{col:'#17d6ff',pitch:560,hair:'short',hc:'#1b1410',band:'#17d6ff',build:1,side:0},
+  BLAZE:{col:'#ff7a1a',pitch:700,hair:'flat',hc:'#20140c',tip:'#ff7a1a',build:0.95,side:0},
+  MOOSE:{col:'#c9a0ff',pitch:250,hair:'bald',beard:'#2a1d14',build:1.32,side:0},
+  YOU:{col:'#3dffa8',pitch:440,hair:'buzz',hc:'#16110d',build:1,side:0},
+  OPP:{col:'#ff4d6d',pitch:360,build:1.05,side:1},
+  SCOUT:{col:'#b8c0d8',pitch:300,hair:'short',hc:'#111',suit:'#1c2030',shades:1,build:1,side:1,skin:'#a0693a'},
+  MANAGER:{col:'#ffd166',pitch:210,hair:'slick',hc:'#c9ccd6',suit:'#b8902a',shades:1,build:1.1,side:1,skin:'#e0ac69'}
+};
+const HOUNDS_JERSEY={c:'#c9ced9',t:'#ff7a1a'};
+let CN=null;
+function cineFig(sp,d){
+  const base=CAST[sp]||CAST.OPP,f=Object.assign({sp:sp},base);
+  const ch=n=>{const c=findChar(n);return c?c.o:{skin:'#c68642',num:0};};
+  if(sp==='DIME'||sp==='BLAZE'||sp==='MOOSE'){const o=ch(sp);f.skin=o.skin;f.num=o.num;f.jc=HOUNDS_JERSEY.c;f.jt=HOUNDS_JERSEY.t;f.name=sp;}
+  else if(sp==='YOU'){
+    f.skin=custom?custom.skin:'#c68642';f.num=custom?custom.num:'?';f.jc=HOUNDS_JERSEY.c;f.jt=HOUNDS_JERSEY.t;
+    f.name=custom?custom.name:'YOU';f.build=custom?(custom.pos==='C'?1.22:(custom.pos==='SG'?1:0.96)):1;if(!custom)f.hood=1;
+  }else if(sp==='OPP'){
+    const r=d&&d.opp?d.opp.roster[0]:['PG','RIVAL',0,'#c68642'],h=sHash(r[1]);
+    f.skin=r[3];f.num=r[2];f.jc=d?d.opp.c:'#555';f.jt=d?d.opp.a:'#fff';f.name=r[1]+(d?' · '+d.opp.name:'');
+    f.hair=['short','flat','locks','buzz','puff'][h%5];f.hc=['#141010','#2b1a10','#3a2a1a','#0e0e14'][(h>>>3)%4];f.col=(d&&d.opp.c&&parseInt(d.opp.c.slice(1),16)>0x303030)?d.opp.c:'#ff4d6d';
+    if((h>>>5)%3===0)f.band=d?d.opp.a:'#fff';
+  }else{f.name=sp;}
+  f.x=0;f.tx=0;f.a=0;f.k=0;f.blink=2+Math.random()*3;f.flap=0;
+  return f;
+}
+function cineMood(t){if(!t)return 'n';if(/!/.test(t))return 'hype';if(/^\.\.\./.test(t)||/\.\.\.$/.test(t))return 'flat';if(/\?$/.test(t))return 'ask';return 'n';}
+function drawFig(g,f,X,Y,S,talk,lit,T,mood){
+  const B=f.build||1,dir=f.side?-1:1,sk=f.skin||'#c68642';
+  g.save();g.translate(X,Y);
+  const rim=f.col;
+  /* torso */
+  const sw=S*0.46*B,neckY=-S*0.6;
+  g.fillStyle=f.suit||sk;
+  g.beginPath();g.moveTo(-sw,0);g.lineTo(-sw*0.98,-S*0.42);g.quadraticCurveTo(-sw*0.9,-S*0.56,-sw*0.45,-S*0.58);g.lineTo(sw*0.45,-S*0.58);g.quadraticCurveTo(sw*0.9,-S*0.56,sw*0.98,-S*0.42);g.lineTo(sw,0);g.closePath();g.fill();
+  if(f.suit){
+    g.fillStyle='#f4f6ff';g.beginPath();g.moveTo(-S*0.09,-S*0.58);g.lineTo(0,-S*0.3);g.lineTo(S*0.09,-S*0.58);g.fill();
+    g.fillStyle='#10131f';g.beginPath();g.moveTo(-S*0.025,-S*0.52);g.lineTo(S*0.025,-S*0.52);g.lineTo(S*0.04,-S*0.3);g.lineTo(0,-S*0.24);g.lineTo(-S*0.04,-S*0.3);g.fill();
+    g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=S*0.012;g.beginPath();g.moveTo(-S*0.1,-S*0.58);g.lineTo(-S*0.02,-S*0.12);g.moveTo(S*0.1,-S*0.58);g.lineTo(S*0.02,-S*0.12);g.stroke();
+  }else if(f.hood){
+    g.fillStyle='#2b3040';g.beginPath();g.moveTo(-sw,0);g.lineTo(-sw*0.98,-S*0.42);g.quadraticCurveTo(-sw*0.9,-S*0.6,0,-S*0.62);g.quadraticCurveTo(sw*0.9,-S*0.6,sw*0.98,-S*0.42);g.lineTo(sw,0);g.fill();
+  }else{
+    /* tank top over shoulders */
+    g.fillStyle=f.jc||'#888';const jw=sw*0.7;
+    g.beginPath();g.moveTo(-jw,0);g.lineTo(-jw*1.02,-S*0.4);g.quadraticCurveTo(-jw*0.75,-S*0.5,-jw*0.55,-S*0.58);g.lineTo(-S*0.08,-S*0.58);g.lineTo(0,-S*0.47);g.lineTo(S*0.08,-S*0.58);g.lineTo(jw*0.55,-S*0.58);g.quadraticCurveTo(jw*0.75,-S*0.5,jw*1.02,-S*0.4);g.lineTo(jw,0);g.closePath();g.fill();
+    g.strokeStyle=f.jt||'#fff';g.lineWidth=S*0.018;g.beginPath();g.moveTo(-jw*0.55,-S*0.58);g.lineTo(-S*0.08,-S*0.58);g.lineTo(0,-S*0.47);g.lineTo(S*0.08,-S*0.58);g.lineTo(jw*0.55,-S*0.58);g.stroke();
+    g.beginPath();g.moveTo(-jw*1.02,-S*0.4);g.quadraticCurveTo(-jw*0.75,-S*0.5,-jw*0.55,-S*0.58);g.moveTo(jw*1.02,-S*0.4);g.quadraticCurveTo(jw*0.75,-S*0.5,jw*0.55,-S*0.58);g.stroke();
+    g.fillStyle=f.jt||'#fff';g.font='900 '+Math.round(S*0.2)+'px system-ui,sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText(String(f.num),0,-S*0.24);
+  }
+  /* neck */
+  g.fillStyle=shade(sk,-18);g.fillRect(-S*0.07,-S*0.7,S*0.14,S*0.14);
+  /* head */
+  const hy=-S*0.82,hx=dir*S*0.01,rx=S*0.15,ry=S*0.18;
+  g.fillStyle=sk;g.beginPath();g.ellipse(hx-rx*0.98,hy+S*0.01,S*0.03,S*0.045,0,0,6.283);g.ellipse(hx+rx*0.98,hy+S*0.01,S*0.03,S*0.045,0,0,6.283);g.fill();
+  g.beginPath();g.ellipse(hx,hy,rx,ry,0,0,6.283);g.fill();
+  /* shading on the far side */
+  g.save();g.beginPath();g.ellipse(hx,hy,rx,ry,0,0,6.283);g.clip();g.fillStyle='rgba(0,0,0,.18)';g.beginPath();g.ellipse(hx-dir*rx*1.1,hy,rx*0.8,ry*1.2,0,0,6.283);g.fill();g.restore();
+  /* hair */
+  const hc=f.hc||'#15100c';g.fillStyle=hc;
+  if(f.hood){g.fillStyle='#2b3040';g.beginPath();g.ellipse(hx,hy-S*0.02,rx*1.28,ry*1.22,0,Math.PI*0.92,Math.PI*2.08);g.lineTo(hx+rx*1.2,hy+S*0.12);g.lineTo(hx+rx*0.95,hy+S*0.12);g.lineTo(hx+rx*0.95,hy-S*0.02);g.ellipse(hx,hy-S*0.02,rx*0.95,ry*0.95,0,0,Math.PI,true);g.lineTo(hx-rx*0.95,hy+S*0.12);g.lineTo(hx-rx*1.2,hy+S*0.12);g.fill();}
+  else if(f.hair==='short'){g.beginPath();g.ellipse(hx,hy-ry*0.35,rx*1.04,ry*0.72,0,Math.PI,0);g.fill();}
+  else if(f.hair==='buzz'){g.globalAlpha=0.85;g.beginPath();g.ellipse(hx,hy-ry*0.38,rx*1.0,ry*0.66,0,Math.PI,0);g.fill();g.globalAlpha=1;}
+  else if(f.hair==='flat'){g.fillRect(hx-rx*0.95,hy-ry*1.42,rx*1.9,ry*0.95);g.beginPath();g.ellipse(hx,hy-ry*0.45,rx*1.03,ry*0.6,0,Math.PI,0);g.fill();if(f.tip){g.fillStyle=f.tip;g.fillRect(hx-rx*0.95,hy-ry*1.42,rx*1.9,ry*0.22);}}
+  else if(f.hair==='locks'){g.beginPath();g.ellipse(hx,hy-ry*0.4,rx*1.12,ry*0.75,0,Math.PI,0);g.fill();for(let i=-3;i<=3;i++){g.fillRect(hx+i*rx*0.3-S*0.012,hy-ry*0.5,S*0.024,ry*(0.9+Math.abs(i)*0.12));}}
+  else if(f.hair==='puff'){g.beginPath();g.arc(hx,hy-ry*0.55,rx*1.18,Math.PI*0.95,Math.PI*2.05);g.fill();}
+  else if(f.hair==='slick'){g.beginPath();g.ellipse(hx-dir*rx*0.1,hy-ry*0.4,rx*1.06,ry*0.68,-dir*0.15,Math.PI,0);g.fill();}
+  if(f.band){g.fillStyle=f.band;g.fillRect(hx-rx*1.0,hy-ry*0.62,rx*2,S*0.035);}
+  /* face */
+  const ex=hx+dir*rx*0.12,ey=hy-ry*0.05,es=rx*0.32;
+  const blink=(f.blink<0.12);
+  if(f.shades){g.fillStyle='#0b0d18';g.beginPath();g.ellipse(ex-es,ey,es*0.85,es*0.55,0,0,6.283);g.ellipse(ex+es,ey,es*0.85,es*0.55,0,0,6.283);g.fill();g.fillRect(ex-es,ey-es*0.12,es*2,es*0.24);g.fillStyle='rgba(255,255,255,.35)';g.fillRect(ex-es*1.3,ey-es*0.3,es*0.4,es*0.12);}
+  else for(const s of [-1,1]){
+    const x=ex+s*es;
+    if(blink){g.strokeStyle='#14100c';g.lineWidth=S*0.008;g.beginPath();g.moveTo(x-es*0.4,ey);g.lineTo(x+es*0.4,ey);g.stroke();}
+    else{g.fillStyle='#fbfbff';g.beginPath();g.ellipse(x,ey,es*0.45,es*0.32,0,0,6.283);g.fill();g.fillStyle='#1a1410';g.beginPath();g.arc(x+dir*es*0.12,ey,es*0.22,0,6.283);g.fill();g.fillStyle='#fff';g.fillRect(x+dir*es*0.12-es*0.1,ey-es*0.14,es*0.08,es*0.08);}
+  }
+  /* brows */
+  g.strokeStyle=shade(f.hc||'#15100c',10);g.lineWidth=S*0.014;g.lineCap='round';
+  const bt=mood==='hype'?0.18:(mood==='flat'?-0.05:(mood==='ask'?0.12:0.04)),ang=f.sp==='OPP'?0.18:0;
+  for(const s of [-1,1]){const x=ex+s*es;g.beginPath();g.moveTo(x-es*0.45,ey-es*(0.7+bt)+(s*dir>0?0:ang*es));g.lineTo(x+es*0.45,ey-es*(0.7+bt)-(s*dir>0?ang*es:0)*0.5);g.stroke();}
+  /* mouth */
+  const my=hy+ry*0.5,mxp=hx+dir*rx*0.1,open=talk?Math.abs(Math.sin(f.flap))*S*0.035:0;
+  if(f.beard){g.fillStyle=f.beard;g.beginPath();g.ellipse(hx,hy+ry*0.55,rx*0.82,ry*0.5,0,0,Math.PI);g.fill();g.fillRect(hx-rx*0.82,hy+ry*0.35,rx*1.64,ry*0.2);}
+  g.fillStyle='#3a1414';g.strokeStyle='#3a1414';g.lineWidth=S*0.01;
+  if(open>S*0.004){g.beginPath();g.ellipse(mxp,my,rx*0.28,open,0,0,6.283);g.fill();}
+  else{g.beginPath();if(mood==='hype'||f.sp==='OPP'){g.moveTo(mxp-rx*0.3,my-S*0.004);g.quadraticCurveTo(mxp,my+S*0.03,mxp+rx*0.3,my-(f.sp==='OPP'?S*0.02:S*0.004));}else{g.moveTo(mxp-rx*0.25,my);g.lineTo(mxp+rx*0.25,my);}g.stroke();}
+  /* rim light */
+  if(lit){g.globalCompositeOperation='lighter';g.strokeStyle=rim;g.globalAlpha=0.55;g.lineWidth=S*0.012;g.shadowColor=rim;g.shadowBlur=S*0.06;
+    g.beginPath();g.ellipse(hx,hy,rx*1.01,ry*1.01,0,dir>0?-Math.PI*0.95:-Math.PI*0.05,dir>0?-Math.PI*0.35:-Math.PI*0.65,dir<0);g.stroke();
+    g.beginPath();g.moveTo(-dir*sw*0.98,-S*0.42);g.quadraticCurveTo(-dir*sw*0.9,-S*0.56,-dir*sw*0.45,-S*0.58);g.stroke();}
+  g.restore();
+}
+/* ----- backgrounds, one per chapter ----- */
+function cineRng(seed){let s=seed;return ()=>{s=(s*9301+49297)%233280;return s/233280;};}
+function cineBgInit(ci,W,H){
+  const r=cineRng(17+ci*101),bg={ci:ci,W:W,H:H,blds:[],far:[],crowd:[],drops:[],sparks:[],shards:[],conf:[]};
+  let x=-20;while(x<W+40){const w=W*(0.04+r()*0.07),h=H*(0.2+r()*0.35);const win=[];for(let i=0;i<14;i++)win.push([r(),r(),r()<0.5?'#ffd27a':'#7af0ff',r()]);bg.blds.push({x:x,w:w,h:h,win:win});x+=w*(0.8+r()*0.3);}
+  x=-20;while(x<W+40){const w=W*(0.03+r()*0.05),h=H*(0.25+r()*0.4);bg.far.push({x:x,w:w,h:h});x+=w*(1+r()*0.6);}
+  for(let i=0;i<140;i++)bg.crowd.push({x:r(),row:Math.floor(r()*4),ph:r()*6,c:r()});
+  for(let i=0;i<120;i++)bg.drops.push({x:r()*W,y:r()*H,v:0.6+r()*0.6});
+  return bg;
+}
+function cineBg(g,W,H,T,ci,fx){
+  if(!CN.bg||CN.bg.ci!==ci||CN.bg.W!==W||CN.bg.H!==H)CN.bg=cineBgInit(ci,W,H);
+  const bg=CN.bg,hz=H*0.66;
+  if(ci===3){
+    let s=g.createLinearGradient(0,0,0,hz);s.addColorStop(0,'#1d2b5c');s.addColorStop(0.55,'#7a5c9e');s.addColorStop(1,'#ffbf8a');g.fillStyle=s;g.fillRect(0,0,W,H);
+    g.fillStyle='rgba(255,255,255,.12)';for(let i=0;i<6;i++){const cx=((i*W*0.27+T*12*(1+i%3))%(W*1.4))-W*0.2,cy=H*(0.1+0.07*(i%4));g.beginPath();g.ellipse(cx,cy,W*0.12,H*0.03,0,0,6.283);g.ellipse(cx+W*0.05,cy-H*0.02,W*0.07,H*0.03,0,0,6.283);g.fill();}
+    /* floating stadium ring */
+    g.save();g.translate(W*0.72,H*0.2);g.strokeStyle='rgba(255,240,210,.8)';g.lineWidth=H*0.012;g.beginPath();g.ellipse(0,0,W*0.16,H*0.045,0,0,6.283);g.stroke();
+    for(let i=0;i<16;i++){const a=i/16*6.283+T*0.2;g.fillStyle='rgba(255,250,220,'+(0.5+0.5*Math.sin(T*3+i))+')';g.fillRect(Math.cos(a)*W*0.16-2,Math.sin(a)*H*0.045-2,4,4);}g.restore();
+    for(const b of bg.far){const gr=g.createLinearGradient(b.x,hz-b.h,b.x+b.w,hz);gr.addColorStop(0,'rgba(190,220,255,.55)');gr.addColorStop(1,'rgba(90,120,190,.55)');g.fillStyle=gr;g.fillRect(b.x,hz-b.h,b.w,b.h);g.fillStyle='rgba(255,255,255,.18)';g.fillRect(b.x+b.w*0.15,hz-b.h,b.w*0.08,b.h);}
+    s=g.createLinearGradient(0,hz,0,H);s.addColorStop(0,'rgba(220,235,255,.5)');s.addColorStop(1,'rgba(40,60,110,.9)');g.fillStyle=s;g.fillRect(0,hz,W,H-hz);
+    g.strokeStyle='rgba(255,255,255,.2)';g.lineWidth=1;for(let i=-8;i<=8;i++){g.beginPath();g.moveTo(W/2+i*W*0.03,hz);g.lineTo(W/2+i*W*0.18,H);g.stroke();}
+  }else if(ci===2){
+    g.fillStyle='#07060d';g.fillRect(0,0,W,H);
+    g.save();g.globalCompositeOperation='lighter';
+    for(let i=0;i<4;i++){const a=Math.sin(T*0.6+i*1.7)*0.5,ox=W*(0.15+i*0.23);g.fillStyle=['rgba(255,94,224,.13)','rgba(23,214,255,.13)','rgba(255,209,102,.12)','rgba(61,255,168,.1)'][i];g.beginPath();g.moveTo(ox,0);g.lineTo(ox+Math.sin(a)*W*0.4-W*0.08,hz);g.lineTo(ox+Math.sin(a)*W*0.4+W*0.08,hz);g.fill();}
+    g.restore();
+    for(const c of bg.crowd){const y=hz-H*0.04-c.row*H*0.06+Math.sin(T*(4+c.c*3)+c.ph)*H*0.006*(CN.hype>0?3:1),x=c.x*W;g.fillStyle='hsl(240,15%,'+(9+c.row*4)+'%)';g.beginPath();g.arc(x,y,H*0.016,0,6.283);g.fill();g.fillRect(x-H*0.018,y+H*0.012,H*0.036,H*0.05);}
+    g.fillStyle='#14121f';g.fillRect(0,hz,W,H-hz);g.strokeStyle='rgba(255,255,255,.08)';g.lineWidth=2;g.beginPath();g.ellipse(W/2,hz+H*0.2,W*0.3,H*0.08,0,0,6.283);g.stroke();
+    g.strokeStyle='rgba(180,190,220,.12)';g.lineWidth=1;for(let i=0;i<W;i+=H*0.03){g.beginPath();g.moveTo(i,hz-H*0.3);g.lineTo(i+H*0.3,hz);g.moveTo(i+H*0.3,hz-H*0.3);g.lineTo(i,hz);g.stroke();}
+  }else{
+    let s=g.createLinearGradient(0,0,0,hz);
+    if(ci===1){s.addColorStop(0,'#0b1018');s.addColorStop(1,'#1c2530');}else{s.addColorStop(0,'#160b1e');s.addColorStop(0.6,'#2c1430');s.addColorStop(1,'#3a1c2a');}
+    g.fillStyle=s;g.fillRect(0,0,W,H);
+    /* the Upper City glowing far above */
+    for(const b of bg.far){const top=H*0.4-b.h*0.75,gr=g.createLinearGradient(0,top,0,H*0.4);gr.addColorStop(0,'rgba(150,220,255,'+(ci===1?0.1:0.16)+')');gr.addColorStop(1,'rgba(150,220,255,0)');g.fillStyle=gr;g.fillRect(b.x,top,b.w*0.6,b.h*0.75);g.fillStyle='rgba(200,240,255,'+(ci===1?0.25:0.4)+')';g.fillRect(b.x+b.w*0.27,top-H*0.012,2,H*0.012);}
+    for(const b of bg.blds){g.fillStyle=ci===1?'#0a0e14':'#0c0710';g.fillRect(b.x,hz-b.h,b.w,b.h);
+      for(const w of b.win){const on=w[3]>0.35&&!(w[3]>0.9&&Math.sin(T*7+w[0]*40)>0.6);if(!on)continue;g.fillStyle=w[2];g.globalAlpha=0.55;g.fillRect(b.x+w[0]*b.w*0.85,hz-b.h+w[1]*b.h*0.8+4,b.w*0.08,b.h*0.035);}g.globalAlpha=1;}
+    if(ci===0){
+      const fl=!(Math.sin(T*1.7)>0.93&&Math.sin(T*31)>0);g.save();g.font='900 '+Math.round(H*0.07)+'px system-ui,sans-serif';g.textAlign='center';
+      g.shadowColor='#ff3fa4';g.shadowBlur=fl?H*0.04:0;g.fillStyle=fl?'#ff6fc0':'#4a2038';g.fillText('NOODLES 24',W*0.78,H*0.3);
+      g.shadowColor='#3dffd0';g.shadowBlur=H*0.03;g.fillStyle='#7affe0';g.font='800 '+Math.round(H*0.04)+'px system-ui,sans-serif';g.fillText('COURT ⟶',W*0.2,H*0.22);g.restore();
+      for(let i=0;i<3;i++){const cx=((T*W*0.02*(i+1)+i*W*0.4)%(W*1.6))-W*0.3;const sg=g.createRadialGradient(cx,H*0.45,10,cx,H*0.45,W*0.35);sg.addColorStop(0,'rgba(150,110,140,.12)');sg.addColorStop(1,'rgba(150,110,140,0)');g.fillStyle=sg;g.fillRect(0,0,W,H);}
+    }
+    g.fillStyle=ci===1?'#161b22':'#1d1519';g.fillRect(0,hz,W,H-hz);
+    g.strokeStyle='rgba(0,0,0,.5)';g.lineWidth=2;const rr=cineRng(5+ci);for(let i=0;i<9;i++){let x=rr()*W,y=hz+rr()*(H-hz),a=rr()*6.283;g.beginPath();g.moveTo(x,y);for(let j=0;j<5;j++){a+=rr()-0.5;x+=Math.cos(a)*W*0.03;y+=Math.sin(a)*H*0.02;g.lineTo(x,y);}g.stroke();}
+    if(ci===0){g.strokeStyle='rgba(180,170,190,.13)';g.lineWidth=1.2;for(let i=-H;i<W;i+=H*0.035){g.beginPath();g.moveTo(i,hz);g.lineTo(i+H*0.3,hz-H*0.3);g.moveTo(i+H*0.3,hz);g.lineTo(i,hz-H*0.3);g.stroke();}}
+    if(ci===1){
+      g.fillStyle='#1c2430';g.fillRect(0,0,W,H*0.13);g.fillStyle='#2c3746';g.fillRect(0,H*0.125,W,H*0.008);
+      for(let i=0;i<8;i++){const x=i*W/7-W*0.014;g.fillStyle='#151b24';g.fillRect(x,0,W*0.028,hz);g.fillStyle='#2a3442';g.fillRect(x,0,W*0.005,hz);g.fillStyle='rgba(255,190,90,.5)';for(let r=0;r<6;r++)g.fillRect(x+W*0.012,H*0.16+r*H*0.08,3,3);}
+      g.strokeStyle='#2a3442';g.lineWidth=H*0.008;for(let i=0;i<7;i++){g.beginPath();g.moveTo(i*W/7,H*0.12);g.lineTo((i+1)*W/7,H*0.015);g.moveTo(i*W/7,H*0.015);g.lineTo((i+1)*W/7,H*0.12);g.stroke();}
+      /* trains */
+      const tr=CN.train;if(tr>0){const p=1-tr/1.6,x=-W*1.2+p*W*3.2;g.fillStyle='#202a36';g.fillRect(x,H*0.02,W*1.2,H*0.09);g.fillStyle='rgba(255,236,170,.9)';for(let i=0;i<14;i++)g.fillRect(x+i*W*0.085+W*0.01,H*0.04,W*0.05,H*0.035);
+        g.fillStyle='rgba(255,236,170,'+(0.08+0.06*Math.sin(T*40))+')';g.fillRect(0,0,W,H);}
+      if(Math.random()<0.04)bg.sparks.push({x:Math.random()*W,y:H*0.12,vx:(Math.random()-0.5)*40,vy:20,l:1});
+    }
+    /* rain */
+    if(ci===0||ci===1){g.strokeStyle='rgba(170,190,230,.25)';g.lineWidth=1;g.beginPath();for(const d of bg.drops){d.y+=H*0.012*d.v;d.x-=H*0.002;if(d.y>H){d.y=-10;d.x=Math.random()*W*1.1;}g.moveTo(d.x,d.y);g.lineTo(d.x-H*0.006,d.y+H*0.03);}g.stroke();}
+  }
+  /* particles */
+  for(const p of bg.sparks){p.x+=p.vx*0.016;p.y+=p.vy*0.016;p.vy+=300*0.016;p.l-=0.02;g.fillStyle='rgba(255,200,90,'+Math.max(0,p.l)+')';g.fillRect(p.x,p.y,3,3);}
+  bg.sparks=bg.sparks.filter(p=>p.l>0&&p.y<H);
+  for(const p of bg.conf){p.x+=p.vx*0.016;p.y+=p.vy*0.016;p.vy+=120*0.016;p.r+=0.1;g.save();g.translate(p.x,p.y);g.rotate(p.r);g.fillStyle=p.c;g.fillRect(-4,-2,8,4);g.restore();}
+  bg.conf=bg.conf.filter(p=>p.y<H+20);
+  for(const p of bg.shards){p.x+=p.vx*0.016;p.y+=p.vy*0.016;p.vy+=500*0.016;p.r+=p.vr;g.save();g.translate(p.x,p.y);g.rotate(p.r);g.fillStyle='rgba(210,240,255,.75)';g.beginPath();g.moveTo(0,-p.s);g.lineTo(p.s*0.6,p.s);g.lineTo(-p.s*0.5,p.s*0.4);g.fill();g.restore();}
+  bg.shards=bg.shards.filter(p=>p.y<H+30);
+  /* vignette */
+  const v=g.createRadialGradient(W/2,H*0.45,H*0.3,W/2,H*0.5,W*0.75);v.addColorStop(0,'rgba(0,0,0,0)');v.addColorStop(1,'rgba(0,0,0,.65)');g.fillStyle=v;g.fillRect(0,0,W,H);
+}
+function cineFx(k){
+  if(!k||!CN)return;const W=CN.cv.width,H=CN.cv.height,bg=CN.bg;
+  if(k==='shake')CN.shake=0.45;
+  if(k==='flash'){CN.flash=1;uiSnd('uiPop');}
+  if(k==='train'){CN.train=1.6;CN.shake=1.2;if(uiOk()&&sfx.rumble)sfx.rumble();}
+  if(k==='crowd'){CN.hype=2.5;try{sfx.cheer(1.2);}catch(e){}if(bg)for(let i=0;i<70;i++)bg.conf.push({x:Math.random()*W,y:-Math.random()*H*0.3,vx:(Math.random()-0.5)*60,vy:40+Math.random()*80,r:Math.random()*6,c:['#ff7a1a','#17d6ff','#ffd166','#3dffa8','#ff5ee0'][i%5]});}
+  if(k==='lights')CN.dark=1.2;
+  if(k==='buzzer'){CN.flash=0.5;try{sfx.buzzer();}catch(e){}}
+  if(k==='glass'){CN.flash=1;CN.shake=0.8;if(uiOk()&&sfx.shatter)sfx.shatter();try{sfx.cheer(1.6);}catch(e){}if(bg)for(let i=0;i<60;i++)bg.shards.push({x:W*0.3+Math.random()*W*0.4,y:H*0.1,vx:(Math.random()-0.5)*500,vy:-Math.random()*250,r:Math.random()*6,vr:(Math.random()-0.5)*0.3,s:4+Math.random()*12});CN.hype=3;}
+}
+/* ----- player ----- */
+function cineEsc(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c]);}
+function cineSegs(t){const out=[];t.split(/(\*[^*]+\*)/).forEach(p=>{if(!p)return;if(p[0]==='*'&&p.length>2)out.push([p.slice(1,-1),1]);else out.push([p,0]);});return out;}
+function cineHtml(segs,n){let h='',left=n;for(const s of segs){if(left<=0)break;const t=s[0].slice(0,left);left-=t.length;h+=s[1]?'<em>'+cineEsc(t)+'</em>':cineEsc(t);}return h;}
+function cineSpeed(){return 58;}
+function cinePlay(o){
+  /* o: {ci, d, label, title, sub, lines, match:bool, done:fn, back:fn, mode:'scene'|'intro'} */
+  if(!CN){CN={};}
+  const el=$('cine');
+  Object.assign(CN,{o:o,i:-1,n:0,full:0,seg:null,wait:0,auto:CN.auto||false,log:[],shake:0,flash:0,train:0,hype:0,dark:0,T:0,last:performance.now(),open:true,titleT:o.title?1.9:0,cast:[],ended:false,trainT:9});
+  CN.cv=$('cineCv');
+  const sps=[];(o.lines||[]).forEach(l=>{if(l[0]&&sps.indexOf(l[0])<0)sps.push(l[0]);});
+  const order=['YOU','DIME','BLAZE','MOOSE','OPP','SCOUT','MANAGER'];sps.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+  CN.cast=sps.map(sp=>cineFig(sp,o.d));
+  $('cTitleS').textContent=o.label||'';$('cTitleB').textContent=o.title||'';$('cTitleV').textContent=o.sub||'';
+  $('cTitle').classList.toggle('on',!!o.title);
+  $('cBox').classList.add('off');$('cBig').classList.remove('on');$('cMatch').classList.add('hide');$('cLog').classList.add('hide');
+  $('cAuto').classList.toggle('sel',CN.auto);$('cSkip').classList.toggle('hide',!(o.lines&&o.lines.length));
+  el.classList.remove('hide');el.classList.remove('bars');void el.offsetWidth;el.classList.add('bars');
+  cineSize();
+  if(uiOk()&&sfx.whoosh)sfx.whoosh();
+  if(!o.title)cineNext();
+  if(!CN.raf)CN.raf=requestAnimationFrame(cineLoop);
+}
+function cineSize(){const cv=CN.cv,r=cv.getBoundingClientRect(),k=Math.min(2,window.devicePixelRatio||1);const w=Math.max(320,Math.round(r.width*k)),h=Math.max(180,Math.round(r.height*k));if(cv.width!==w||cv.height!==h){cv.width=w;cv.height=h;}}
+function cineLine(){return CN&&CN.o.lines?CN.o.lines[CN.i]:null;}
+function cineNext(){
+  if(!CN||!CN.open)return;
+  if(CN.titleT>0){CN.titleT=0;$('cTitle').classList.remove('on');cineNext();return;}
+  const L=cineLine();
+  if(L&&CN.n<CN.full){CN.n=CN.full;cineRenderText();return;}
+  CN.i++;const nl=cineLine();
+  if(!nl){cineEnd();return;}
+  const sp=nl[0],text=nl[1],big=(CN.o.mode==='intro'&&!sp)||nl[2]==='end';
+  CN.seg=cineSegs(text);CN.full=CN.seg.reduce((a,s)=>a+s[0].length,0);CN.n=0;CN.wait=0;CN.big=big;CN.sp=sp;CN.mood=cineMood(text);
+  const f=CN.cast.find(c=>c.sp===sp),col=f?f.col:'#c8cde6';
+  const box=$('cBox');box.style.setProperty('--c',col);
+  if(big){box.classList.add('off');$('cBig').classList.add('on');$('cBig').classList.toggle('end',nl[2]==='end');}
+  else{$('cBig').classList.remove('on');box.classList.remove('off');}
+  $('cName').textContent=sp?(f?f.name:sp):'';$('cName').classList.toggle('hide',!sp);
+  $('cText').classList.toggle('nar',!sp);
+  $('cSr').textContent=(sp?(f?f.name:sp)+': ':'')+text.replace(/\*/g,'');
+  CN.log.push([sp?(f?f.name:sp):'',text.replace(/\*/g,''),col]);
+  if(nl[2]&&nl[2]!=='end')cineFx(nl[2]);
+  cineRenderText();
+}
+function cineRenderText(){
+  const h=cineHtml(CN.seg,CN.n),done=CN.n>=CN.full;
+  if(CN.big)$('cBigT').innerHTML=h;else $('cText').innerHTML=h;
+  $('cMore').classList.toggle('hide',!done||CN.big);
+  if(done&&CN.big)$('cBig').classList.add('done');else $('cBig').classList.remove('done');
+}
+function cineEnd(){
+  if(CN.ended)return;CN.ended=true;
+  $('cBox').classList.add('off');$('cBig').classList.remove('on');$('cTitle').classList.remove('on');
+  const o=CN.o;
+  if(o.match&&o.d){cineMatch(o.d);return;}
+  cineClose();o.done&&o.done();
+}
+function cineClose(){if(!CN)return;CN.open=false;hideEl('cine');if(CN.raf){cancelAnimationFrame(CN.raf);CN.raf=0;}}
+function cineMatch(d){
+  const m=$('cMatch');m.classList.remove('hide');
+  $('cmLbl').textContent='CHAPTER '+(d.ci+1)+' · GAME '+(d.gi+1)+(d.boss?' · FINAL':'');
+  const mine=storyMine().map(r=>r[1]),th=d.opp.roster.map(r=>r[1]);
+  const plate=(el,name,c,dk,acc,names)=>{el.innerHTML='';el.style.background='linear-gradient(135deg,'+c+','+dk+')';el.style.color=acc;const b=document.createElement('b');b.textContent=name;const s=document.createElement('small');s.textContent=names.join(' · ');el.append(b,s);};
+  plate($('cmA'),'ASH HOUNDS','#c9ced9','#3a3f4f','#10131f',mine);
+  plate($('cmB'),d.opp.name,d.opp.c,d.opp.d,d.opp.a,th);
+  const chips=[DIFF[d.diff].name,fmt(d.len)+' game',d.where];
+  if(d.haz&&(d.haz.slick||d.haz.crack))chips.push('Slick spots and cracked pavement');else chips.push('Clean court');
+  const ch=$('cmChips');ch.innerHTML='';chips.forEach(t=>{const s=document.createElement('span');s.textContent=t;ch.appendChild(s);});
+  $('cmGo').onclick=()=>{const o=CN.o;cineClose();o.done&&o.done();};
+  $('cmBack').onclick=()=>{const o=CN.o;cineClose();o.back&&o.back();};
+  uiSnd('uiSelect');CN.matchAt=performance.now();
+}
+function cineLoop(now){
+  if(!CN||!CN.open){if(CN)CN.raf=0;return;}
+  CN.raf=requestAnimationFrame(cineLoop);
+  const dt=Math.min(0.05,(now-CN.last)/1000);CN.last=now;CN.T+=dt;
+  if(CN.titleT>0){CN.titleT-=dt;if(CN.titleT<=0){$('cTitle').classList.remove('on');cineNext();}}
+  /* typing */
+  const L=cineLine();
+  if(L&&CN.n<CN.full){
+    CN.wait-=dt;
+    while(CN.wait<=0&&CN.n<CN.full){
+      CN.n++;const ch=cineHtml(CN.seg,CN.n).slice(-1);let d=1/cineSpeed();
+      if(/[.!?]/.test(ch))d*=6;else if(/[,;:]/.test(ch))d*=3;
+      CN.wait+=d;
+      if(CN.sp&&CN.n%2===0&&/\w/.test(ch)&&uiOk()&&sfx.blip){const f=CN.cast.find(c=>c.sp===CN.sp);sfx.blip((f?f.pitch:400)*(0.94+Math.random()*0.12));}
+    }
+    cineRenderText();
+  }else if(L&&CN.auto&&!CN.ended){CN.autoT=(CN.autoT||0)+dt;if(CN.autoT>1.1+CN.full*0.025){CN.autoT=0;cineNext();}}
+  if(!(L&&CN.n>=CN.full))CN.autoT=0;
+  /* draw */
+  cineSize();
+  const cv=CN.cv,g=cv.getContext('2d'),W=cv.width,H=cv.height,o=CN.o,ci=o.ci||0;
+  CN.shake=Math.max(0,CN.shake-dt);CN.flash=Math.max(0,CN.flash-dt*1.6);CN.train=Math.max(0,CN.train-dt);CN.hype=Math.max(0,CN.hype-dt);CN.dark=Math.max(0,CN.dark-dt);
+  if(ci===1){CN.trainT-=dt;if(CN.trainT<=0){CN.trainT=12+Math.random()*8;cineFx('train');}}
+  g.save();
+  if(CN.shake>0){const k=CN.shake*H*0.012;g.translate((Math.random()-0.5)*k,(Math.random()-0.5)*k);}
+  cineBg(g,W,H,CN.T,ci);
+  /* cast */
+  const left=CN.cast.filter(c=>!c.side),right=CN.cast.filter(c=>c.side),S=H*0.5,bx=$('cBox'),kk=H/(cv.clientHeight||H),boxTop=bx.offsetTop*kk,base=Math.min(H*0.95,boxTop-H*0.02+0.64*S);
+  const place=(arr,side)=>arr.forEach((c,i)=>{const n=arr.length,step=Math.min(0.13,0.34/Math.max(1,n-1)),x0=0.13+(n>1?i*step:0.08);c.tx=(side?1-x0:x0)*W;});
+  place(left,0);place(right,1);
+  const speaking=L&&!CN.big?L[0]:null;
+  CN.cast.forEach(c=>{c.a=Math.min(1,c.a+dt*2.2);const tgt=c.sp===speaking?1:0;c.k+=(tgt-c.k)*Math.min(1,dt*8);c.blink-=dt;if(c.blink<0)c.blink=2.5+Math.random()*3.5;if(c.sp===speaking&&CN.n<CN.full)c.flap+=dt*22;else c.flap=0;});
+  const drawOrder=CN.cast.slice().sort((a,b)=>a.k-b.k);
+  const inMatch=!$('cMatch').classList.contains('hide');
+  for(const c of drawOrder){
+    const enter=(1-c.a)*(c.side?1:-1)*W*0.25,bob=c.k>0.5?Math.sin(CN.T*3)*H*0.004:0;
+    const sc=0.92+0.1*c.k,X=c.tx+enter+(c.side?-1:1)*c.k*W*0.02,Y=base+bob-c.k*H*0.02,SS=S*sc,B=c.build||1;
+    const ow=Math.ceil(SS*1.25*B),oh=Math.ceil(SS*1.15);
+    const oc=c.oc||(c.oc=document.createElement('canvas'));if(oc.width!==ow||oc.height!==oh){oc.width=ow;oc.height=oh;}
+    const o2=oc.getContext('2d');o2.clearRect(0,0,ow,oh);
+    drawFig(o2,c,ow/2,oh,SS,c.sp===speaking&&CN.n<CN.full,c.k>0.3,CN.T,c.sp===speaking?CN.mood:'n');
+    const dim=inMatch?0.7:(speaking?(1-c.k)*0.6:(CN.big||!L?0.55:0.45));
+    if(dim>0.02){o2.globalCompositeOperation='source-atop';o2.fillStyle='rgba(6,7,16,'+dim+')';o2.fillRect(0,0,ow,oh);o2.globalCompositeOperation='source-over';}
+    g.save();g.globalAlpha=c.a;g.drawImage(oc,X-ow/2,Y-oh);g.restore();
+  }
+  g.restore();
+  if(CN.dark>0){g.fillStyle='rgba(0,0,0,'+Math.min(1,CN.dark>0.6?1:(Math.sin(CN.T*60)>0?CN.dark:CN.dark*0.3))+')';g.fillRect(0,0,W,H);}
+  if(CN.flash>0){g.fillStyle='rgba(255,255,255,'+Math.min(1,CN.flash)+')';g.fillRect(0,0,W,H);}
+}
+function cineKey(e){
+  if(!CN||!CN.open||$('cine').classList.contains('hide'))return;
+  const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'))return;
+  try{sfx.init();}catch(x){}
+  const k=e.code;
+  if(!$('cMatch').classList.contains('hide')){
+    if(k==='Escape'){e.preventDefault();e.stopImmediatePropagation();$('cmBack').click();}
+    else if(k==='Space'||k==='Enter'||k==='NumpadEnter'){e.preventDefault();e.stopImmediatePropagation();if(!e.repeat&&performance.now()-(CN.matchAt||0)>700)$('cmGo').click();}
+    return;}
+  if(k==='Space'||k==='Enter'||k==='NumpadEnter'){e.preventDefault();e.stopImmediatePropagation();if(!e.repeat)cineNext();}
+  else if(k==='Escape'){e.preventDefault();e.stopImmediatePropagation();cineSkip();}
+  else{e.stopImmediatePropagation();}
+}
+function cineSkip(){if(!CN||CN.ended)return;CN.titleT=0;cineEnd();}
+function cineLogToggle(){
+  const l=$('cLog');if(!l.classList.contains('hide')){l.classList.add('hide');return;}
+  const b=$('cLogBody');b.innerHTML='';CN.log.forEach(x=>{const p=document.createElement('p');if(x[0]){const s=document.createElement('b');s.textContent=x[0]+': ';s.style.color=x[2];p.appendChild(s);}else p.className='nar';p.appendChild(document.createTextNode(x[1]));b.appendChild(p);});
+  l.classList.remove('hide');b.scrollTop=b.scrollHeight;
+}
+window.addEventListener('keydown',cineKey,true);
+$('cine').addEventListener('pointerdown',e=>{if(e.target.closest('button')||e.target.closest('#cLog')||e.target.closest('#cMatch'))return;if(!$('cLog').classList.contains('hide'))return;cineNext();});
+$('cSkip').onclick=cineSkip;
+$('cAuto').onclick=()=>{CN.auto=!CN.auto;$('cAuto').classList.toggle('sel',CN.auto);};
+$('cLogBtn').onclick=cineLogToggle;$('cLogClose').onclick=()=>$('cLog').classList.add('hide');
+window.addEventListener('resize',()=>{if(CN&&CN.open)cineSize();});
 /* ===== MyPLAYER builder (NBA 2K style): set potential once, grow from 60 to 99 ===== */
 const CC_SKINS=['#f1c27d','#e0ac69','#c68642','#a0693a','#8d5524','#6b4423'];
 const CC_ABS=['kai','dime','flash','orbit','glove','rex','blaze','volt','haze','moose','rock','boom','atlas','dozer'];
