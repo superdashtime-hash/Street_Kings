@@ -335,6 +335,12 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 @keyframes cmIn{from{transform:translateX(-40px);opacity:0}}@keyframes cmInR{from{transform:translateX(40px);opacity:0}}
 @media (max-width:600px){.cmv{flex-direction:column}.cmp{min-width:62vw}#cBox{left:3%;right:3%}}
 #subs{z-index:45}
+#devTools{z-index:46}
+.dtrow{flex-wrap:wrap;gap:.6cqw;justify-content:center}.dtrow select{max-width:34cqw}
+.dtcheats{display:grid;grid-template-columns:1fr 1fr;gap:.6cqw;margin:.4cqw 0}
+.dtchk{display:flex;gap:.8cqw;align-items:flex-start;text-align:left;padding:.7cqw 1cqw;border-radius:.8cqw;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);cursor:pointer}
+.dtchk input{width:auto;margin:.2cqw 0 0;flex:none}.dtchk b{display:block;font-size:clamp(11px,1.35cqw,17px)}.dtchk small{color:var(--muted);font-size:clamp(9px,1.05cqw,13px)}
+@media (max-width:600px){.dtcheats{grid-template-columns:1fr}}
 .sbrow{display:flex;flex-wrap:wrap;gap:.8cqw;justify-content:center;margin:.6cqw 0 1cqw}
 .sbc{min-width:15cqw;max-width:24cqw;padding:.9cqw 1.2cqw;border-radius:.9cqw;border:2px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--ink);font-family:inherit;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:.3cqw}
 .sbc b{font-size:clamp(12px,1.6cqw,21px);font-weight:900;letter-spacing:.04em}.sbc small{color:var(--muted);font-size:clamp(9px,1.05cqw,14px);line-height:1.3}
@@ -679,11 +685,13 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
   <div id="pause" class="ov hide"><div class="card scr"><h1>PAUSED</h1><p id="pauseScore" style="font-weight:800;color:var(--ink)"></p><p id="pauseWhy"></p>
     <div class="mbtns">
       <button class="mbtn" id="resumeBtn"><span>Resume</span><small>Keep playing</small></button>
+      <button class="mbtn hide" id="dtPauseBtn"><span>Dev tools</span><small>Cheats and shortcuts for this game</small></button>
       <button class="mbtn hide" id="subBtn"><span>Substitutes</span><small>Rest tired players and bring in the bench</small></button>
       <button class="mbtn" id="pauseSet"><span>Settings</span><small>Controls, audio and visuals</small></button>
       <button class="mbtn danger" id="ffBtn"><span>Forfeit</span><small>Give up this game and take the loss</small></button>
     </div></div></div>
 
+  <div id="devTools" class="ov hide"><div class="card scr wide"><h1>DEV TOOLS</h1><p class="tag" style="margin-top:0">Shortcuts for testing story mode. Everything here stays in the dev save.</p><div id="dtBody"></div><div class="row"><button class="go back" id="dtBack">Back</button></div></div></div>
   <div id="subs" class="ov hide"><div class="card scr wide"><h1 id="sbTitle">SUBSTITUTES</h1><p class="tag" id="sbTip"></p>
     <h2>On the court</h2><div id="sbCourt" class="sbrow"></div><h2 id="sbBenchH">Bench</h2><div id="sbBench" class="sbrow"></div>
     <label class="sbauto"><input type="checkbox" id="sbAuto"> Auto subs: swap in a rested player at dead balls when someone gets tired</label>
@@ -926,6 +934,7 @@ function sendDc(m){try{if(dc&&dc.readyState==='open')dc.send(JSON.stringify(m));
 function showPauseMenu(){
   $('pauseWhy').textContent=pvp?'The game paused after the last point.':'Take a breather.';
   ffArm=false;const sp=$('ffBtn').querySelector('span');if(sp)sp.textContent='Forfeit';
+  $('dtPauseBtn').classList.toggle('hide',!(typeof devOn!=='undefined'&&devOn&&typeof story!=='undefined'&&story&&story.live));
   $('subBtn').classList.toggle('hide',!(typeof story!=='undefined'&&story&&story.live&&story.bench&&story.bench.length));
   $('pauseScore').textContent=teams[0].name+' '+teams[0].score+'  -  '+teams[1].score+' '+teams[1].name;
   show('pause');
@@ -1565,7 +1574,7 @@ function tryShoot(p,human){
   const dR=p.arch.dunk*fxv(p,'dunkR',1);
   if(dh<dR&&spd>(fxv(p,'dunkR',0)?2:3.3)&&toward>0.5&&HS*(p.x-HX)>0){
     const c=contest(p);
-    p.dunk={t:0,dur:0.62,sx:p.x,sy:p.y,tx:HX+HS*0.62,ty:HY+rnd(-0.1,0.1),make:fxv(p,'dunkR',0)?true:Math.random()>c*0.5,done:false,poster:!!fxv(p,'poster',0)};
+    p.dunk={t:0,dur:0.62,sx:p.x,sy:p.y,tx:HX+HS*0.62,ty:HY+rnd(-0.1,0.1),make:(dch('make')&&p.team===0)||(fxv(p,'dunkR',0)?true:Math.random()>c*0.5),done:false,poster:!!fxv(p,'poster',0)};
     if(p.dunk.poster){delete p.fx.poster;delete p.fx.dunkR;}
     p.dir=-1;p.vx=p.vy=0;return true;
   }
@@ -1593,7 +1602,7 @@ function releaseShot(p,t){
   if(p.type==='C'&&dh>=3.2){const tgt=dh<5?0.25:dh<8.6?0.15:0.10;pmx=Math.max(0.02,tgt*(0.55+0.45*q)-c*0.15);}
   if(devFeat('blaze')&&p.arch.sureIn&&!green&&!oz)pmx=Math.min(pmx,0.55);
   const ozCap=(devFeat('blaze')&&p.arch.sureIn&&dh<3.2)?1:0.3;
-  const made=sp_>0?Math.random()<sp_:Math.random()<(oz?Math.min(pmx,ozCap):pmx);
+  const made=(dch('make')&&p.team===0)||(sp_>0?Math.random()<sp_:Math.random()<(oz?Math.min(pmx,ozCap):pmx));
   if(hum&&p.team===0)shotStat(made?'make':'miss');
   if(p.arch.heat){if(made){p.heat=Math.min(5,(p.heat||0)+1);if(p.heat===3)popup('ON FIRE','#ff9a3d',p);}else p.heat=0;}
   if(!s.ai){
@@ -1844,6 +1853,9 @@ function steer(p,dx,dy,mul,dt,sprint){
   const D=DIFF[diffIdx];
   let sp=((p.reachT||0)>0?0.45:1)*p.arch.spd*adSpd(p)*rallyK(p)*mul*(isCPU(p)?D.cpuSpd*ST.spd:0.98)*(p.hasBall?0.94:1)*fxv(p,'speed',1);
   if(p.en!==undefined)sp*=0.84+0.16*p.en;
+  if(p.team===0&&dch('speed'))sp*=1.35;if(p.team===1&&dch('freeze')){sp=0;p.vx=0;p.vy=0;}
+  if(p.team===0&&dch('energy')){p.stamina=1;p.exhausted=false;if(p.en!==undefined)p.en=1;}
+  if(p.team===0&&dch('abil'))p.abCd=0;
   if(sprint){sp*=1.3;p.stamina=Math.max(0,p.stamina-dt*0.38*(fxv(p,'turbo',0)?0:1));if(p.stamina<=0)p.exhausted=true;p.sprinting=true;}
   else p.sprinting=false;
   const a=Math.min(1,(p.z>0?2:(storyHaz()&&inZone('slick',p.x,p.y)?2.2:10))*dt);
@@ -3091,7 +3103,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.1.22';
+const GAME_VER='2.1.23';
 const DEV_VER='2.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -4372,7 +4384,7 @@ function updateTouchLabels(){
 }
 
 /* ===== menu sounds ===== */
-const BACK_IDS=['sbBack','upBack','stBack','ccBack','daBack','devBack','qcClose','profBack','frBack','dmBack','repCancel','invNo','playBack','offBack','qpBack','tpBack','netBack','setBack','shopClose','codeBack','evBack','acBack','lvBack','lbBack','brBack','chCancel','tutBack','hangNo','coachExit','hangLeave','specStop'];
+const BACK_IDS=['dtBack','sbBack','upBack','stBack','ccBack','daBack','devBack','qcClose','profBack','frBack','dmBack','repCancel','invNo','playBack','offBack','qpBack','tpBack','netBack','setBack','shopClose','codeBack','evBack','acBack','lvBack','lbBack','brBack','chCancel','tutBack','hangNo','coachExit','hangLeave','specStop'];
 var uiHovT=0,lastCoins=null;
 function uiOk(){return SET.vol.ui!==false;}
 function uiSnd(k){if(uiOk()&&sfx[k])sfx[k]();}
@@ -5114,7 +5126,7 @@ function storyGame(g){
   return {g:g,ci:ci,gi:gi,boss:boss,title:C.title,where:C.where,diff:C.diffs[gi],len:boss?(ci>=2?240:180):120,haz:haz,
     opp:{name:t[0],c:col,d:dk,a:ac,desc:'',style:C.style,roster:roster},dlg:(C.dlg[gi]||{})};
 }
-function storyHaz(){return story&&story.live&&story.zones?story.zones:null;}
+function storyHaz(){if(dch('nohaz'))return null;return story&&story.live&&story.zones?story.zones:null;}
 function storyZones(h){
   if(!h)return null;const z=[];const rnd2=(a,b)=>a+Math.random()*(b-a);
   for(let i=0;i<(h.slick||0);i++)z.push({k:'slick',x:rnd2(2.4,12.5),y:rnd2(2,13),r:rnd2(1.1,1.8)});
@@ -5234,6 +5246,7 @@ function storyRender(){
   }
   h.append(n,info);
   const e=document.createElement('button');e.className='sbtn';e.style.margin='0';e.textContent=custom?'Edit player':'Create player';e.onclick=()=>openCC();h.appendChild(e);
+  if(devOn){const dv=document.createElement('button');dv.className='sbtn';dv.style.margin='0';dv.textContent='Dev tools';dv.onclick=()=>dtOpen('story');h.appendChild(dv);}
   if(custom){const u=document.createElement('button');u.className='go';u.style.margin='0';u.textContent='Upgrades'+((custom.pts||0)>0?' ('+custom.pts+')':'');u.onclick=()=>openUpg();h.appendChild(u);}
   const l=$('stList');l.innerHTML='';
   const nextG=Math.min(storyDone,STORY_GAMES-1);
@@ -5817,6 +5830,58 @@ function filmPlay(done){
 function filmEnd(silent){if(!FP)return;const d=FP.done;cancelAnimationFrame(FP.raf);FP=null;hideEl('film');try{musFade();}catch(e){}if(!silent&&d)d();}
 $('filmSkip').onclick=()=>filmEnd();
 window.addEventListener('keydown',e=>{if(!FP)return;if(e.code==='Escape'){e.preventDefault();e.stopImmediatePropagation();filmEnd();}else if(['Space','Enter','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].indexOf(e.code)>=0){e.preventDefault();e.stopImmediatePropagation();}},true);
+
+/* ===== dev tools for story mode (dev build only; changes stay in the dev save) ===== */
+var DEVCH={make:false,energy:false,speed:false,freeze:false,nohaz:false,abil:false};
+function dch(k){return typeof devOn!=='undefined'&&devOn&&typeof story!=='undefined'&&story&&story.live&&!!DEVCH[k];}
+const DEV_CHEATS=[['make','Always make shots','Every shot and dunk by your team goes in.'],['energy','Infinite energy and turbo','Your team never gets tired.'],
+  ['speed','Super speed','Your team moves 35% faster.'],['freeze','Freeze opponents','The other team can\'t move.'],['nohaz','No court hazards','Turns off slick spots and cracked pavement.'],['abil','Abilities always ready','No ability cooldowns for your team.']];
+function dtGameLabel(g){if(g<0)return 'Prologue: The Tryout';if(g>=STORY_GAMES)return 'Story complete';const d=storyGame(g);return 'Chapter '+(d.ci+1)+', game '+(d.gi+1)+' vs '+d.opp.name;}
+function dtRender(){
+  const b=$('dtBody');b.innerHTML='';const inGame=!!(story&&story.live&&phase!=='menu');
+  const sec=t=>{const h=document.createElement('h2');h.textContent=t;b.appendChild(h);};
+  const row=(...els)=>{const r=document.createElement('div');r.className='row dtrow';els.forEach(e=>r.appendChild(e));b.appendChild(r);return r;};
+  const btn=(t,fn,cls)=>{const x=document.createElement('button');x.type='button';x.className=cls||'sbtn';x.textContent=t;x.onclick=()=>{fn();uiSnd('uiSelect');};return x;};
+  const msg=t=>{toast(t);dtRender();};
+  if(inGame){sec('This game');
+    row(btn('Win now',()=>{dtClose(true);teams[0].score=Math.max(teams[0].score,teams[1].score+3);phase='over';resultShown=false;showResult();},'go'),
+        btn('Lose now',()=>{dtClose(true);teams[1].score=Math.max(teams[1].score,teams[0].score+3);phase='over';resultShown=false;showResult();}),
+        btn('+5 points',()=>{teams[0].score+=5;msg('+5 points for '+teams[0].name+'.');}),
+        btn('Refill energy',()=>{players.forEach(p=>{if(p.team===0){p.en=1;p.stamina=1;p.exhausted=false;}});if(story.bench)story.bench.forEach(m=>m.en=1);msg('Energy refilled.');}),
+        btn('Add 30 seconds',()=>{timeLeft+=30;msg('Added 30 seconds.');}));}
+  sec('Cheats');
+  const cw=document.createElement('div');cw.className='dtcheats';
+  DEV_CHEATS.forEach(c=>{const l=document.createElement('label');l.className='dtchk';const i=document.createElement('input');i.type='checkbox';i.checked=!!DEVCH[c[0]];i.onchange=()=>{DEVCH[c[0]]=i.checked;uiSnd('uiTick');};
+    const t=document.createElement('span');const s1=document.createElement('b');s1.textContent=c[1];const s2=document.createElement('small');s2.textContent=c[2];t.append(s1,s2);l.append(i,t);cw.appendChild(l);});
+  b.appendChild(cw);
+  const note=document.createElement('p');note.className='tag';note.textContent='Cheats work in story games while you are in the dev build. They reset when you reload.';b.appendChild(note);
+  if(inGame)return;
+  sec('Story progress');
+  const sel=document.createElement('select');sel.setAttribute('aria-label','Jump to');
+  for(let g=-1;g<=STORY_GAMES;g++){const o=document.createElement('option');o.value=g;o.textContent=dtGameLabel(g);sel.appendChild(o);}
+  sel.value=String(!storyProDone?-1:Math.min(storyDone,STORY_GAMES));
+  row(sel,btn('Jump there',()=>{const g=+sel.value;storyProDone=g>=0;storyDone=Math.max(0,Math.min(STORY_GAMES,g));if(custom)upgSync(custom,storyDone);saveCfg();msg('Story progress set: next up is '+dtGameLabel(g)+'.');}),
+      btn('Unlock everything',()=>{storyProDone=true;storyDone=STORY_GAMES;if(custom)upgSync(custom,storyDone);saveCfg();msg('Every game is unlocked.');}),
+      btn('Reset progress',()=>{storyProDone=false;storyDone=0;storyIntroSeen=false;saveCfg();msg('Story progress reset.');}));
+  sec('MyPLAYER');
+  if(!custom){const p=document.createElement('p');p.className='tag';p.textContent='Create a MyPLAYER first.';b.appendChild(p);}
+  else{
+    const info=document.createElement('p');info.className='tag';upgEnsure(custom);info.textContent=custom.name+' · '+ccOvr(custom)+' OVR · '+(custom.pts||0)+' upgrade points to spend';b.appendChild(info);
+    row(btn('+25 upgrade points',()=>{custom.pts=(custom.pts||0)+25;custom.earn=(custom.earn||0)+25;saveCfg();msg('+25 upgrade points.');}),
+        btn('Max every attribute',()=>{AKEYS.forEach(k=>{custom.a[k]=custom.pot[k];});custom.earn=Math.max(custom.earn||0,upgTotal(custom));custom.pts=0;saveCfg();msg(custom.name+' is now '+ccOvr(custom)+' OVR.');}),
+        btn('Reset upgrades',()=>{const a0=custom.a0||ccStart(custom);custom.pts=(custom.pts||0)+upgSpent(custom);AKEYS.forEach(k=>{custom.a[k]=a0[k];});saveCfg();msg('Upgrades refunded. Back to 60 OVR.');}),
+        btn('Unlock the build',()=>{custom.locked=false;saveCfg();msg('Position, body and potential can be changed again in Edit player.');}));
+  }
+  sec('Scenes');
+  const ss=document.createElement('select');ss.setAttribute('aria-label','Scene');
+  for(let g=-1;g<STORY_GAMES;g++){const d=storyGame(g);if(d.dlg&&d.dlg.pre){const o=document.createElement('option');o.value=g+':pre';o.textContent=dtGameLabel(g)+' (before)';ss.appendChild(o);}if(d.dlg&&d.dlg.post){const o=document.createElement('option');o.value=g+':post';o.textContent=dtGameLabel(g)+' (after)';ss.appendChild(o);}}
+  row(ss,btn('Play scene',()=>{const [gs,k]=ss.value.split(':'),g=+gs,d=storyGame(g);hideEl('devTools');
+      cinePlay({ci:d.ci,d:d,g:g,label:k==='pre'?(d.pro?'PROLOGUE':'CHAPTER '+(d.ci+1)+' · GAME '+(d.gi+1)):'',title:k==='pre'?(d.pro?'The Tryout':d.where):'',sub:k==='pre'?'vs '+d.opp.name:'',lines:d.dlg[k],done:()=>{show('devTools');dtRender();}});}),
+      btn('Watch the intro',()=>{hideEl('devTools');filmPlay(()=>{show('devTools');dtRender();});}));
+}
+let dtFrom='story';
+function dtOpen(from){if(!devOn)return;dtFrom=from;if(from==='pause')hideEl('pause');else hideEl('story');dtRender();show('devTools');}
+function dtClose(silent){hideEl('devTools');if(silent)return;if(dtFrom==='pause')showPauseMenu();else{storyRender();show('story');}}
 
 function storyIntro(done){storyIntroSeen=true;storyIntroNow=true;saveCfg();filmPlay(done);}
 function storyStart(g){
@@ -6468,6 +6533,7 @@ function upgRender(){
   $('stIntro').onclick=()=>{hideEl('story');filmPlay(()=>{storyRender();show('story');});};
   $('stNext').onclick=()=>storyStart(storyProDone?Math.min(storyDone,STORY_GAMES-1):-1);
   $('subBtn').onclick=()=>{hideEl('pause');subsOpen('game');};
+  $('dtPauseBtn').onclick=()=>dtOpen('pause');$('dtBack').onclick=()=>dtClose();
   $('sbBack').onclick=subsClose;
   $('sbAuto').onchange=()=>{try{localStorage.setItem('sk_autosub',$('sbAuto').checked?'1':'0');}catch(e){}};
   $('offStory').onclick=openStory;
