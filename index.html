@@ -2501,7 +2501,7 @@ const LOOKS={
   ADAPT:{hair:'bald',circuit:'#3dffa8',sleeve:'#3dffa8',sleeveArm:'B',shoe:'#1b1d26',sole:'#3dffa8',build:1},
   ROCK:{hair:'buzz',hc:'#120e0a',wrist:'#ffd166',wristBoth:1,shoe:'#ffd166',sole:'#6b4a2b',build:1.28},
   BOOM:{hair:'afro',hc:'#1a120c',band:'#ff6a3d',shoe:'#ff6a3d',sole:'#ffffff',build:1.18},
-  ATLAS:{hair:'curly',hc:'#140f0b',elbow:'#e8ecf5',shoe:'#3d7bff',sole:'#ffffff',build:1.2},
+  ATLAS:{hair:'curly',hc:'#140f0b',elbow:'#1b1d26',shoe:'#3d7bff',sole:'#ffffff',build:1.2},
   DOZER:{hair:'bald',hat:'#ffd23f',boots:1,shoe:'#7a5a33',sole:'#2b2b2b',build:1.36},
   GOLIATH:{hair:'locks',hc:'#100c09',knee:'#e9edf5',kneeLeg:'both',shoe:'#e9edf5',sole:'#c9a227',build:1.42},
   KRAKEN:{hair:'locksUp',hc:'#140c08',tip:'#ff3b1f',beard:'#140c08',beardT:'chin',shoe:'#15151c',sole:'#ff3b1f',build:1.48},
@@ -2545,6 +2545,7 @@ function lkHead(c,L,hx,hy,r,d,skin,acc,T){
   circ(hx,hy,r,skin);
   /* on top */
   if(st==='short'||st==='pony'||st==='bun'||st==='buns'||st==='locks'||st==='locksUp'||st==='puff')cap();
+  else if(st==='afro'){cap(1.08);for(let i=0;i<6;i++){const a=Math.PI*(1.12+i*0.15);circ(hx-d*r*0.12+Math.cos(a)*r*1.02*d,hy-r*0.12+Math.sin(a)*r*0.98,r*0.32,hc);}}
   else if(st==='part'){cap();circ(hx+d*r*0.42,hy-r*0.82,r*0.38,hc);c.strokeStyle=skin;c.lineWidth=r*0.09;c.beginPath();c.moveTo(hx-d*r*0.05,hy-r*1.08);c.lineTo(hx-d*r*0.55,hy-r*0.72);c.stroke();}
   else if(st==='buzz')cap(1,0.55);
   else if(st==='bald'){c.fillStyle='rgba(255,255,255,.22)';c.beginPath();c.ellipse(hx-d*r*0.2,hy-r*0.55,r*0.36,r*0.18,-d*0.3,0,P2);c.fill();}
@@ -2585,7 +2586,7 @@ function lkArm(c,L,front,s,e,HP,skin){
   const seg=(k0,k1,col,wd)=>{const a=lerp(k0),b=lerp(k1);c.strokeStyle=col;c.lineWidth=wd;c.beginPath();c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);c.stroke();};
   if(L.hair==='hood'){seg(0,0.9,front?(L.hood||'#2b2d3a'):shade(L.hood||'#2b2d3a',-20),HP*0.085);if(L.trim)seg(0.82,0.9,L.trim,HP*0.088);}
   else if(L.sleeve&&on(L.sleeveArm))seg(0.04,0.86,front?L.sleeve:shade(L.sleeve,-25),HP*0.082);
-  if(L.elbow)seg(0.42,0.56,L.elbow,HP*0.09);
+  if(L.elbow)seg(0.44,0.56,front?L.elbow:shade(L.elbow,-25),HP*0.084);
   if(L.wrist&&(front||L.wristBoth))seg(0.78,0.88,L.wrist,HP*0.088);
   if(L.watch&&front){seg(0.78,0.88,'#1b1d26',HP*0.09);const m=lerp(0.83);c.fillStyle=L.watch;c.beginPath();c.arc(m[0],m[1],HP*0.022,0,6.283);c.fill();}
   if(L.tape){c.fillStyle='rgba(244,246,255,.92)';c.beginPath();c.arc(e[0],e[1],HP*0.042,0,6.283);c.fill();}
@@ -2691,13 +2692,14 @@ function head(g,L,J,r,fd,T,pose,eyes){
   ell(g,X(-r*0.12),r*0.12,r*0.18,r*0.25,0,dk);ell(g,X(-r*0.1),r*0.12,r*0.08,r*0.13,0,sh(skin,-45));
   /* hair on top */
   if(['short','pony','bun','buns','locks','locksUp','puff'].indexOf(st)>=0)cap();
+  else if(st==='afro'){cap(1.08,1);for(let i=0;i<8;i++){const a=Math.PI*(1.1+i*0.11);circ(g,X(-r*0.12+Math.cos(a)*r*1.04),-r*0.12+Math.sin(a)*r*1.0,r*0.3,hc);}}
   else if(st==='part'){cap();circ(g,X(r*0.45),-r*0.82,r*0.4,hc);g.strokeStyle=skin;g.lineWidth=r*0.07;g.beginPath();g.moveTo(X(-r*0.02),-r*1.08);g.lineTo(X(-r*0.6),-r*0.74);g.stroke();}
   else if(st==='buzz'){cap(1.01,0.55);}
   else if(st==='bald'){g.fillStyle='rgba(255,255,255,.22)';g.beginPath();g.ellipse(X(-r*0.15),-r*0.6,r*0.38,r*0.17,X(-0.3),0,P2);g.fill();}
   else if(st==='flat'){g.fillStyle=hc;g.beginPath();g.roundRect(X(-r*0.08)-r*0.98,-r*1.78,r*1.96,r*1.4,r*0.12);g.fill();cap();if(L.tip){g.fillStyle=L.tip;g.beginPath();g.roundRect(X(-r*0.08)-r*0.98,-r*1.78,r*1.96,r*0.34,r*0.1);g.fill();}}
   else if(st==='rows'){cap();g.strokeStyle=sh(skin,-10);g.lineWidth=r*0.07;for(let i=0;i<4;i++){g.beginPath();g.arc(X(-r*0.08),-r*0.08,r*(0.35+0.18*i),Math.PI*1.12,Math.PI*1.88);g.stroke();}}
   else if(st==='twists'){cap();for(let i=0;i<8;i++){const a=Math.PI*(1.06+i*0.125),x=X(-r*0.08)+Math.cos(a)*r*1.0,y=-r*0.08+Math.sin(a)*r*1.0;circ(g,x,y,r*0.22,hc);if(L.tip)circ(g,x+Math.cos(a)*r*0.13,y+Math.sin(a)*r*0.13,r*0.12,L.tip);}}
-  else if(st==='curly'){cap();for(let i=0;i<9;i++){const a=Math.PI*(1.02+i*0.12);circ(g,X(-r*0.08)+Math.cos(a)*r*0.96,-r*0.1+Math.sin(a)*r*0.96,r*0.27,hc);}}
+  else if(st==='curly'){cap(1.04,1);for(let i=0;i<12;i++){const a=Math.PI*(0.86+i*0.095);circ(g,X(-r*0.08+Math.cos(a)*r*0.98),-r*0.1+Math.sin(a)*r*0.98,r*0.25,hc);}for(let i=0;i<5;i++){const a=Math.PI*(1.15+i*0.16);circ(g,X(-r*0.1+Math.cos(a)*r*0.62),-r*0.2+Math.sin(a)*r*0.62,r*0.2,sh(hc,10));}}
   else if(st==='spiky'){cap();for(let i=0;i<6;i++){const a=Math.PI*(1.12+i*0.15),bx=X(-r*0.08)+Math.cos(a)*r*0.9,by=-r*0.08+Math.sin(a)*r*0.9,tx=X(-r*0.08)+Math.cos(a-fd*0.15)*r*1.7,ty=-r*0.08+Math.sin(a)*r*1.7;
     g.fillStyle=hc;g.beginPath();g.moveTo(bx-Math.sin(a)*r*0.3,by+Math.cos(a)*r*0.3);g.lineTo(tx,ty);g.lineTo(bx+Math.sin(a)*r*0.3,by-Math.cos(a)*r*0.3);g.fill();if(L.tip){g.fillStyle=L.tip;g.beginPath();g.moveTo(tx+(bx-tx)*0.35-Math.sin(a)*r*0.12,ty+(by-ty)*0.35+Math.cos(a)*r*0.12);g.lineTo(tx,ty);g.lineTo(tx+(bx-tx)*0.35+Math.sin(a)*r*0.12,ty+(by-ty)*0.35-Math.cos(a)*r*0.12);g.fill();}}}
   else if(st==='mohawk'){cap(1.01,0.22);g.fillStyle=hc;g.beginPath();let q=pol(-0.85,0.9);g.moveTo(q[0],q[1]);for(let i=0;i<5;i++){const a=-0.95-i*0.42;q=pol(a-0.12,1.9-i*0.08);g.lineTo(q[0],q[1]);q=pol(a-0.3,0.95);g.lineTo(q[0],q[1]);}q=pol(-3.0,0.9);g.lineTo(q[0],q[1]);g.closePath();g.fill();
@@ -2740,7 +2742,7 @@ function figure(g,x0,y0,h,d,L,J,poseName,o){
   o=o||{};const pose=Object.assign({},POSE[poseName]||POSE.stand,o.pose||{}),Q=solve(pose),B=L.build||1,W=Math.sqrt(B),T=o.t||0;
   const P=p=>[x0+d*p[0]*h,y0+p[1]*h],skin=J.skin,dk=sh(skin,-30),hoodC=L.hair==='hood'?(L.hood||'#2b2d3a'):null;
   const hip=P(Q.hip),S=P(Q.S),N=P(Q.N),HD=P(Q.H);
-  if(o.dry)return {Q:Q,P:P,hand:P(Q.wF),handB:P(Q.wB),elbow:P(Q.eF),head:HD,hip:hip,S:S,h:h};
+  if(o.dry)return {Q:Q,P:P,hand:P(Q.wF),handB:P(Q.wB),elbow:P(Q.eF),elbowB:P(Q.eB),head:HD,hip:hip,S:S,h:h};
   const on=(w,front)=>w==='both'||(w==='F')===front;
   const shoe=(an,s,front)=>{const ang=(pose.ft?pose.ft[front?0:1]:0)*D,big=L.boots?1.18:1,col=front?L.shoe:sh(L.shoe,-30);
     g.save();g.translate(an[0],an[1]);g.scale(d,1);g.rotate(ang);const L2=0.105*h*big,H2=0.05*h*big;
@@ -2759,7 +2761,7 @@ function figure(g,x0,y0,h,d,L,J,poseName,o){
   const arm=(front)=>{const e=P(front?Q.eF:Q.eB),w=P(front?Q.wF:Q.wB),c=front?skin:dk,sl=hoodC||(L.sleeve&&on(L.sleeveArm,front)?L.sleeve:null);
     const s0=[S[0],S[1]+0.012*h];limb(g,s0,e,0.033*h*W,0.026*h*W,c);limb(g,e,w,0.026*h*W,0.021*h*W,c);
     if(sl){const col=front?sl:sh(sl,-28);limb(g,s0,e,0.036*h*W,0.029*h*W,col);limb(g,e,lerp(e,w,0.82),0.029*h*W,0.024*h*W,col);if(hoodC&&L.trim)limb(g,lerp(e,w,0.74),lerp(e,w,0.82),0.025*h*W,0.025*h*W,L.trim);}
-    if(L.elbow)circ(g,e[0],e[1],0.034*h*W,front?L.elbow:sh(L.elbow,-30));
+    if(L.elbow)limb(g,lerp(s0,e,0.82),lerp(e,w,0.2),0.031*h*W,0.027*h*W,front?L.elbow:sh(L.elbow,-30));
     if(L.wrist&&(front||L.wristBoth))limb(g,lerp(e,w,0.66),lerp(e,w,0.82),0.026*h*W,0.025*h*W,front?L.wrist:sh(L.wrist,-30));
     if(L.watch&&!front){limb(g,lerp(e,w,0.64),lerp(e,w,0.82),0.028*h,0.027*h,'#1b1d26');const m=lerp(e,w,0.73);g.save();g.shadowColor=L.watch;g.shadowBlur=h*0.02;circ(g,m[0],m[1],0.016*h,L.watch);g.restore();}
     const hr=0.027*h*W;circ(g,w[0],w[1],hr,L.tape?'#eef1f8':c);
@@ -2790,7 +2792,7 @@ function figure(g,x0,y0,h,d,L,J,poseName,o){
   /* head */
   {const r=0.066*h,fd=d*(pose.look||1);g.save();g.translate(HD[0],HD[1]);g.rotate((pose.neck||0)*D*fd*0.6+d*Q.lean*0.2);head(g,L,J,r,fd,T,pose,o.eyes||pose.eyes);g.restore();}
   leg(true);arm(true);
-  return {Q:Q,P:P,hand:P(Q.wF),handB:P(Q.wB),elbow:P(Q.eF),head:HD,hip:hip,S:S,h:h};
+  return {Q:Q,P:P,hand:P(Q.wF),handB:P(Q.wB),elbow:P(Q.eF),elbowB:P(Q.eB),head:HD,hip:hip,S:S,h:h};
 }
 /* render a figure once, with an outline, a rim light or a tint, into its own canvas */
 let OFF=null,OFF2=null;
@@ -2916,7 +2918,7 @@ function mixPose(a,b,u){
   const o={},L=(f)=>(a[f]||0)+((b[f]||0)-(a[f]||0))*u,L2=(x,y)=>[x[0]+(y[0]-x[0])*u,x[1]+(y[1]-x[1])*u];
   o.lean=L('lean');o.neck=L('neck');o.lift=L('lift');['aF','aB','lF','lB'].forEach(f=>{o[f]=L2(a[f],b[f]);});o.ft=L2(a.ft||[0,0],b.ft||[0,0]);
   o.plant=(a.plant&&b.plant)?1:0;o.seatK=(a.seat?1:0)+((b.seat?1:0)-(a.seat?1:0))*u;
-  const near=u<0.5?a:b;o.look=near.look||1;o.mouth=near.mouth;o.wrist=near.wrist;return o;}
+  const near=u<0.5?a:b;o.look=near.look||1;o.mouth=near.mouth;o.wrist=near.wrist;o.prop=near.prop;return o;}
 function animAt(A,t){
   if(t<=A[0].t)return {p:mixPose(poseOf(A[0]),poseOf(A[0]),0),x:A[0].x||0};
   for(let i=0;i<A.length-1;i++)if(t<A[i+1].t){const k=A[i+1],raw=(t-A[i].t)/(k.t-A[i].t),u=k.e==='lin'?raw:(k.e==='out'?1-(1-raw)*(1-raw):(k.e==='in'?raw*raw:fs2(raw)));
@@ -2927,12 +2929,18 @@ function live(g,W,H,pr,fn,opt){
   opt=opt||{};if(!OFF){OFF=document.createElement('canvas');OFF2=document.createElement('canvas');}
   const cw=Math.ceil(W*pr),ch=Math.ceil(H*pr);if(OFF.width!==cw||OFF.height!==ch){OFF.width=OFF2.width=cw;OFF.height=OFF2.height=ch;}
   const a=OFF.getContext('2d'),b=OFF2.getContext('2d');a.setTransform(1,0,0,1,0,0);a.clearRect(0,0,cw,ch);a.setTransform(pr,0,0,pr,0,0);const res=fn(a);
-  const tintTo=col=>{b.setTransform(1,0,0,1,0,0);b.globalCompositeOperation='source-over';b.clearRect(0,0,cw,ch);b.drawImage(OFF,0,0);b.globalCompositeOperation='source-in';b.fillStyle=col;b.fillRect(0,0,cw,ch);b.globalCompositeOperation='source-over';};
+  /* only composite the box around the figure: much cheaper than whole-canvas copies */
+  let bx=0,by=0,bw=cw,bh=ch;
+  if(res&&res.Q&&res.P){const Q=res.Q,m=res.h*0.22;let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;const add=p=>{if(p[0]<x0)x0=p[0];if(p[0]>x1)x1=p[0];if(p[1]<y0)y0=p[1];if(p[1]>y1)y1=p[1];};
+    for(const k of ['hip','S','N','H','kF','aF','kB','aB','eF','wF','eB','wB']){const q=Q[k];if(q&&q.length===2)add(res.P(q));}if(res.head)add(res.head);
+    if(x1>x0){bx=Math.max(0,Math.floor((x0-m)*pr));by=Math.max(0,Math.floor((y0-m)*pr));bw=Math.min(cw,Math.ceil((x1+m)*pr))-bx;bh=Math.min(ch,Math.ceil((y1+m)*pr))-by;if(bw<=0||bh<=0)return res;}}
+  const tintTo=col=>{b.setTransform(1,0,0,1,0,0);b.globalCompositeOperation='source-over';b.clearRect(bx,by,bw,bh);b.drawImage(OFF,bx,by,bw,bh,bx,by,bw,bh);b.globalCompositeOperation='source-in';b.fillStyle=col;b.fillRect(bx,by,bw,bh);b.globalCompositeOperation='source-over';};
+  const put=(src,dx,dy)=>g.drawImage(src,bx,by,bw,bh,bx+dx,by+dy,bw,bh);
   g.save();g.setTransform(1,0,0,1,0,0);const al=opt.alpha==null?1:opt.alpha;
-  if(opt.ow!==0){tintTo(opt.line||'#06070d');g.globalAlpha=al;const ow=Math.max(1.5,(opt.ow||2.6)*pr);for(let i=0;i<8;i++){const an=i/8*P2;g.drawImage(OFF2,Math.cos(an)*ow,Math.sin(an)*ow);}}
-  if(opt.rim){tintTo(opt.rim);g.globalAlpha=al*0.55;g.drawImage(OFF2,(opt.rimDx||-3)*pr,-1*pr);}
-  g.globalAlpha=al;g.drawImage(OFF,0,0);
-  if(opt.tint){tintTo(opt.tint);g.globalAlpha=al*(opt.tintA||0.5);g.drawImage(OFF2,0,0);}
+  if(opt.ow!==0){tintTo(opt.line||'#06070d');g.globalAlpha=al;const ow=Math.max(1.5,(opt.ow||2.6)*pr);for(let i=0;i<8;i++){const an=i/8*P2;put(OFF2,Math.cos(an)*ow,Math.sin(an)*ow);}}
+  if(opt.rim){tintTo(opt.rim);g.globalAlpha=al*0.55;put(OFF2,(opt.rimDx||-3)*pr,-1*pr);}
+  g.globalAlpha=al;put(OFF,0,0);
+  if(opt.tint){tintTo(opt.tint);g.globalAlpha=al*(opt.tintA||0.5);put(OFF2,0,0);}
   g.restore();return res;
 }
 /* a ball thrown, bounced and rolled to a stop */
@@ -2952,13 +2960,135 @@ const PRE={
   cross:()=>[{t:0,pose:'pdribUp'},{t:0.42,pose:'pdrib',e:'in'},{t:0.84,pose:'pdribUp',e:'out'},{t:1.08,pose:'pcross'},{t:1.5,pose:'pcatch'},{t:2.05,pose:'pend'}],
   steal:()=>[{t:0,pose:'dstance',fit:'back'},{t:0.9,pose:'dstance2',fit:'back'},{t:1.12,pose:'poke',fit:'poke',e:'in'},{t:1.32,pose:'poke',fit:'poke'},{t:1.75,pose:'scoop',fit:'poke'},{t:2.4,pose:'scoop',fit:'poke'}]
 };
+/* ---------- every player's scene animation: hero keys, defenders, and ball keys ---------- */
+Object.assign(POSE,{
+  runA:{lean:24,neck:-14,aF:[-48,82],aB:[62,82],lF:[76,112],lB:[-40,40],lift:0.03},
+  runB:{lean:24,neck:-14,aF:[62,82],aB:[-48,82],lF:[-40,40],lB:[76,112],lift:0.03},
+  drvA:{lean:22,neck:-14,aF:[48,26],aB:[-30,60],lF:[70,100],lB:[-38,40],lift:0.02},
+  drvB:{lean:22,neck:-14,aF:[42,20],aB:[40,62],lF:[-38,40],lB:[70,100],lift:0.02},
+  chA:{lean:30,neck:-22,aF:[40,112],aB:[-44,62],lF:[64,90],lB:[-36,22],lift:0.02},
+  chB:{lean:30,neck:-22,aF:[40,112],aB:[50,70],lF:[-36,22],lB:[64,90],lift:0.02},
+  dribLo:{lean:18,neck:-12,aF:[30,8],aB:[45,70],lF:[36,66],lB:[4,42],plant:1},
+  watchLo:{lean:12,neck:6,aF:[32,10],aB:[74,124],lF:[32,58],lB:[2,38],plant:1},
+  phoneLo:{lean:14,neck:-26,aF:[32,10],aB:[150,58],lF:[32,58],lB:[2,38],plant:1,prop:'phone'},
+  dip:{lean:8,neck:-8,aF:[40,112],aB:[30,120],lF:[32,60],lB:[-8,44],plant:1},
+  releaseG:{lean:0,neck:-14,aF:[158,6],aB:[128,44],lF:[6,6],lB:[-6,6],plant:1,wrist:1},
+  chestPass:{lean:6,neck:-4,aF:[36,110],aB:[28,118],lF:[14,10],lB:[-12,14],plant:1},
+  catchP:{lean:6,neck:-6,aF:[80,20],aB:[74,26],lF:[14,10],lB:[-12,14],plant:1},
+  wave:{lean:2,neck:-6,aF:[36,110],aB:[150,30],lF:[6,6],lB:[-6,6],plant:1,mouth:'grin'},
+  wave2:{lean:2,neck:-6,aF:[36,110],aB:[166,4],lF:[6,6],lB:[-6,6],plant:1,mouth:'grin'},
+  snatch:{lean:20,neck:-16,aF:[118,4],aB:[60,40],lF:[40,62],lB:[-20,40],plant:1},
+  postDrib:{lean:18,neck:-8,aF:[30,14],aB:[70,92],lF:[30,52],lB:[-12,30],plant:1},
+  bump:{lean:28,neck:-10,aF:[30,14],aB:[84,70],lF:[42,66],lB:[-22,24],plant:1},
+  box:{lean:12,neck:-18,aF:[84,40],aB:[72,50],lF:[38,64],lB:[-20,40],plant:1}
+});
+/* helpers for writing keys */
+function kDrib(t0,n,per,up,down){const k=[];for(let i=0;i<n;i++){k.push([t0+per*(i+0.5),down||'fF','drop']);k.push([t0+per*(i+1),up||'hFd','rise']);}return k;}
+function kRun(t0,t1,x0,x1,a,b,step){const k=[],n=Math.max(1,Math.round((t1-t0)/(step||0.16)));for(let i=0;i<=n;i++){const u=i/n;k.push({t:t0+(t1-t0)*u,pose:i%2?b:a,x:x0+(x1-x0)*u,e:'lin'});}return k;}
+function kShot(t0,x){x=x||0;return [{t:t0,pose:'dip',x:x},{t:t0+0.25,pose:'shoot',lift:0.12,x:x,e:'out'},{t:t0+0.37,pose:'release',lift:0.12,x:x},{t:t0+0.7,pose:'releaseG',x:x,e:'in'}];}
+function bShot(t0,fly){/* ball keys for a jumper that starts with the dip at t0 and releases at t0+0.37 */
+  const r=t0+0.37,a=r+(fly||1.45);return [[t0,'two','lin'],[t0+0.25,'set','lin'],[r,'set','hold'],[a,'rim','arc'],[a+0.24,'net','drop'],[a+0.24,{sim:[-0.12,0.8]}]];}
+const ANIMS={
+  kai:()=>({A:[{t:0,pose:'watch'},{t:0.18,pose:'watchLo'},{t:0.55,pose:'watch'},{t:0.88,pose:'watchLo'},{t:1.25,pose:'watch'},{t:1.7,pose:'watch'},{t:2.05,pose:'point'}],
+    BK:[[0,'hFd']].concat(kDrib(0,2,0.7),[[1.7,'hFd','hold'],[2.05,'hB','lin']])}),
+  dime:()=>({rel:1.12,A:[{t:0,pose:'dribble'},{t:0.18,pose:'dribLo'},{t:0.55,pose:'dribble'},{t:0.9,pose:'chestPass',over:{look:-1}},{t:1.12,pose:'pass'},{t:2.3,pose:'pass'}],
+    BK:[[0,'hFd']].concat(kDrib(0,1,0.7),[[0.9,'two','lin'],[1.12,'two','hold'],[2.35,'catch','out']])}),
+  flash:()=>({burst:[0.68,1.55],A:[{t:0,pose:'dribble',x:-0.22},{t:0.2,pose:'dribLo',x:-0.22},{t:0.45,pose:'cross',x:-0.2},{t:0.62,pose:'dribble',x:-0.19}].concat(kRun(0.7,1.5,-0.17,0.3,'drvA','drvB',0.2),[{t:1.75,pose:'hold',x:0.33}]),
+    D:[{x:0.5,d:-1,keys:[{t:0,pose:'guard'},{t:0.62,pose:'guard'},{t:0.9,pose:'stumble'},{t:1.35,pose:'fallen',e:'in'}]}],
+    BK:[[0,'hFd'],[0.22,'fF','drop'],[0.45,{floor:1,mid:1},'drop'],[0.62,'hFd','rise'],[0.8,'fA','drop'],[0.98,'hFd','rise'],[1.16,'fA','drop'],[1.34,'hFd','rise'],[1.52,'fA','drop'],[1.75,'hF','rise']]}),
+  orbit:()=>({rel:1.57,A:[{t:0,pose:'phone'},{t:0.2,pose:'phoneLo'},{t:0.55,pose:'phone'},{t:0.88,pose:'phoneLo'},{t:1.2,pose:'dip'},{t:1.45,pose:'step',x:-0.06,lift:0.06,e:'out'},{t:1.57,pose:'release',x:-0.07,lift:0.08},{t:1.95,pose:'releaseG',x:-0.08,e:'in'}],
+    BK:[[0,'hFd']].concat(kDrib(0,2,0.7).slice(0,3),[[1.2,'two','lin'],[1.45,'set','lin'],[1.57,'set','hold'],[3.0,'rim','arc'],[3.24,'net','drop'],[3.24,{sim:[-0.12,0.8]}]])}),
+  sage:()=>({rel:1.85,lanes:[0.6,1.3],A:[{t:0,pose:'hold'},{t:0.6,pose:'point'},{t:1.4,pose:'point'},{t:1.65,pose:'chestPass'},{t:1.85,pose:'pass'},{t:2.7,pose:'pass'}],
+    BK:[[0,'hF'],[0.6,'hB','lin'],[1.4,'hB','hold'],[1.65,'two','lin'],[1.85,'two','hold'],[2.3,{x:0.66,floor:1},'drop'],[2.75,'catch','rise']]}),
+  warden:()=>({rel:1.05,A:[{t:0,pose:'stance',x:-0.04},{t:0.4,pose:'stance',x:0.02},{t:0.8,pose:'stance',x:-0.02},{t:1.05,pose:'snatch',x:0.02,e:'out'},{t:1.3,pose:'snatch',x:0.02},{t:1.65,pose:'scoop',x:0.02},{t:2.4,pose:'scoop',x:0.02}],
+    BK:[[0,{x:1.08,y:0.42}],[0.55,{x:1.08,y:0.42},'lin'],[1.05,'hF','lin'],[2.4,'hF','hold']]}),
+  rex:()=>({rel:0.82,A:[{t:0,pose:'hold'}].concat(kShot(0.45)),BK:[[0,'hF'],[0.45,'two','lin']].concat(bShot(0.45,1.5).slice(1))}),
+  blaze:()=>({rel:1.77,burst:[0.6,1.3],A:[{t:0,pose:'dribble',x:-0.14},{t:0.22,pose:'dribLo',x:-0.14},{t:0.45,pose:'cross',x:-0.13}].concat(kRun(0.6,1.2,-0.12,0.12,'drvA','drvB',0.2),kShot(1.4,0.15)),
+    BK:[[0,'hFd'],[0.22,'fF','drop'],[0.45,{floor:1,mid:1},'drop'],[0.6,'hFd','rise'],[0.8,'fA','drop'],[1.0,'hFd','rise'],[1.2,'fA','drop']].concat([[1.4,'two','rise']],bShot(1.4,1.25).slice(1))}),
+  snipe:()=>({rel:1.3,A:[{t:0,pose:'hold'},{t:0.6,pose:'dip'},{t:1.0,pose:'shoot',lift:0.1,e:'out'},{t:1.3,pose:'release',lift:0.1},{t:1.65,pose:'releaseG',e:'in'}],
+    BK:[[0,'hF'],[0.6,'two','lin'],[1.0,'set','lin'],[1.3,'set','hold'],[3.3,'rim','arc'],[3.5,'net','drop'],[3.5,{sim:[-0.08,0.6]}]]}),
+  haze:()=>({ghost:[0.5,1.15],trail:['#b7a6ff',0.55,1.4],A:[{t:0,pose:'dribble',x:-0.3}].concat(kRun(0.25,1.35,-0.28,0.2,'drvA','drvB',0.18),[{t:1.6,pose:'hold',x:0.24}]),
+    D:[{x:0.46,d:-1,alpha:0.85,keys:[{t:0,pose:'stance'}]},{x:0.65,d:-1,alpha:0.85,keys:[{t:0,pose:'guard'}]}],
+    BK:[[0,'hFd'],[0.25,'fF','drop']].concat((()=>{const k=[];for(let i=0;i<3;i++){k.push([0.43+i*0.36,'hFd','rise']);k.push([0.61+i*0.36,'fA','drop']);}return k;})(),[[1.6,'hF','rise']])}),
+  zen:()=>({rel:1.67,A:[{t:0,pose:'hold'},{t:0.9,pose:'hold',over:{lean:-3,neck:-10}},{t:1.3,pose:'dip'},{t:1.55,pose:'shoot',lift:0.1,e:'out'},{t:1.67,pose:'release',lift:0.1},{t:2.0,pose:'releaseG',e:'in'}],
+    BK:[[0,'hF'],[1.3,'two','lin'],[1.55,'set','lin'],[1.67,'set','hold'],[3.15,'rim','arc'],[3.38,'net','drop'],[3.38,{sim:[-0.1,0.8]}]]}),
+  heater:()=>({rel:0.92,A:[{t:0,pose:'catchP'},{t:0.45,pose:'hold'},{t:0.6,pose:'dip'},{t:0.8,pose:'shoot',lift:0.12,e:'out'},{t:0.92,pose:'release',lift:0.12},{t:1.25,pose:'releaseG',e:'in'},{t:2.5,pose:'releaseG'},{t:2.85,pose:'point'}],
+    BK:[[0,{x:-0.06,y:0.5}],[0.45,'hF','lin'],[0.6,'two','lin'],[0.8,'set','lin'],[0.92,'set','hold'],[2.3,'rim','arc'],[2.54,'net','drop'],[2.54,{sim:[-0.12,0.8]}]]}),
+  apex:()=>({rel:1.32,blink:0.75,after:{x:-0.26,t0:0.75,t1:2.2},A:[{t:0,pose:'dribble',x:-0.26},{t:0.25,pose:'dribLo',x:-0.26},{t:0.55,pose:'dribble',x:-0.26},{t:0.74,pose:'hold',x:-0.26},{t:0.76,pose:'hold',x:0,e:'lin'},{t:1.0,pose:'dip'},{t:1.2,pose:'shoot',lift:0.12,e:'out'},{t:1.32,pose:'release',lift:0.12},{t:1.65,pose:'releaseG',e:'in'}],
+    D:[{x:0.63,d:-1,keys:[{t:0,pose:'guard'},{t:0.9,pose:'guard'},{t:1.15,pose:'block',lift:0.15,x:-0.06,e:'out'},{t:1.45,pose:'stumble',x:-0.08},{t:1.8,pose:'stumble',x:-0.08}]}],
+    BK:[[0,'hFd'],[0.28,'fF','drop'],[0.55,'hFd','rise'],[0.74,'hF','lin'],[0.76,'hF','hold'],[1.0,'two','lin'],[1.2,'set','lin'],[1.32,'set','hold'],[2.7,'rim','arc'],[2.94,'net','drop'],[2.94,{sim:[-0.12,0.8]}]]}),
+  moose:()=>({impacts:[0.42,0.97,1.47],A:[{t:0,pose:'postDrib',x:-0.05},{t:0.4,pose:'bump',x:-0.03},{t:0.62,pose:'postDrib',x:-0.03},{t:0.95,pose:'bump',x:0},{t:1.17,pose:'postDrib',x:0},{t:1.45,pose:'bump',x:0.03},{t:1.8,pose:'post',x:0.03},{t:2.4,pose:'post',x:0.03}],
+    D:[{x:0.66,d:-1,keys:[{t:0,pose:'guard',x:-0.02},{t:0.42,pose:'guard',x:-0.02},{t:0.55,pose:'stumble',x:0.01,e:'out'},{t:0.8,pose:'guard',x:0.01},{t:0.97,pose:'guard',x:0.01},{t:1.1,pose:'stumble',x:0.04,e:'out'},{t:1.3,pose:'guard',x:0.04},{t:1.47,pose:'guard',x:0.04},{t:1.62,pose:'stumble',x:0.08,e:'out'},{t:2.0,pose:'fallen',x:0.1,e:'in'}]}],
+    BK:[[0,'hFd']].concat(kDrib(0,3,0.52),[[1.8,'hF','lin']])}),
+  rock:()=>({rel:0.75,A:[{t:0,pose:'guard'},{t:0.4,pose:'gather'},{t:0.72,pose:'block',lift:0.26,e:'out'},{t:1.0,pose:'block',lift:0.18},{t:1.3,pose:'land',e:'in'},{t:1.8,pose:'roar'}],
+    D:[{x:0.64,d:-1,keys:[{t:0,pose:'drvA',x:0.1},{t:0.35,pose:'layup',lift:0.14,x:0.02},{t:0.72,pose:'layup',lift:0.22,x:0},{t:1.0,pose:'stumble',lift:0.05,x:0.01},{t:1.3,pose:'stumble',lift:0,x:0.01}]}],
+    BK:[[0,{d:0,a:'hF'}],[0.75,{d:0,a:'hF'},'hold'],[0.75,{sim:[1.5,-1.0]}]]}),
+  atlas:()=>({grab:[0.82,1.4],A:[{t:0,pose:'box',x:-0.04},{t:0.55,pose:'gather',x:-0.02},{t:0.9,pose:'reb',lift:0.24,x:0,e:'out'},{t:1.15,pose:'reb',lift:0.16},{t:1.45,pose:'land',e:'in'},{t:1.95,pose:'post'}],
+    BK:[[0,'rim'],[0.9,'up','arc'],[1.45,'up','hold'],[1.95,'hF','lin']]}),
+  dozer:()=>({dust:[0,1.15],A:kRun(0,1.05,-0.3,0.05,'chA','chB',0.15).concat([{t:1.3,pose:'stand',x:0.07,over:{aF:[40,112]}},{t:1.6,pose:'wave',x:0.07},{t:1.85,pose:'wave2',x:0.07},{t:2.1,pose:'wave',x:0.07},{t:2.35,pose:'wave2',x:0.07}]),
+    D:[{x:0.62,d:-1,keys:[{t:0,pose:'guard'},{t:0.92,pose:'guard'},{t:1.12,pose:'stumble',x:0.05,e:'out'},{t:1.5,pose:'fallen',x:0.1,e:'in'}]}],
+    BK:[[0,'hF'],[3,'hF','hold']]}),
+  goliath:()=>({land:1.35,A:[{t:0,pose:'box'},{t:0.5,pose:'gather'},{t:0.85,pose:'reb',lift:0.2,e:'out'},{t:1.15,pose:'reb',lift:0.12},{t:1.35,pose:'stomp',e:'in'},{t:2.2,pose:'stomp'}],
+    BK:[[0,{x:0.47,y:-0.06}],[0.85,'up','drop'],[2.2,'up','hold']]})
+};
+/* ---------- the engine for keyed scenes: the hero, any defenders, and the ball all run on keys ---------- */
+function heroAt(C,t,dry,g){const a=animAt(C.A,t);return figure(g||null,C.x0+a.x*C.W,C.gy,C.hpx,C.d,C.L,C.J,'stand',{t:t,eyes:C.S.eyes,pose:Object.assign(a.p,C.S.over||{}),dry:!!dry});}
+function defAt(C,i,t,g){const D=C.D[i],a=animAt(D.keys,t);return figure(g||null,C.W*D.x+a.x*C.W,C.gy,C.hpx*(D.s||1),D.d||-1,C.dl,C.DJ,'stand',{t:t,pose:a.p,dry:!g});}
+function palm(h,e,br){const dx=h[0]-e[0],dy=h[1]-e[1],l=Math.hypot(dx,dy)||1;return [h[0]+dx/l*br*0.85,h[1]+dy/l*br*0.85];}
+function handA(r,a,d,br,floor){
+  if(a==='hB')return palm(r.handB,r.elbowB,br);
+  if(a==='hFd')return [r.hand[0]+d*br*0.2,r.hand[1]+br*0.95];
+  if(a==='hBd')return [r.handB[0]+d*br*0.2,r.handB[1]+br*0.95];
+  if(a==='two')return [(r.hand[0]+r.handB[0])/2+d*br*0.75,(r.hand[1]+r.handB[1])/2];
+  if(a==='set')return [(r.hand[0]+r.handB[0])/2+d*br*0.4,Math.min(r.hand[1],r.handB[1])-br*0.6];
+  if(a==='up')return [(r.hand[0]+r.handB[0])/2,Math.min(r.hand[1],r.handB[1])-br*0.7];
+  if(a==='fF')return [r.hand[0]+d*br*0.25,floor];
+  if(a==='fA')return [r.hand[0]+d*br*2.2,floor];
+  return palm(r.hand,r.elbow,br);}
+function anchorOf(C,a,r,dr){const br=C.br,W=C.W,H=C.H,floor=C.gy-br;
+  if(a&&typeof a==='object'){
+    if(a.d!=null){const q=dr&&dr[a.d];return q?handA(q,a.a,C.D[a.d].d||-1,br,floor):[W/2,floor];}
+    if(a.floor)return [a.mid?(r.hand[0]+r.handB[0])/2:W*a.x,floor];
+    return [W*a.x,H*a.y];}
+  if(a==='rim')return [C.rimP[0],C.rimP[1]-br*0.6];
+  if(a==='net')return [C.rimP[0],C.rimP[1]+br*0.6+40*C.hs];
+  if(a==='catch')return [W*0.9,C.catchY];
+  return handA(r,a,C.d,br,floor);}
+function needsDef(a){return a&&typeof a==='object'&&a.d!=null;}
+function keyPrep(C){const K=C.BK;C.BKP=[];
+  for(let i=0;i<K.length;i++){const a=K[i][1];
+    if(a&&a.sim){C.BKP.push(C.BKP[i-1]);continue;}
+    const r=heroAt(C,K[i][0],true),dr=needsDef(a)?C.D.map((_,j)=>defAt(C,j,K[i][0])):null;C.BKP.push(anchorOf(C,a,r,dr));}}
+function ballAt(C,t,r,dr){const K=C.BK,P=C.BKP,n=K.length,br=C.br,floor=C.gy-br;
+  if(t<K[0][0])return anchorOf(C,K[0][1],r,dr).concat(0);
+  const z=K[n-1];
+  if(t>=z[0]){if(z[1]&&z[1].sim){const p=P[n-1],v=z[1].sim,s=sim(p[0],p[1],v[0]*C.d*C.hpx,v[1]*C.hpx,t-z[0],floor,{g:C.hpx*5,minX:br,maxX:C.W-br});return [s[0],s[1],z[0]*4+s[2]/br];}
+    return anchorOf(C,z[1],r,dr).concat(0);}
+  for(let i=0;i<n-1;i++)if(t<K[i+1][0]){const k=K[i+1],m=k[2]||'lin';
+    if(k[1]&&k[1].sim)return P[i].concat(0);
+    if(m==='hold')return anchorOf(C,k[1],r,dr).concat(K[i][0]*4);
+    const a=P[i],b=P[i+1],raw=(t-K[i][0])/(k[0]-K[i][0]),sp=t*5;
+    if(m==='arc'){const mx=(a[0]+b[0])/2,my=Math.max(C.H*0.04,Math.min(a[1],b[1])-C.H*(k[3]||0.2)),q=raw;return [(1-q)*(1-q)*a[0]+2*(1-q)*q*mx+q*q*b[0],(1-q)*(1-q)*a[1]+2*(1-q)*q*my+q*q*b[1],sp];}
+    const ux=m==='out'?1-(1-raw)*(1-raw):raw,uy=m==='drop'?raw*raw:(m==='rise'||m==='out'?1-(1-raw)*(1-raw):raw);
+    return [a[0]+(b[0]-a[0])*ux,a[1]+(b[1]-a[1])*uy,sp];}
+  return P[n-1].concat(0);}
 function prepare(W,H,pr,name,S,J){
   const gy=H*0.88,L=(typeof lookOf==='function')?lookOf(name):{build:1,shoe:'#fff',sole:'#ccc'};
   const ph=(S.h||1.95)/2.1,hpx=H*0.62*ph*(S.scale||1),x0=W*(S.x||0.42),d=S.d||1,fx=S.fx||'',C={ghosts:[],br:hpx*0.06};
   Object.assign(C,{gy:gy,hpx:hpx,x0:x0,d:d,L:L,W:W,H:H,pr:pr,J:J});
   const dl=(typeof lookOf==='function')?lookOf((S.def&&S.def.n)||'DEFENDER'):{build:1,shoe:'#fff',sole:'#ccc'},DJ=Object.assign({},DEFJ,{skin:(S.def&&S.def.skin)||DEFJ.skin});C.dl=dl;C.DJ=DJ;
   const dry=(k,ox)=>figure(null,x0+((ox!=null?ox:k.x)||0)*W,gy,hpx,d,L,J,'stand',{pose:Object.assign(poseOf(k),{plant:poseOf(k).plant||0}),dry:true});
-  if(S.preset){
+  if(S.anim&&ANIMS[S.anim]){
+    const G=ANIMS[S.anim](S);C.G=G;C.S=S;C.A=G.A;C.BK=G.BK;C.D=G.D||[];C.rel=G.rel;
+    C.end=Math.max(G.A[G.A.length-1].t,...C.D.map(o=>o.keys[o.keys.length-1].t));
+    C.rimP=S.hoop?[W*S.hoop[0],H*S.hoop[1]]:null;C.hs=S.hoop?(S.hoop[2]||1):1;
+    C.catchY=G.rel!=null?handA(heroAt(C,G.rel,true),'two',d,C.br,gy-C.br)[1]:gy-hpx*0.6;C.hasCatch=G.BK.some(k=>k[1]==='catch');
+    keyPrep(C);
+    if(G.rel!=null){const r=heroAt(C,G.rel,true),dr=C.D.map((_,j)=>defAt(C,j,G.rel));C.relB=ballAt(C,G.rel,r,dr);}
+    const ia=G.BK.findIndex((k,i)=>i>0&&k[2]==='arc');if(ia>0)C.arcT=[G.BK[ia-1][0],G.BK[ia][0]];
+    const ic=G.BK.findIndex(k=>k[1]==='catch');if(ic>=0)C.catchT=G.BK[ic][0];
+    if(G.after){const af=G.after;C.afterImg=sprite(W,H,pr,c=>figure(c,x0+af.x*W,gy,hpx,d,L,J,'hold',{t:0,eyes:S.eyes}),{tint:'#17d6ff',tintA:0.85,ow:0});}
+  }else if(S.preset){
     const A=PRE[S.preset](S).map(k=>Object.assign({},k));C.A=A;C.end=A[A.length-1].t;
     if(S.preset==='dunk'){const kr=A.find(k=>k.rel),r=dry(kr);C.rel=kr.t;C.rim=[r.hand[0]+d*hpx*0.07,r.hand[1]+hpx*0.09];C.hs=hpx/235;
       A.forEach(k=>{if(k.fit==='rim'){const r0=dry(Object.assign({},k,{lift:0}),0);k.lift=(r0.hand[1]-(C.rim[1]+hpx*0.004))/hpx;k.x=((C.rim[0]-d*hpx*0.04)-r0.hand[0])/W;}});
@@ -2983,7 +3113,10 @@ function prepare(W,H,pr,name,S,J){
   return C;
 }
 function scene(g,W,H,t,name,S,J,C){
-  const gy=C.gy,hpx=C.hpx,x0=C.x0,d=C.d,br=C.br,pr=C.pr,L=C.L,fx=S.fx||'',anim=!!C.A;(BG[S.bg]||BG.sprawl)(g,W,H,t,gy,S);
+  const gy=C.gy,hpx=C.hpx,x0=C.x0,d=C.d,br=C.br,pr=C.pr,L=C.L,fx=S.fx||'',anim=!!C.A,G=C.G;let shk=0;
+  if(G&&G.land!=null){const k=t-G.land;if(k>0&&k<0.45){const a=(1-k/0.45)*H*0.012;shk=1;g.save();g.translate(W/2,H/2);g.scale(1.03,1.03);g.translate(-W/2+Math.sin(k*95)*a,-H/2+Math.cos(k*71)*a);}}
+  (BG[S.bg]||BG.sprawl)(g,W,H,t,gy,S);
+  const X0=G?x0+animAt(C.A,t).x*W:x0,win=(w,fi,fo)=>!w?1:Math.max(0,Math.min(1,fi?(t-w[0])/fi:(t>=w[0]?1:0),1-(t-w[1])/fo));
   const pose=anim?{}:(POSE[S.pose]||POSE.stand),bob=anim?0:Math.sin(t*2.2)*H*0.004*(pose.lift?2.5:1),fy=gy-bob;
   const rel=C.rel==null?99:C.rel,aft=t-rel;
   /* hoop behind */
@@ -2991,21 +3124,36 @@ function scene(g,W,H,t,name,S,J,C){
   if(S.hoop)hoop(g,rimP[0],rimP[1],S.hoop[2]||1,S.hoopO);
   if(C.rim){rimP=C.rim;hoop(g,rimP[0],rimP[1],C.hs,{broken:!!S.shatter&&aft>=0});}
   /* back effects */
-  if(fx==='lanes'){g.save();g.shadowColor='#5bbf7a';g.shadowBlur=12;g.setLineDash([12,10]);g.lineDashOffset=-t*40;g.strokeStyle='rgba(120,255,170,.85)';g.lineWidth=3;const hx=x0+d*hpx*0.27,hy=fy-hpx*0.82;
+  const laA=G&&G.lanes?fs2((t-G.lanes[0])/(G.lanes[1]-G.lanes[0])):1;
+  if(fx==='lanes'&&laA>0){g.save();g.globalAlpha=laA;g.shadowColor='#5bbf7a';g.shadowBlur=12;g.setLineDash([12,10]);g.lineDashOffset=-t*40;g.strokeStyle='rgba(120,255,170,.85)';g.lineWidth=3;const hx=x0+d*hpx*0.27,hy=fy-hpx*0.82;
     [[0.82,0.93],[0.68,0.97],[0.93,0.86]].forEach((p,i)=>{const tx=W*p[0],ty=H*p[1];g.beginPath();g.moveTo(hx,hy);g.quadraticCurveTo((hx+tx)/2,Math.min(hy,ty)-H*0.12*(i+1),tx,ty);g.stroke();g.setLineDash([]);g.beginPath();g.ellipse(tx,ty,26,7,0,0,P2);g.stroke();g.setLineDash([12,10]);});g.restore();}
-  if(fx==='quake'){g.strokeStyle='rgba(30,20,10,.75)';g.lineWidth=3;for(let i=0;i<9;i++){const a=Math.PI*(0.05+i*0.11),l=H*(0.08+0.06*fr(i));g.beginPath();g.moveTo(x0,gy+4);g.lineTo(x0+Math.cos(a)*l*1.6,gy+4+Math.sin(a)*l*0.35);g.lineTo(x0+Math.cos(a+0.1)*l*2.6,gy+4+Math.sin(a+0.1)*l*0.5);g.stroke();}
-    const k=(t*0.8)%1;g.strokeStyle='rgba(220,200,170,'+(0.7*(1-k))+')';g.lineWidth=4;g.beginPath();g.ellipse(x0,gy+4,W*0.08+W*0.4*k,H*0.02+H*0.06*k,0,0,P2);g.stroke();}
+  const qT=G&&G.land!=null?t-G.land:t,qk=G&&G.land!=null?Math.min(1,qT/0.25):1;
+  if(fx==='quake'&&qT>=0){g.strokeStyle='rgba(30,20,10,.75)';g.lineWidth=3;for(let i=0;i<9;i++){const a=Math.PI*(0.05+i*0.11),l=H*(0.08+0.06*fr(i))*qk;g.beginPath();g.moveTo(x0,gy+4);g.lineTo(x0+Math.cos(a)*l*1.6,gy+4+Math.sin(a)*l*0.35);g.lineTo(x0+Math.cos(a+0.1)*l*2.6,gy+4+Math.sin(a+0.1)*l*0.5);g.stroke();}
+    const k=(qT*0.8)%1;g.strokeStyle='rgba(220,200,170,'+(0.7*(1-k))+')';g.lineWidth=4;g.beginPath();g.ellipse(x0,gy+4,W*0.08+W*0.4*k,H*0.02+H*0.06*k,0,0,P2);g.stroke();}
   if(fx==='shock'&&C.A){const landT=C.A[C.A.length-1].t;if(t>landT-0.1){const lx=x0+0.02*W,k=Math.min(1,(t-landT+0.1)/0.4);g.strokeStyle='rgba(255,90,40,'+(0.9*k)+')';g.lineWidth=3;for(let i=0;i<9;i++){const a=Math.PI*(0.05+i*0.11),l=H*(0.08+0.06*fr(i))*k;g.beginPath();g.moveTo(lx,gy+4);g.lineTo(lx+Math.cos(a)*l*1.6,gy+4+Math.sin(a)*l*0.35);g.lineTo(lx+Math.cos(a+0.1)*l*2.6,gy+4+Math.sin(a+0.1)*l*0.5);g.stroke();}}}
-  if(fx==='dust'){for(let i=0;i<14;i++){const k=(t*0.6+fr(i))%1;g.fillStyle='rgba(190,170,140,'+(0.4*(1-k))+')';g.beginPath();g.arc(x0-d*(hpx*0.2+k*W*0.35),gy-H*0.04-fr(i+3)*H*0.18*k,H*0.03+k*H*0.07,0,P2);g.fill();}
-    for(let i=0;i<8;i++){const k=(t*0.9+fr(i+20))%1;g.fillStyle='#6a5a48';g.fillRect(x0+d*hpx*0.3+d*k*W*0.2,gy-H*0.2*Math.sin(k*Math.PI)-fr(i)*H*0.1,7,7);}}
+  const dA=G?win(G.dust,0.15,0.6):1;
+  if(fx==='dust'&&dA>0){g.save();g.globalAlpha=dA;for(let i=0;i<14;i++){const k=(t*0.6+fr(i))%1;g.fillStyle='rgba(190,170,140,'+(0.4*(1-k))+')';g.beginPath();g.arc(X0-d*(hpx*0.2+k*W*0.35),gy-H*0.04-fr(i+3)*H*0.18*k,H*0.03+k*H*0.07,0,P2);g.fill();}
+    for(let i=0;i<8;i++){const k=(t*0.9+fr(i+20))%1;g.fillStyle='#6a5a48';g.fillRect(X0+d*hpx*0.3+d*k*W*0.2,gy-H*0.2*Math.sin(k*Math.PI)-fr(i)*H*0.1,7,7);}g.restore();}
   if(fx==='comeback'){const flip=aft>=0;g.fillStyle='rgba(8,10,20,.9)';g.fillRect(W*0.64,H*0.08,W*0.32,H*0.26);g.strokeStyle=flip?'#5dff8a':'#ff9a2e';g.lineWidth=3;g.strokeRect(W*0.64,H*0.08,W*0.32,H*0.26);g.textAlign='center';g.textBaseline='alphabetic';
     g.fillStyle='#9aa3c7';g.font='800 '+Math.round(H*0.03)+'px system-ui';g.fillText('4TH QUARTER  0:03',W*0.8,H*0.135);
     g.font='900 '+Math.round(H*0.09)+'px Impact,sans-serif';g.fillStyle=flip?'#5dff8a':'#fff';g.fillText(flip?'20 - 20':'18 - 20',W*0.8,H*0.24);g.fillStyle=flip?'#5dff8a':'#ff9a2e';g.font='800 '+Math.round(H*0.028)+'px system-ui';g.fillText(flip?'TIED UP':'DOWN TWO',W*0.8,H*0.3);}
-  if(fx==='speed'){g.strokeStyle='rgba(198,255,61,.6)';g.lineWidth=3;for(let i=0;i<9;i++){const y=fy-hpx*(0.1+i*0.11),l=W*(0.12+0.16*fr(i+(Math.floor(t*8)%5)));g.beginPath();g.moveTo(x0-d*hpx*0.3,y);g.lineTo(x0-d*(hpx*0.3+l),y);g.stroke();}}
+  const bA=G?win(G.burst,0.12,0.3):1;
+  if(fx==='speed'&&bA>0){g.save();g.globalAlpha=bA;g.strokeStyle='rgba(198,255,61,.6)';g.lineWidth=3;for(let i=0;i<9;i++){const y=fy-hpx*(0.1+i*0.11),l=W*(0.12+0.16*fr(i+(Math.floor(t*8)%5)));g.beginPath();g.moveTo(X0-d*hpx*0.3,y);g.lineTo(X0-d*(hpx*0.3+l),y);g.stroke();}g.restore();}
   /* figures */
   let res,dres=null;
   const drawAnim=(c,tt)=>{const a=animAt(C.A,tt);return figure(c,x0+a.x*W,gy,hpx,d,L,J,'stand',{t:tt,eyes:S.eyes,pose:Object.assign(a.p,S.over||{})});};
-  if(anim){
+  if(G){
+    const done=t>C.end+0.05;
+    if(G.after&&C.afterImg&&t>=G.after.t0&&t<G.after.t1){const k=(t-G.after.t0)/(G.after.t1-G.after.t0);blit(g,C.afterImg,0,0,0.6*(1-k)*(0.85+0.15*Math.sin(t*20)));}
+    if(!C.dfin)C.dfin=[];
+    dres=C.D.map((D,i)=>{const al=D.alpha||0.95;if(done){if(!C.dfin[i])C.dfin[i]=sprite(W,H,pr,c=>defAt(C,i,C.end+0.05,c),{});blit(g,C.dfin[i],0,0,al);return C.dfin[i].res;}return live(g,W,H,pr,c=>defAt(C,i,t,c),{alpha:al});});
+    if(G.trail&&t>G.trail[1]&&t<G.trail[2]){const f=Math.min(1,(t-G.trail[1])/0.15,(G.trail[2]-t)/0.25);for(let i=4;i>=1;i--){const tt=Math.max(0,t-i*0.075);live(g,W,H,pr,c=>heroAt(C,tt,false,c),{ow:0,tint:G.trail[0],tintA:0.9,alpha:(0.1+0.05*(4-i))*f});}}
+    const gk=G.ghost?Math.max(0,Math.min(1,(t-G.ghost[0])/0.12,(G.ghost[1]-t)/0.15)):0;
+    if(done){if(!C.fin)C.fin=sprite(W,H,pr,c=>heroAt(C,C.end+0.05,false,c),{rim:S.rim||'#ffffff',rimDx:-d*3});blit(g,C.fin,0,0,1);res=C.fin.res;}
+    else res=live(g,W,H,pr,c=>heroAt(C,t,false,c),{rim:S.rim||'#ffffff',rimDx:-d*3,alpha:1-0.6*gk,tint:gk>0?'#b7a6ff':null,tintA:0.7*gk});
+    if(G.blink!=null&&G.after){const k=(t-G.blink)/0.3;if(k>=0&&k<1){const ax=x0+G.after.x*W,y=gy-hpx*0.55;g.save();g.globalCompositeOperation='lighter';const gr=g.createLinearGradient(ax,0,x0,0);gr.addColorStop(0,'rgba(23,214,255,0)');gr.addColorStop(1,'rgba(170,245,255,'+(0.95*(1-k))+')');g.strokeStyle=gr;g.lineCap='round';for(let i=0;i<7;i++){const yy=y+hpx*(i-3)*0.085,l=0.55+0.45*fr(i+3);g.lineWidth=(i%2?2:3.5)*(1-k*0.5);g.beginPath();g.moveTo(x0-(x0-ax)*l,yy);g.lineTo(x0-d*hpx*0.08,yy);g.stroke();}g.restore();}}
+  }
+  else if(anim){
     if(fx==='timewarp'){const fade=1-fs2((t-C.end)/0.5);if(fade>0)for(let i=3;i>=1;i--){const tt=Math.max(0,t-i*0.09);live(g,W,H,pr,c=>drawAnim(c,tt),{ow:0,tint:'#ff3b1f',tintA:0.75,alpha:(0.3-0.07*i)*fade});}}
     if(C.DA){const a=animAt(C.DA,t),dx=(C.dX!=null?C.dX:W*S.def.x)+a.x*W,dd=C.dd||S.def.d||-1;dres=live(g,W,H,pr,c=>figure(c,dx,gy,C.dH||hpx*(S.def.s||1),dd,C.dl,C.DJ,'stand',{pose:a.p}),{alpha:0.95});}
     const done=t>C.end+0.05;
@@ -3017,12 +3165,17 @@ function scene(g,W,H,t,name,S,J,C){
     if(C.def)blit(g,C.def,0,0,C.defA);
     blit(g,C.hero,0,-bob,1);const R=C.res;res={hand:[R.hand[0],R.hand[1]-bob],handB:[R.handB[0],R.handB[1]-bob],head:[R.head[0],R.head[1]-bob],elbow:[R.elbow[0],R.elbow[1]-bob]};
   }
-  if(pose.prop==='phone'){const pw=hpx*0.055,ph2=hpx*0.1,px=res.handB[0]-pw/2,py=res.handB[1]-ph2*0.85;g.fillStyle='#14121c';g.beginPath();g.roundRect(px,py,pw,ph2,pw*0.18);g.fill();g.save();g.shadowColor='#ff5ee0';g.shadowBlur=14;g.fillStyle='rgba(255,140,230,.9)';g.fillRect(px+pw*0.12,py+ph2*0.1,pw*0.76,ph2*0.78);g.restore();circ(g,px+pw*0.75,py+ph2*0.2,pw*0.1,Math.sin(t*6)>0?'#ff2d55':'#7a1a2a');}
+  const cpose=G?animAt(C.A,Math.min(t,C.end+0.05)).p:pose;if(cpose.prop==='phone'){const pw=hpx*0.055,ph2=hpx*0.1,px=res.handB[0]-pw/2,py=res.handB[1]-ph2*0.85;g.fillStyle='#14121c';g.beginPath();g.roundRect(px,py,pw,ph2,pw*0.18);g.fill();g.save();g.shadowColor='#ff5ee0';g.shadowBlur=14;g.fillStyle='rgba(255,140,230,.9)';g.fillRect(px+pw*0.12,py+ph2*0.1,pw*0.76,ph2*0.78);g.restore();circ(g,px+pw*0.75,py+ph2*0.2,pw*0.1,Math.sin(t*6)>0?'#ff2d55':'#7a1a2a');}
   /* the ball: slow, one time through, then it comes to rest */
   const hd=res.hand,hb=res.handB,floor=gy-br;
   const inHand=(h,e)=>{const dx=h[0]-e[0],dy=h[1]-e[1],l=Math.hypot(dx,dy)||1;return [h[0]+dx/l*br*0.85,h[1]+dy/l*br*0.85];};
   const bm=anim?(S.preset):(S.ball||pose.ball||'none');let B=null,spin=0;
-  if(bm==='hand')B=[hd[0]+d*br*0.5,hd[1]-br*0.7];
+  if(G){const q=ballAt(C,t,res,dres);B=[q[0],q[1]];spin=q[2];
+    if(C.hasCatch){const sy2=C.catchY,cx=W*0.9,sk=sh('#c68642',-10);g.strokeStyle=sk;g.lineCap='round';g.lineWidth=br*0.55;g.beginPath();g.moveTo(W+10,sy2-br*0.2);g.lineTo(cx+br*1.25,sy2-br*0.75);g.moveTo(W+10,sy2+br*0.9);g.lineTo(cx+br*1.25,sy2+br*0.6);g.stroke();circ(g,cx+br*1.15,sy2-br*0.75,br*0.42,'#c68642');circ(g,cx+br*1.15,sy2+br*0.6,br*0.42,'#c68642');}
+    if(fx==='fire'&&C.arcT&&t>C.arcT[0]&&t<C.arcT[1]){for(let i=1;i<8;i++){const p=ballAt(C,Math.max(C.arcT[0],t-i*0.028),res,dres);circ(g,p[0],p[1],br*(1-i*0.1),'rgba(255,'+(120+i*12)+',40,'+(0.5-i*0.05)+')');}}
+    if(fx==='laser'&&C.relB&&t>G.rel){const tc=C.catchT||G.rel+1.2,fade=t<tc?1:Math.max(0,1-(t-tc)/0.5);if(fade>0){g.save();g.globalCompositeOperation='lighter';g.globalAlpha=fade;const a=C.relB,gr=g.createLinearGradient(a[0],a[1],B[0],B[1]);gr.addColorStop(0,'rgba(23,214,255,0)');gr.addColorStop(1,'rgba(23,214,255,.9)');g.strokeStyle=gr;g.lineWidth=br*1.1;g.lineCap='round';g.beginPath();g.moveTo(a[0],a[1]);g.lineTo(B[0],B[1]);g.stroke();g.restore();}}
+    shadow(g,B[0],gy,br,B[1]);}
+  else if(bm==='hand')B=[hd[0]+d*br*0.5,hd[1]-br*0.7];
   else if(bm==='handB')B=[hb[0]+d*br*0.3,hb[1]-br*0.2];
   else if(bm==='set')B=[(hd[0]+hb[0])/2+d*br*0.4,Math.min(hd[1],hb[1])-br*0.6];
   else if(bm==='up')B=[(hd[0]+hb[0])/2,Math.min(hd[1],hb[1])-br*0.7];
@@ -3068,23 +3221,29 @@ function scene(g,W,H,t,name,S,J,C){
   /* glass from a shattered backboard */
   if(C.shards&&aft>=0){const gg=hpx*5;g.fillStyle='rgba(215,240,255,.8)';for(const s of C.shards){let x=s.x+s.vx*aft,y=s.y+s.vy*aft+0.5*gg*aft*aft,rot=s.sp*aft;if(y>s.fl){const tt=(-s.vy+Math.sqrt(s.vy*s.vy+2*gg*(s.fl-s.y)))/gg;x=s.x+s.vx*tt;y=s.fl;rot=s.sp*tt;}g.save();g.translate(x,y);g.rotate(rot);g.beginPath();g.moveTo(-s.sz,-s.sz*0.4);g.lineTo(s.sz,-s.sz*0.5);g.lineTo(s.sz*0.3,s.sz*0.7);g.closePath();g.fill();g.restore();}}
   /* front effects */
-  if(fx==='laser'&&t>0.35&&t<1.9){for(let i=0;i<6;i++){const k=((t-0.35)*1.2+i/6)%1;g.strokeStyle='rgba(23,214,255,'+(0.6*(1-k))+')';g.lineWidth=2;g.beginPath();g.moveTo(hd[0]+d*W*0.1*k,hd[1]-20+i*8);g.lineTo(hd[0]+d*(W*0.1*k+60),hd[1]-20+i*8);g.stroke();}}
-  if(fx==='burst'){for(let i=0;i<16;i++){const k=(t*0.9+fr(i))%1;g.fillStyle='rgba(255,'+Math.floor(120+fr(i)*110)+',40,'+(1-k)+')';g.fillRect(x0-d*(hpx*0.25+k*W*0.3),fy-hpx*(0.15+0.8*fr(i+4))-k*20,4,4);}g.strokeStyle='rgba(255,122,26,.7)';g.lineWidth=3;for(let i=0;i<6;i++){const y=fy-hpx*(0.2+i*0.13),l=W*(0.12+0.1*fr(i+9));g.beginPath();g.moveTo(x0-d*hpx*0.25,y);g.lineTo(x0-d*(hpx*0.25+l),y);g.stroke();}}
+  if(fx==='laser'&&!G&&t>0.35&&t<1.9){for(let i=0;i<6;i++){const k=((t-0.35)*1.2+i/6)%1;g.strokeStyle='rgba(23,214,255,'+(0.6*(1-k))+')';g.lineWidth=2;g.beginPath();g.moveTo(hd[0]+d*W*0.1*k,hd[1]-20+i*8);g.lineTo(hd[0]+d*(W*0.1*k+60),hd[1]-20+i*8);g.stroke();}}
+  if(fx==='burst'&&bA>0){g.save();g.globalAlpha=bA;for(let i=0;i<16;i++){const k=(t*0.9+fr(i))%1;g.fillStyle='rgba(255,'+Math.floor(120+fr(i)*110)+',40,'+(1-k)+')';g.fillRect(X0-d*(hpx*0.25+k*W*0.3),fy-hpx*(0.15+0.8*fr(i+4))-k*20,4,4);}g.strokeStyle='rgba(255,122,26,.7)';g.lineWidth=3;for(let i=0;i<6;i++){const y=fy-hpx*(0.2+i*0.13),l=W*(0.12+0.1*fr(i+9));g.beginPath();g.moveTo(X0-d*hpx*0.25,y);g.lineTo(X0-d*(hpx*0.25+l),y);g.stroke();}g.restore();}
   if(fx==='spark'){g.save();g.globalCompositeOperation='lighter';g.shadowColor='#ffee3a';g.shadowBlur=18;
     if(aft<0&&t>0.5){for(let i=0;i<3;i++){const a=-Math.PI*0.5+(fr(i+Math.floor(t*12)*5)-0.5)*2.4;bolt(g,hd[0]+Math.cos(a)*br*1.2,hd[1]+Math.sin(a)*br*1.2,hd[0]+Math.cos(a)*H*0.1,hd[1]+Math.sin(a)*H*0.1,i*31+Math.floor(t*14),2,'rgba(255,240,120,.9)');}}
     if(aft>=0&&aft<0.4){bolt(g,W*0.92,0,rimP[0]+10,rimP[1]-10,7,4,'rgba(235,245,255,'+(1-aft/0.4)+')');}g.restore();
     if(aft>=0&&aft<0.25){g.fillStyle='rgba(220,230,255,'+(0.25*(1-aft/0.25))+')';g.fillRect(0,0,W,H);}}
-  if(fx==='fire'){if(!S.ball||S.ball!=='flight'||t<2.0)flame(g,hd[0],hd[1]+br,br*2.2,br*3,t,0.7);if(rimP)flame(g,rimP[0],rimP[1]+40*(S.hoop[2]||1),70*(S.hoop[2]||1),90*(S.hoop[2]||1),t,0.65);}
+  if(fx==='fire'){if(G?t<G.rel:(!S.ball||S.ball!=='flight'||t<2.0))flame(g,hd[0],hd[1]+br,br*2.2,br*3,t,0.7);if(rimP)flame(g,rimP[0],rimP[1]+40*(S.hoop[2]||1),70*(S.hoop[2]||1),90*(S.hoop[2]||1),t,0.65);}
   if(fx==='breath'){g.save();g.strokeStyle='rgba(61,106,255,.5)';g.lineWidth=2.5;for(let i=0;i<3;i++){const a=t*0.9+i*2.1,rr=hpx*(0.18+0.06*i);g.beginPath();g.arc(res.head[0],res.head[1],rr,a,a+2.2);g.stroke();}g.restore();
-    g.fillStyle='rgba(255,255,255,.85)';g.font='italic 700 '+Math.round(H*0.035)+'px system-ui';g.textAlign='left';g.textBaseline='alphabetic';g.globalAlpha=Math.min(1,t*2);g.fillText(t<2?'breathe in':'release at the top',W*0.06,H*0.12);g.globalAlpha=1;}
+    g.fillStyle=S.bg==='zenith'?'rgba(38,62,150,.85)':'rgba(255,255,255,.85)';g.font='italic 700 '+Math.round(H*0.035)+'px system-ui';g.textAlign='left';g.textBaseline='alphabetic';g.globalAlpha=Math.min(1,t*2);g.fillText(t<(G&&G.rel!=null?G.rel-0.4:2)?'breathe in':'release at the top',W*0.06,H*0.12);g.globalAlpha=1;}
   if(fx==='chat'){const msgs=['W','SHEESH','STEP BACK!!','91% voted','HOUNDS 4 LIFE','clip it','he cooked','LET HIM COOK','0 dribbles wasted?'];for(let i=0;i<5;i++){const k=(t*0.22+i/5)%1;bubble(g,W*(0.68+0.2*fr(i+Math.floor(t*0.22+i/5)*3)),H*(0.85-0.75*k),msgs[(i+Math.floor(t*0.22+i/5)*5)%msgs.length],['#ff5ee0','#17d6ff','#ffd166'][i%3],Math.min(1,(1-k)*3,k*6));}
     g.fillStyle='#ff2d55';g.beginPath();g.roundRect(W*0.04,H*0.05,64,24,6);g.fill();g.fillStyle='#fff';g.font='900 15px system-ui';g.textAlign='left';g.textBaseline='middle';g.fillText('LIVE',W*0.04+14,H*0.05+13);g.fillStyle='rgba(0,0,0,.5)';g.beginPath();g.roundRect(W*0.04+70,H*0.05,110,24,6);g.fill();g.fillStyle='#fff';g.fillText((40+Math.floor(t*3)%9)+','+String(100+Math.floor(t*37)%900)+' watching',W*0.04+78,H*0.05+13);g.textBaseline='alphabetic';}
-  if(fx==='scope'&&rimP){const cx=rimP[0],cy=rimP[1];g.strokeStyle='rgba(255,59,59,.85)';g.lineWidth=2;const rr=34+3*Math.sin(t*3);g.beginPath();g.arc(cx,cy,rr,0,P2);g.stroke();g.beginPath();g.moveTo(cx-rr-14,cy);g.lineTo(cx-8,cy);g.moveTo(cx+8,cy);g.lineTo(cx+rr+14,cy);g.moveTo(cx,cy-rr-14);g.lineTo(cx,cy-8);g.moveTo(cx,cy+8);g.lineTo(cx,cy+rr+14);g.stroke();
+  if(fx==='scope'&&rimP){const cx=rimP[0],cy=rimP[1];g.strokeStyle='rgba(255,59,59,.85)';g.lineWidth=2;const rr=34+(G&&G.rel?36*(1-fs2(t/G.rel)):0)+3*Math.sin(t*3);g.beginPath();g.arc(cx,cy,rr,0,P2);g.stroke();g.beginPath();g.moveTo(cx-rr-14,cy);g.lineTo(cx-8,cy);g.moveTo(cx+8,cy);g.lineTo(cx+rr+14,cy);g.moveTo(cx,cy-rr-14);g.lineTo(cx,cy-8);g.moveTo(cx,cy+8);g.lineTo(cx,cy+rr+14);g.stroke();
     g.fillStyle='rgba(255,90,90,.9)';g.font='800 14px monospace';g.textAlign='left';g.fillText('11.5 m',cx+rr+8,cy-rr);}
-  if(fx==='impact'){const cx=(x0+W*(S.def?S.def.x:0.6))/2+d*20,cy=fy-hpx*0.6;g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=3;for(let i=0;i<8;i++){const a=i/8*P2+t,r1=hpx*0.12,r2=hpx*(0.2+0.04*Math.sin(t*10+i));g.beginPath();g.moveTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1);g.lineTo(cx+Math.cos(a)*r2,cy+Math.sin(a)*r2);g.stroke();}}
-  if(fx==='grab'){g.save();g.globalCompositeOperation='lighter';const gr=g.createRadialGradient(hd[0],hd[1]-br,br,hd[0],hd[1]-br,hpx*0.4);gr.addColorStop(0,'rgba(61,123,255,.55)');gr.addColorStop(1,'rgba(61,123,255,0)');g.fillStyle=gr;g.fillRect(0,0,W,H);g.restore();}
+  if(fx==='impact'&&!G){const cx=(x0+W*(S.def?S.def.x:0.6))/2+d*20,cy=fy-hpx*0.6;g.strokeStyle='rgba(255,255,255,.85)';g.lineWidth=3;for(let i=0;i<8;i++){const a=i/8*P2+t,r1=hpx*0.12,r2=hpx*(0.2+0.04*Math.sin(t*10+i));g.beginPath();g.moveTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1);g.lineTo(cx+Math.cos(a)*r2,cy+Math.sin(a)*r2);g.stroke();}}
+  const grA=G?win(G.grab,0.1,0.5):1;
+  if(fx==='grab'&&grA>0){const gp=G&&B?B:[hd[0],hd[1]-br];g.save();g.globalAlpha=grA;g.globalCompositeOperation='lighter';const gr=g.createRadialGradient(gp[0],gp[1],br,gp[0],gp[1],hpx*0.4);gr.addColorStop(0,'rgba(61,123,255,.55)');gr.addColorStop(1,'rgba(61,123,255,0)');g.fillStyle=gr;g.fillRect(0,0,W,H);g.restore();}
   if(fx==='shock'&&rimP&&aft>=0&&aft<1){g.save();g.globalCompositeOperation='lighter';g.strokeStyle='rgba(255,80,30,'+(1-aft)+')';g.lineWidth=6;g.beginPath();g.arc(rimP[0],rimP[1],20+aft*W*0.35,0,P2);g.stroke();g.restore();}
   if(fx==='press'){g.fillStyle='rgba(255,60,60,.08)';g.fillRect(0,0,W,H);g.strokeStyle='rgba(255,90,90,.6)';g.lineWidth=2;for(let i=0;i<3;i++){const k=(t*0.8+i/3)%1;g.beginPath();g.arc(x0+d*hpx*0.3,fy-hpx*0.6,hpx*(0.2+0.5*k),-0.7,0.7);g.globalAlpha=1-k;g.stroke();g.globalAlpha=1;}}
+  if(G){
+    if(fx==='swatfx'&&C.relB){const k=(t-G.rel)/0.35;if(k>=0&&k<1){g.save();g.translate(C.relB[0],C.relB[1]);g.fillStyle='rgba(255,236,150,'+(1-k)+')';g.beginPath();for(let i=0;i<10;i++){const an=i/10*P2,rr=(i%2?br*1.2:br*2.6)*(0.7+k*0.6);g.lineTo(Math.cos(an)*rr,Math.sin(an)*rr);}g.fill();g.restore();}}
+    if(fx==='impact'&&G.impacts&&dres&&dres[0]){for(const it of G.impacts){const k=(t-it)/0.35;if(k<0||k>=1)continue;const cx=(res.head[0]+dres[0].head[0])/2,cy=(res.head[1]+dres[0].head[1])/2+hpx*0.2;g.strokeStyle='rgba(255,255,255,'+(0.9*(1-k))+')';g.lineWidth=3;for(let i=0;i<8;i++){const a=i/8*P2,r1=hpx*(0.06+0.1*k),r2=hpx*(0.16+0.12*k);g.beginPath();g.moveTo(cx+Math.cos(a)*r1,cy+Math.sin(a)*r1);g.lineTo(cx+Math.cos(a)*r2,cy+Math.sin(a)*r2);g.stroke();}}}
+  }
+  if(shk)g.restore();
   /* vignette */
   const vg=g.createRadialGradient(W*0.5,H*0.5,H*0.35,W*0.5,H*0.5,W*0.75);vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,'rgba(0,0,0,.5)');g.fillStyle=vg;g.fillRect(0,0,W,H);
 }
@@ -3666,37 +3825,37 @@ const PROFILES={
     style:"A pass-first point guard who makes everyone around him better. Dime sees the cutter before the cutter knows he's open, and his passes arrive exactly where a shooter wants them.",
     facts:["Has eaten at Noodles 24 more than 2,000 times. Same bowl every time: spicy, extra egg.","Learned to pass by bouncing a ball off the same brick for six summers. The brick is still chipped.","The cyan headband was made by his little sister for his first league game.","Draws every Hounds play on a napkin. The team's playbook is mostly napkins."],
     quote:"Nobody plays for themselves. That's the whole playbook.",cap:"A no-look dime out of a double team, outside Noodles 24.",
-    scene:{bg:'sprawl',pose:'pass',fx:'laser',x:0.36}},
+    scene:{bg:'sprawl',anim:'dime',fx:'laser',x:0.36}},
   BLAZE:{nick:'Flash Point',from:'Lower Sprawl, by way of the Prism tryouts',wt:182,kit:HOUNDS_KIT,
     story:["Blaze was the best shooter at the Prism tryout and still got sent home: too loud, too fast, not a 'system player'. Sage argued for him for an hour. Nobody listened.","He came back to the Sprawl furious, joined Dime's Hounds, and decided the best revenge would be beating every system in the city. He's still working on the 'quiet' part."],
     style:"A quick-release scorer who lives on the first step. Flash Burst blows past defenders (the close ones can fall) and loads a lightning-fast release, and inside his zone his green goes in 65% of the time.",
     facts:["Dyes the tips of his flat-top orange before every big game. Moose helps with the back.","Has a comeback ready for everything. Kai keeps a tally: 412 and counting.","Still has the Prism rejection letter. He uses it as a coaster.","Can't whistle. Has tried every day for three years."],
     quote:"Four percent? I love those odds.",cap:"Flash Burst: one hard step and he's already gone.",
-    scene:{bg:'sprawl',pose:'drive',fx:'burst',x:0.52}},
+    scene:{bg:'sprawl',anim:'blaze',fx:'burst',x:0.42,hoop:[0.9,0.38,0.85]}},
   MOOSE:{nick:'The Quiet Wall',from:'Lower Sprawl, under the train lines',wt:265,kit:HOUNDS_KIT,
     story:["Moose has said maybe forty words since the Hounds started, and every one of them mattered. He loads freight under the train lines at night and still gets to every game early to sweep the glass off the court.","He played a whole season on a bad knee because the team needed him. His cousin Rock is his opposite in every way except the heart."],
     style:"An immovable anchor in the paint. Nobody strips him, he moves defenders wherever he wants, and with Immovable on, his close shots can't even be contested.",
     facts:["Sweeps the court before every home game with the same broom. Its name is Gerald.","Said 'Home.' after the Sovereigns final. The team counts it as his longest speech.","Can carry three bowls of noodles in one hand without spilling.","Still wears the knee brace even though the knee healed. 'Just in case.'"],
     quote:"Team needed me.",cap:"Immovable: backing down in the post, and the defender bounces right off.",
-    scene:{bg:'sprawl',pose:'post',fx:'impact',x:0.44,def:{pose:'stumble',x:0.62,d:-1}}},
+    scene:{bg:'sprawl',anim:'moose',fx:'impact',x:0.44}},
   KAI:{nick:'The Timetable',from:'The Rail Yards',wt:168,kit:{c:'#3d4a5c',t:'#ffb000',s:'#262e3a'},
     story:["Kai runs packages between the rail yards: twelve trains an hour, and he knows every one by heart. He found the Hounds by timing them from the platform. Forty-one seconds holding the ball, three possessions in a row.","He walked down and told them it was too long. He was right, and he's been right about a lot since. He has a schedule for practice, meals, sleep and, apparently, fun."],
     style:"A balanced floor general who never wastes a dribble. Floor General speeds up the whole team by 18% for six seconds, which is exactly as long as Kai thinks a fast break should take.",
     facts:["Owns four watches. Wears two of them.","Has never missed a train. Has missed one bus, and he's still upset about it.","Keeps a notebook of every opponent's shooting, open and contested.","Gave the Hounds a practice schedule on his first day. It was laminated."],
     quote:"I don't waste dribbles.",cap:"Checking the time mid-dribble. The Red Line is right on schedule.",
-    scene:{bg:'rail',pose:'watch',x:0.42}},
+    scene:{bg:'rail',anim:'kai',x:0.42}},
   FLASH:{nick:'Zero to Sixty',from:'The Overpass courts',wt:160,kit:{c:'#1c2a14',t:'#c6ff3d',s:'#11190c'},
     story:["Flash grew up racing delivery bikes down the Overpass, and won more than he lost. He's the fastest player in any park he walks into, and the shakiest shooter, and he made peace with both a long time ago.","He wears number zero because, as he puts it, that's how many seconds it takes him to get past you."],
     style:"Pure speed. Turbo Boost gives him blazing speed and unlimited turbo, and every crossover during it freezes a defender in place. The jumper is a work in progress.",
     facts:["Has been timed at 3.9 seconds baseline to baseline. Kai timed it twice to be sure.","Bleaches the tips of his spikes every summer so they glow under the court lights.","Has never walked anywhere. He jogs to the fridge.","Wears one green leg sleeve. The other one has been 'in the wash' for two years."],
     quote:"Blink and you'll miss me. Don't blink and you'll still miss me.",cap:"Turbo Boost on the rooftop. The defender is still spinning.",
-    scene:{bg:'rooftop',pose:'drive',fx:'speed',x:0.6,def:{pose:'stumble',x:0.22,d:1}}},
+    scene:{bg:'rooftop',anim:'flash',fx:'speed',x:0.45}},
   ORBIT:{nick:'Live',from:'The Mid-Sprawl rooftops',wt:170,kit:{c:'#5a2a6a',t:'#ff5ee0',s:'#3a1a44'},
     story:["Orbit has streamed every Ash Hounds game since the rail line, for a chat that grew from twelve people to forty thousand. When ninety-one percent of them voted for him to join the team, he took it as a contract.","Dime made him keep the phone in his bag during games. He still narrates every play under his breath, and somehow his chat finds out anyway."],
     style:"A shifty step-back artist who can make his own shot when a play breaks down. Hesi Step snaps him back into space and leaves his next shot uncontested.",
     facts:["The other nine percent of his chat are banned.","Has a new victory dance for every 10,000 followers. He's on number four.","Calls every made shot 'a clip'.","His headphones are always around his neck and never playing anything."],
     quote:"Chat, you heard it! Hounds for life!",cap:"A practice stream on the roof, with forty thousand people watching him dribble.",
-    scene:{bg:'rooftop',pose:'phone',fx:'chat',x:0.38}},
+    scene:{bg:'rooftop',anim:'orbit',fx:'chat',x:0.38,hoop:[0.9,0.38,0.85]}},
   GLOVE:{nick:'Sticky',from:'The Yard',wt:178,kit:{c:'#d81e3a',t:'#1b1d26',s:'#7a0f20'},
     story:["Glove learned defense in the Yard, a fenced-in court where the only way to get the ball was to take it. He tapes his hands before every game, wears his sleeves down to the wrists and treats picking pockets as a craft, because to him it is.","He learned most of it from Warden. He's still trying to steal one ball from him."],
     style:"A defensive pest with sticky hands. Lockdown stretches his reach for six seconds and lets him strip the ball from either side of the dribbler.",
@@ -3708,7 +3867,7 @@ const PROFILES={
     style:"A legendary maestro. Court Vision speeds the whole team up by 20% for eight seconds and gives every teammate a wider green window on their next shot.",
     facts:["Has written a 400-page book of plays. He lets nobody read it.","Still wears a whistle on the court. He has never blown it as a player.","Sits next to Blaze on the bench. Blaze says it's to keep an eye on Sage. It's the other way round.","Can tell you who will be open three passes from now."],
     quote:"I'd rather coach players who change the game.",cap:"Court Vision: he sees the lanes three passes before anyone else.",
-    scene:{bg:'arena',pose:'point',fx:'lanes',x:0.3}},
+    scene:{bg:'arena',anim:'sage',fx:'lanes',x:0.3}},
   PHANTOM:{nick:'No Face',from:'The Neo League',wt:172,kit:HELL_KIT,
     story:["Nobody in the Neo League knows Phantom's real name, or what's under the mask. Footage of him is famously blurry, because cameras can't keep up.","He runs the point for the Hellfire Squad, the undefeated best team above the clouds, and nobody has ever seen him sweat. Some people say he grew up in the Sprawl. Phantom doesn't say anything at all."],
     style:"Mythic speed and the best hands in the game. Time Warp makes him blindingly fast with unlimited turbo for five seconds: he slips through defenders, freezes anyone he crosses and strips the ball from any side.",
@@ -3720,25 +3879,25 @@ const PROFILES={
     style:"A legendary pest who picks pockets like no one else. Full Court Press gives his whole team longer reach, steals from either side and 12% more speed for eight seconds.",
     facts:["Wears a beanie in every kind of weather, including the summer of the heat wave.","Taught Glove how to steal. Glove has still never stolen from him.","Has had the same goatee since he was seventeen. It hasn't changed shape once.","Keeps the score of every game in the Yard in his head, at the same time."],
     quote:"Ninety-four feet. Every possession. You'll get tired before I do.",cap:"Full Court Press under the Yard lights.",
-    scene:{bg:'cage',pose:'stance',fx:'press',x:0.45,eyes:'fierce'}},
+    scene:{bg:'cage',anim:'warden',fx:'press',x:0.45,eyes:'fierce'}},
   REX:{nick:'Old Man',from:'Lower Sprawl',wt:195,kit:{c:'#2a3a6a',t:'#d4af37',s:'#1a2546'},
     story:["Ten years ago Rex made the Gauntlet final and lost it on a last-second shot. He spent the next decade in an empty gym, putting up two hundred jumpers a night and thinking about that one.","When the Hounds started winning, he walked in, told them their bench was empty, and asked for one more run at the Gauntlet. At thirty-one he's the oldest guard on the team. He'd rather you didn't mention it."],
     style:"Good from everywhere. His greens go in 75% of the time from any range, and Pure Stroke opens up a much wider green window on his next shot.",
     facts:["Still shoots 200 jumpers every night, counting them out loud.","Has watched the tape of the Gauntlet miss 1,000 times. He says the release was fine and the rim was wrong.","Has passed to everybody except the guy who called him 'old man'. Twice.","The gray at his temples showed up the year after the final."],
     quote:"Call me old man and I'll pass to everybody but you.",cap:"Pure Stroke, in the same old gym where he spent ten years practicing it.",
-    scene:{bg:'gym',pose:'release',ball:'flight',hoop:[0.86,0.36,1.05],x:0.32}},
+    scene:{bg:'gym',anim:'rex',hoop:[0.86,0.36,1.05],x:0.32}},
   SNIPE:{nick:'Dead Eye',from:'The Rooftops',wt:176,kit:{c:'#3e4a2a',t:'#8aff8a',s:'#283019'},
     story:["Snipe learned to shoot on a rooftop court where only the far hoop still had a net, so he shot at that one, from the other end, for years.","His release is slow and his range is ridiculous. He wears a red-dot lens over his shooting eye and insists it's purely for style."],
     style:"Slow release, endless range. From 11.5 metres and back his green is a guaranteed make, and Long Range pulls that line in to 8.5 metres for seven seconds.",
     facts:["His red-dot lens has no prescription. He's had it tested.","Measures every court with a tape measure before warm-ups.","Has made a shot from 21 metres. There's video. It's grainy.","Has tied his hair back with the same green band since high school."],
     quote:"From where I stand, everything's close.",cap:"Lining up a deep one from the far end of the roof.",
-    scene:{bg:'rooftop',pose:'shoot',fx:'scope',hoop:[0.9,0.44,0.6],x:0.24}},
+    scene:{bg:'rooftop',anim:'snipe',fx:'scope',hoop:[0.9,0.44,0.6],x:0.24}},
   HAZE:{nick:'The Ghost',from:'The Red Line',wt:174,kit:{c:'#7a2020',t:'#ff9a9a',s:'#4a1212'},
     story:["Haze came off the Red Line's bench for three seasons and never missed a game, a free throw or a word, mostly because he never says any. When his teammate Juno started playing for money, Haze walked away.","He found the Hounds after they lost to the Red Line, said nine words and got a jersey. He plays with his hood up. Nobody has ever seen him take it off."],
     style:"A shifty scorer whose green goes in 70% of the time. Ghost Step slips him through defenders with no collisions and 25% more speed for four seconds.",
     facts:["Answered 'Yes.' when Rock asked if his visit was a job application. It's his favourite word.","Owns eleven identical charcoal hoodies.","Rock once talked to him for a full hour. Haze nodded twice.","Ties his shoes with a double knot, then a triple knot."],
     quote:"Thank you. I won't miss.",cap:"Ghost Step: through the gap before it's even there, as the Red Line roars past.",
-    scene:{bg:'rail',pose:'drive',fx:'ghost',fxc:'#b7a6ff',x:0.56}},
+    scene:{bg:'rail',anim:'haze',x:0.56}},
   VOLT:{nick:'Live Wire',from:'The Substation courts',wt:198,kit:{c:'#1a2350',t:'#ffee3a',s:'#10163a'},
     story:["Volt grew up on a court next to the old power substation, where the lights hummed and the air smelled like a storm. He jumps like the ground is electric.","He wears goggles he doesn't need and number 99 because he thinks it looks fast. When he gets going, the rim keeps rattling for a full second after."],
     style:"An athletic slasher who lives above the rim. His green goes in 70% of the time, and Rim Rocker stretches his dunk range and makes every dunk go in for six seconds.",
@@ -3750,25 +3909,25 @@ const PROFILES={
     style:"A legendary streak shooter. Every make builds heat, with a bigger green window and better odds, up to five in a row. Ignite adds two heat on demand.",
     facts:["Wears his hair in a bun so it doesn't 'block the heat'.","Once made 31 in a row in practice, missed an easy one, and went home.","Never says 'miss'. He calls them misunderstandings.","Has a fire-extinguisher sticker on each shoe. For safety."],
     quote:"Three in a row and the rim gets wider. That's science.",cap:"Five in a row. The net is on fire, and so is he.",
-    scene:{bg:'gym',pose:'release',fx:'fire',ball:'flight',hoop:[0.86,0.36,1.05],hoopO:{fire:1},x:0.32}},
+    scene:{bg:'gym',anim:'heater',fx:'fire',hoop:[0.86,0.36,1.05],hoopO:{fire:1},x:0.32}},
   ZEN:{nick:'Calm',from:'Zenith',wt:150,kit:{c:'#e0e6f0',t:'#3d6aff',s:'#c4cde0'},
     story:["Zen led Zenith in scoring while wearing the team's famous shooting braces, tuned sleeves that steadied every release. Then she started wondering how many of those shots were really hers.","She left the braces on the floor of the Zenith gym and walked into Hounds practice with nothing but her jump shot and a breathing routine. It turned out the shot was hers all along."],
     style:"A legendary marksman whose green goes in 85% of the time, from anywhere. Heat Check gives her next shot a huge green window and a lightning-quick release.",
     facts:["Breathes in for four counts before every free throw. Crowds have started counting with her.","Kept one of her old braces. It's a bookend now.","Has never raised her voice on a court. She doesn't need to.","Practices with her eyes closed, and still makes more than you."],
     quote:"Breathe in. Release at the top. Never at the bottom.",cap:"No braces. Eyes closed. Nothing but net.",
-    scene:{bg:'zenith',pose:'release',fx:'breath',ball:'flight',eyes:'closed',hoop:[0.86,0.35,1.05],x:0.32,rim:'#3d6aff'}},
+    scene:{bg:'zenith',anim:'zen',fx:'breath',eyes:'closed',hoop:[0.86,0.35,1.05],x:0.32,rim:'#3d6aff'}},
   APEX:{nick:'The Last Word',from:'The Neo League',wt:196,kit:HELL_KIT,
     story:["Apex is the Hellfire Squad's closer and its loudest voice. He has never lost a game in the Neo League, and he has never let an opponent forget it.","His Afterimage leaves a copy of him behind; by the time a defender reaches it, the real Apex is somewhere else, already shooting. He watched the Ash Hounds beat the Sovereigns and came down to deliver a message in person."],
     style:"Mythic. His green goes in 92% of the time, from anywhere. Afterimage marks a spot, and pressing again blinks him back to it, leaving his defender lost.",
     facts:["Dyes his mohawk the exact red of the Neo League logo.","Has written trash talk for every player in the King League. It's alphabetised.","Hates the word 'second'. He's never been it.","His afterimage once got a technical foul. The ref still insists it was the real one."],
     quote:"Enjoy the moment, Sprawl. It's the last one you'll get.",cap:"Afterimage: the defender closes out on a ghost while the real Apex lets it fly.",
-    scene:{bg:'neo',pose:'shoot',fx:'after',x:0.62,rim:'#ff6a4a'}},
+    scene:{bg:'neo',anim:'apex',x:0.4,hoop:[0.9,0.38,0.85],rim:'#ff6a4a'}},
   ROCK:{nick:'Big Mouth',from:'Lower Sprawl',wt:255,kit:{c:'#6b4a2b',t:'#ffd166',s:'#45301b'},
     story:["Rock heard his favourite cousin was limping around under the trains and showed up the same day, already talking before he was through the gate. He's big, he blocks shots, and he works for noodles.","He was only supposed to cover for Moose until the knee healed. He's still here. Nobody has asked him to leave, mostly because nobody can get a word in."],
     style:"A rim protector who swats everything. The Wall makes him jump at every nearby shot, win every block and grab rebounds from farther out for six seconds.",
     facts:["Introduces himself to everyone, including referees. Including the same referee, twice.","Blocked 11 shots in one pickup game and narrated all of them.","Calls Moose 'Cuz' about 300 times a game.","Owns a karaoke machine. The neighbours know."],
     quote:"I'm big, I block shots, and I work for noodles. Put me in!",cap:"The Wall: sending a layup back into the fence, loudly.",
-    scene:{bg:'cage',pose:'block',ball:'swat',fx:'swatfx',x:0.42,over:{mouth:'shout'},def:{pose:'layup',x:0.66,d:-1,lift:0.04}}},
+    scene:{bg:'cage',anim:'rock',fx:'swatfx',x:0.42,over:{mouth:'shout'}}},
   BOOM:{nick:'Poster Child',from:'The Southside',wt:240,kit:{c:'#ff6a3d',t:'#ffffff',s:'#b8441f'},
     story:["Boom has a wall in his apartment covered in posters, and he's in every one of them, dunking on somebody.","He has quick hops for a big man, a headband his grandmother knitted, and a habit of treating every possession as a chance at a new poster. Defenders on the Southside have learned to step aside. The ones who don't end up on the wall."],
     style:"A dunk machine with quick hops. Posterize gives his next dunk huge range, makes it a sure thing and knocks nearby defenders to the floor.",
@@ -3780,19 +3939,19 @@ const PROFILES={
     style:"A rebounding machine who cleans the glass. Board Man lets him grab rebounds and loose balls from much farther away for seven seconds.",
     facts:["Has a globe tattooed on his shoulder. He got it the day he looked up what his name meant.","Can palm two basketballs at once, upside down.","Wears elbow pads because he 'goes to the floor a lot'. He does.","Still helps his friends move. He is very popular in May."],
     quote:"You shoot. I'll handle the rest.",cap:"Board Man: every miss is his.",
-    scene:{bg:'arena',pose:'reb',fx:'grab',hoop:[0.8,0.34,1.0],x:0.5,scale:0.84}},
+    scene:{bg:'arena',anim:'atlas',fx:'grab',hoop:[0.8,0.34,1.0],x:0.5,scale:0.84}},
   DOZER:{nick:'Lucky Hat',from:'The Docks',wt:290,kit:{c:'#c9a227',t:'#2b2b2b',s:'#8a6f18'},
     story:["Dozer knocks down buildings for a living, very carefully. He played center at the docks until the docks closed, then watched the Hounds from the skybox of an arena he was demolishing and kept forgetting to work. His boss was very angry.","Now he plays in his lucky hard hat, brings snacks to every practice and apologises to every player he knocks over. He knocks over a lot of players."],
     style:"A powerful bruiser who bullies defenders. Bulldoze plows forward, flattens everyone in his path, then shoves through contact for a few seconds.",
     facts:["Has never played a game without the hard hat. The dent is from the last dock finals.","Bakes. His banana bread is the main reason Rock comes to practice.","Says 'sorry' after every screen he sets, and means it every time.","Can lift the back of a small car. Prefers not to."],
     quote:"Oh! Oh, that's wonderful. I'll bring snacks.",cap:"Bulldoze: a gentle man moving at full speed, with the hat on.",
-    scene:{bg:'docks',pose:'charge',fx:'dust',x:0.5}},
+    scene:{bg:'docks',anim:'dozer',fx:'dust',x:0.5}},
   GOLIATH:{nick:'The Mountain',from:'The Sovereigns',wt:300,kit:{c:'#d0d4e0',t:'#c9a227',s:'#a8adbd'},
     story:["Goliath played center for the Sovereigns for three seasons and won the paint every night. Vale cut him anyway, called him 'inefficient', because Goliath wouldn't run his numbers.","He came to the Hounds wanting one game against Vale in their jersey. Dime told him the Hounds play for each other, not for revenge. Goliath said, 'Then teach me how.' He learns fast."],
     style:"A legendary giant who dominates both ends. Earthquake makes him jump at every nearby shot, win every block, shove through contact and grab rebounds from farther out.",
     facts:["His first question to the Hounds was whether they really eat noodles every day. They do.","Wears a size 19 shoe. Dozer is jealous.","Has never once looked at a stat sheet.","Ducks under every doorway, even the tall ones, out of habit."],
     quote:"I don't run their numbers. I just win the paint.",cap:"Earthquake: the floor cracks when he lands.",
-    scene:{bg:'arena',pose:'stomp',fx:'quake',x:0.46,ball:'up'}},
+    scene:{bg:'arena',anim:'goliath',fx:'quake',x:0.46}},
   KRAKEN:{nick:'The Deep',from:'The Neo League',wt:310,kit:HELL_KIT,
     story:["Kraken is 2.2 metres of bad news at the rim. The Neo League rebuilt its backboards twice in his first season, and the third time it stopped bothering.","He doesn't talk much; his dunks do it for him, and the Hellfire Squad lets them. Nobody knows where he learned the game. The rumour is a court at the bottom of a dried-up harbour."],
     style:"A mythic monster who ends possessions at the rim. World Breaker charges through defenders, then for eight seconds every dunk has huge range, always goes in and knocks defenders down.",
@@ -4101,7 +4260,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.1.30';
+const GAME_VER='2.1.31';
 const DEV_VER='2.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
