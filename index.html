@@ -1277,6 +1277,7 @@ const sfx=(()=>{
     thud(){tone(90,45,0.3,'sine',0.42);noise(0.2,0.18,'lowpass',500,0.7);},
     zap(){tone(1400,180,0.22,'square',0.035);noise(0.2,0.12,'highpass',3500,0.6);},
     powerDown(){tone(420,50,0.6,'sawtooth',0.06);tone(150,90,0.12,'square',0.11,1.05);tone(900,1200,0.08,'triangle',0.04,1.1);},
+    level(){return muted?0:0.6*vm*vs;},
     chime(){[784,1047,1319].forEach((f,i)=>tone(f,f,0.4,'triangle',0.085,i*0.08));},
     vsHit(){tone(90,40,0.5,'sine',0.48);noise(0.3,0.22,'bandpass',800,0.7);tone(1200,1150,0.25,'triangle',0.05,0.02);},
     amb(k){
@@ -3077,7 +3078,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.1.19';
+const GAME_VER='2.1.20';
 const DEV_VER='2.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -5515,7 +5516,7 @@ function cinePlay(o){
   el.classList.remove('hide');el.classList.remove('bars');void el.offsetWidth;el.classList.add('bars');
   cineSize();
   if(uiOk()&&sfx.whoosh)sfx.whoosh();
-  try{sfx.amb(o.mode==='intro'?'rain':['rain','rail','arena','sky'][o.ci||0]);if(o.title)sfx.boom();}catch(e){}
+  try{musPlay(o.mode==='intro'?0:(o.ci||0));if(o.title)sfx.boom();}catch(e){}
   if(!o.title)cineNext();
   if(!CN.raf)CN.raf=requestAnimationFrame(cineLoop);
 }
@@ -5555,7 +5556,30 @@ function cineEnd(){
   if(o.match&&o.d){cineMatch(o.d);return;}
   cineClose();o.done&&o.done();
 }
-function cineClose(){if(!CN)return;try{sfx.ambStop();}catch(e){}CN.open=false;hideEl('cine');if(CN.raf){cancelAnimationFrame(CN.raf);CN.raf=0;}}
+/* Chapter background audio: audio/ch1.mp3 to ch4.mp3, looped. If a file is missing or can't play, the built-in ambience plays instead. */
+const STORY_MUS={a:null,ci:-1,target:0,timer:0,fail:false};
+function musFallback(ci){try{sfx.amb(['rain','rail','arena','sky'][ci]||'rain');}catch(e){}}
+function musRun(){
+  const m=STORY_MUS;if(m.timer)return;
+  m.timer=setInterval(()=>{
+    if(!m.a||m.fail){clearInterval(m.timer);m.timer=0;return;}
+    const want=(sfx.level?sfx.level():0.6)*0.6*m.target;m.a.volume=Math.max(0,Math.min(1,m.a.volume+(want-m.a.volume)*0.12));
+    if(m.target===0&&m.a.volume<0.01){m.a.volume=0;try{m.a.pause();}catch(e){}clearInterval(m.timer);m.timer=0;}
+  },50);
+}
+function musPlay(ci){
+  const m=STORY_MUS;
+  if(m.a&&m.ci===ci&&!m.fail){m.target=1;if(m.a.paused){const p=m.a.play();if(p&&p.catch)p.catch(()=>{});}musRun();return;}
+  if(m.a){try{m.a.pause();}catch(e){}}
+  const a=new Audio('audio/ch'+(ci+1)+'.mp3');a.loop=true;a.preload='auto';a.volume=0;
+  Object.assign(m,{a:a,ci:ci,target:1,fail:false});
+  const bad=()=>{if(m.a===a&&!m.fail){m.fail=true;musFallback(ci);}};
+  a.addEventListener('error',bad);
+  const p=a.play();if(p&&p.catch)p.catch(bad);
+  musRun();
+}
+function musFade(){const m=STORY_MUS;if(!m.a||m.fail)return;m.target=0;musRun();}
+function cineClose(){if(!CN)return;try{sfx.ambStop();musFade();}catch(e){}CN.open=false;hideEl('cine');if(CN.raf){cancelAnimationFrame(CN.raf);CN.raf=0;}}
 function cineMatch(d){
   const m=$('cMatch');m.classList.remove('hide');
   $('cmLbl').textContent=d.pro?'PROLOGUE · ONE ON ONE':'CHAPTER '+(d.ci+1)+' · GAME '+(d.gi+1)+(d.boss?' · FINAL':'');
