@@ -331,6 +331,15 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 @keyframes cbob{50%{transform:translateY(4px)}}@keyframes cpulse{50%{opacity:.4}}
 @keyframes cmIn{from{transform:translateX(-40px);opacity:0}}@keyframes cmInR{from{transform:translateX(40px);opacity:0}}
 @media (max-width:600px){.cmv{flex-direction:column}.cmp{min-width:62vw}#cBox{left:3%;right:3%}}
+#subs{z-index:45}
+.sbrow{display:flex;flex-wrap:wrap;gap:.8cqw;justify-content:center;margin:.6cqw 0 1cqw}
+.sbc{min-width:15cqw;max-width:24cqw;padding:.9cqw 1.2cqw;border-radius:.9cqw;border:2px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:var(--ink);font-family:inherit;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:.3cqw}
+.sbc b{font-size:clamp(12px,1.6cqw,21px);font-weight:900;letter-spacing:.04em}.sbc small{color:var(--muted);font-size:clamp(9px,1.05cqw,14px);line-height:1.3}
+.sbc.sel{border-color:var(--gold);background:rgba(255,209,102,.14);box-shadow:0 0 1.4cqw rgba(255,209,102,.35)}
+.sben{height:.55cqw;min-height:5px;border-radius:9px;background:rgba(255,255,255,.12);overflow:hidden}.sben i{display:block;height:100%}
+.sbauto input{width:auto;margin:0;flex:none}
+.sbauto{display:flex;gap:.6cqw;align-items:center;justify-content:center;color:var(--muted);font-size:clamp(10px,1.2cqw,15px);margin-top:.6cqw}
+@media (max-width:600px){.sbc{min-width:40vw;max-width:46vw}}
 #stTxt .card{max-width:min(760px,94%);text-align:left}
 #stTxt p{font-size:clamp(12px,1.55cqw,19px);line-height:1.5;color:var(--ink)}
 #stTxt p.q{color:var(--gold);font-style:italic}
@@ -667,10 +676,15 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
   <div id="pause" class="ov hide"><div class="card scr"><h1>PAUSED</h1><p id="pauseScore" style="font-weight:800;color:var(--ink)"></p><p id="pauseWhy"></p>
     <div class="mbtns">
       <button class="mbtn" id="resumeBtn"><span>Resume</span><small>Keep playing</small></button>
+      <button class="mbtn hide" id="subBtn"><span>Substitutes</span><small>Rest tired players and bring in the bench</small></button>
       <button class="mbtn" id="pauseSet"><span>Settings</span><small>Controls, audio and visuals</small></button>
       <button class="mbtn danger" id="ffBtn"><span>Forfeit</span><small>Give up this game and take the loss</small></button>
     </div></div></div>
 
+  <div id="subs" class="ov hide"><div class="card scr wide"><h1 id="sbTitle">SUBSTITUTES</h1><p class="tag" id="sbTip"></p>
+    <h2>On the court</h2><div id="sbCourt" class="sbrow"></div><h2 id="sbBenchH">Bench</h2><div id="sbBench" class="sbrow"></div>
+    <label class="sbauto"><input type="checkbox" id="sbAuto"> Auto subs: swap in a rested player at dead balls when someone gets tired</label>
+    <div class="row"><button class="go back" id="sbBack">Done</button></div></div></div>
   <div id="settings" class="ov hide"><div class="card scr wide"><h1>SETTINGS</h1><div class="tabs" id="setTabs"></div><div id="setBody"></div><div class="row"><button class="go back" id="setBack">Back</button></div></div></div>
 
   <div id="chalDlg" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(22px,4.5cqw,60px)">CHALLENGE</h1><p id="chalWho" style="font-weight:800;color:var(--ink)"></p>
@@ -765,7 +779,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     <div id="cBox" class="off"><div id="cName"></div><div id="cText"></div><span id="cMore" class="hide">&#9660;</span></div>
     <div id="cCtl"><button id="cAuto" type="button">Auto</button><button id="cLogBtn" type="button">Log</button><button id="cSkip" type="button">Skip &#9197;</button></div>
     <div id="cLog" class="hide"><div class="lh"><b>Story log</b><button id="cLogClose" type="button">Close</button></div><div id="cLogBody"></div></div>
-    <div id="cMatch" class="hide"><small id="cmLbl"></small><div class="cmv"><div id="cmA" class="cmp"></div><i>VS</i><div id="cmB" class="cmp"></div></div><div id="cmChips"></div><div class="row"><button class="go" id="cmGo" type="button">Tip off</button><button class="sbtn" id="cmBack" type="button">Back to story</button></div></div>
+    <div id="cMatch" class="hide"><small id="cmLbl"></small><div class="cmv"><div id="cmA" class="cmp"></div><i>VS</i><div id="cmB" class="cmp"></div></div><div id="cmChips"></div><div class="row"><button class="go" id="cmGo" type="button">Tip off</button><button class="sbtn" id="cmLine" type="button">Lineup</button><button class="sbtn" id="cmBack" type="button">Back to story</button></div></div>
     <span id="cSr" class="csr" aria-live="polite"></span>
   </div>
   <div id="stTxt" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 id="stTitle" style="font-size:clamp(20px,4cqw,54px)"></h1><div id="stBody"></div><div class="row"><button class="go" id="stGo">Continue</button></div></div></div>
@@ -908,6 +922,7 @@ function sendDc(m){try{if(dc&&dc.readyState==='open')dc.send(JSON.stringify(m));
 function showPauseMenu(){
   $('pauseWhy').textContent=pvp?'The game paused after the last point.':'Take a breather.';
   ffArm=false;const sp=$('ffBtn').querySelector('span');if(sp)sp.textContent='Forfeit';
+  $('subBtn').classList.toggle('hide',!(typeof story!=='undefined'&&story&&story.live&&story.bench&&story.bench.length));
   $('pauseScore').textContent=teams[0].name+' '+teams[0].score+'  -  '+teams[1].score+' '+teams[1].name;
   show('pause');
 }
@@ -1155,7 +1170,7 @@ Object.assign(ABIL,{
 let coins=300,owned=['DIME','BLAZE','MOOSE'];
 let squad={PG:2,SG:1,C:0},teamCol=0,teamName='NEON';
 let user='';
-function defaults(){tourSave=null;if(typeof custom!=='undefined'){custom=null;customRaw=null;storyDone=0;storyProDone=false;}wantFull=false;acctShots=[0,0,0];acctQmWins=0;lbShow=true;acctXp=0;coins=300;owned=['DIME','BLAZE','MOOSE'];squad={PG:2,SG:1,C:0};teamCol=0;teamName='NEON';oppIdx=0;gameLen=240;titles=0;gm=3;pk1='DIME';pk2='BLAZE';redeemed=[];}
+function defaults(){tourSave=null;if(typeof custom!=='undefined'){custom=null;customRaw=null;storyDone=0;storyProDone=false;storyLineup=null;}wantFull=false;acctShots=[0,0,0];acctQmWins=0;lbShow=true;acctXp=0;coins=300;owned=['DIME','BLAZE','MOOSE'];squad={PG:2,SG:1,C:0};teamCol=0;teamName='NEON';oppIdx=0;gameLen=240;titles=0;gm=3;pk1='DIME';pk2='BLAZE';redeemed=[];}
 function applyCfg(cfg){
   defaults();
   if(!cfg||typeof cfg!=='object')return;
@@ -1176,8 +1191,8 @@ function applyCfg(cfg){
     if(Array.isArray(cfg.redeemed))redeemed=cfg.redeemed.filter(x=>typeof x==='string').slice(0,200);
     if([1,2,3].indexOf(cfg.gm)>=0)gm=cfg.gm;
     tourSave=validTour(cfg.tr);
-    if(typeof validCustom==='function'){customRaw=cfg.cc||null;custom=validCustom(cfg.cc);storyDone=clamp(Math.floor(+cfg.stp||0),0,40);if(cfg.stv!==2&&storyDone<=4)storyDone*=10;storyProDone=!!cfg.spr||storyDone>0;}
-    if(!(typeof devOn!=='undefined'&&devOn)&&(cfg.cc||cfg.stp)){devStash(cfg.cc,cfg.stp);custom=null;customRaw=null;storyDone=0;storyProDone=false;}
+    if(typeof validCustom==='function'){customRaw=cfg.cc||null;custom=validCustom(cfg.cc);storyDone=clamp(Math.floor(+cfg.stp||0),0,40);if(cfg.stv!==2&&storyDone<=4)storyDone*=10;storyProDone=!!cfg.spr||storyDone>0;storyLineup=Array.isArray(cfg.sln)?cfg.sln.filter(x=>typeof x==='string').slice(0,3):null;}
+    if(!(typeof devOn!=='undefined'&&devOn)&&(cfg.cc||cfg.stp)){devStash(cfg.cc,cfg.stp);custom=null;customRaw=null;storyDone=0;storyProDone=false;storyLineup=null;}
     if(typeof cfg.pk1==='string')pk1=cfg.pk1;
     if(typeof cfg.pk2==='string')pk2=cfg.pk2;
     SLOTS.forEach(s=>{if(owned.indexOf(POOL[s][squad[s]].name)<0)squad[s]=POOL[s].findIndex(o=>owned.indexOf(o.name)>=0);});
@@ -1185,7 +1200,7 @@ function applyCfg(cfg){
     if(owned.indexOf(pk2)<0||pk2===pk1)pk2=owned.find(n=>n!==pk1);
   }catch(e){}
 }
-function curCfg(){return {squad:squad,teamCol:teamCol,teamName:teamName,oppIdx:oppIdx,gameLen:gameLen,coins:coins,titles:titles,redeemed:redeemed,gm:gm,pk1:pk1,pk2:pk2,owned:(typeof devRealOwned!=='undefined'&&devRealOwned)?devRealOwned:owned,xp:acctXp,qmw:acctQmWins,full:wantFull,sh:acctShots,lb:lbShow,tr:tourSave?JSON.stringify(tourSave):null,cc:(typeof custom!=='undefined'&&custom)?JSON.stringify(custom):((typeof customRaw!=='undefined'&&customRaw)||null),stp:(typeof storyDone!=='undefined')?storyDone:0,spr:(typeof storyProDone!=='undefined'&&storyProDone)?1:0,stv:2,ts:Date.now()};}
+function curCfg(){return {squad:squad,teamCol:teamCol,teamName:teamName,oppIdx:oppIdx,gameLen:gameLen,coins:coins,titles:titles,redeemed:redeemed,gm:gm,pk1:pk1,pk2:pk2,owned:(typeof devRealOwned!=='undefined'&&devRealOwned)?devRealOwned:owned,xp:acctXp,qmw:acctQmWins,full:wantFull,sh:acctShots,lb:lbShow,tr:tourSave?JSON.stringify(tourSave):null,cc:(typeof custom!=='undefined'&&custom)?JSON.stringify(custom):((typeof customRaw!=='undefined'&&customRaw)||null),stp:(typeof storyDone!=='undefined')?storyDone:0,spr:(typeof storyProDone!=='undefined'&&storyProDone)?1:0,sln:(typeof storyLineup!=='undefined'&&storyLineup)?storyLineup:null,stv:2,ts:Date.now()};}
 function readAccts(){try{return JSON.parse(localStorage.getItem('sk_accts')||'{}')||{};}catch(e){return {};}}
 function writeAccts(a){try{localStorage.setItem('sk_accts',JSON.stringify(a));}catch(e){}}
 try{
@@ -1284,7 +1299,7 @@ function createGame(){
     {id:1,name:curOpp().name,color:curOpp().c,dark:curOpp().d,accent:curOpp().a,score:0,needClear:false}
   ];
   let mine,theirs=curOpp().roster.slice();const GM=stl?3:(practice?(hangOn?1:2):gm);
-  if(stl){mine=storyMine();if(story.def.solo){mine=[(custom&&mine.find(r=>r[1]===custom.name))||mine[0]];theirs=theirs.slice(0,1);}}
+  if(stl){mine=storyMine(story.g);if(story.def.solo){mine=[custom?ccRoster(custom):mine[0]];theirs=theirs.slice(0,1);}}
   else if(GM===3)mine=SLOTS.map(s=>{const o=POOL[s][squad[s]];return [s,o.name,o.num,o.skin,o.mod];});
   else{
     mine=[pk1,pk2].slice(0,GM).map(nm=>{const c=findChar(nm)||findChar('DIME');return [c.s,c.o.name,c.o.num,c.o.skin,c.o.mod];});
@@ -1301,6 +1316,7 @@ function createGame(){
       stamina:1,exhausted:false,sprinting:false,think:rnd(0.3,1),spot:i,spotT:0,tx:0,ty:0,drive:0,probe:rnd(-0.6,0.6),blockAt:-1,passCd:0,stance:false,guard:null,fx:{},abCd:4,
       stats:{pts:0,reb:0,stl:0,blk:0,dunk:0,fgm:0,fga:0,three:0}});
   }
+  if(stl){story.bench=story.def.solo?null:storyBenchMake(storyLineupFor(story.g).bench);players.forEach(p=>{p.en=1;if(p.team===0)p._row=roster[0][p.idx];});}
   if(stl){teams[0].name='ASH HOUNDS';teams[0].color='#c9ced9';teams[0].dark='#3a3f4f';teams[0].accent='#ff7a1a';if(story.def.solo){teams[0].name=custom?custom.name:'DIME';teams[1].name='BLAZE';}}
   if(pvp)[0,1].forEach(i=>{const col=COLORS[netCfg.cols[i]];Object.assign(teams[i],{name:netCfg.names[i],color:col.c,dark:col.d,accent:col.a});});
   players.forEach(p=>{p.guard=players.find(q=>q.team!==p.team&&q.idx===p.idx);});
@@ -1428,6 +1444,7 @@ function giveBall(p,how){
   });
 }
 function checkBall(off){
+  if(typeof story!=='undefined'&&story&&story.live&&story.bench&&phase!=='menu')storyAutoSub();
   if(practice)off=0;
   poss=off;setHoop(off);
   const O=FULL?[[CL-1.3,7.5],[CL-6,4.0],[CL-7,11.0]]:[[9.4,7.5],[8.3,3.4],[8.3,11.6]],D=FULL?[[9,7.5],[11,4.5],[11,10.5]]:[[7.6,7.5],[6.6,4.6],[6.6,10.4]];
@@ -1792,6 +1809,7 @@ function steer(p,dx,dy,mul,dt,sprint){
   if(p.juke>0)return;
   const D=DIFF[diffIdx];
   let sp=((p.reachT||0)>0?0.45:1)*p.arch.spd*adSpd(p)*rallyK(p)*mul*(isCPU(p)?D.cpuSpd*ST.spd:0.98)*(p.hasBall?0.94:1)*fxv(p,'speed',1);
+  if(p.en!==undefined)sp*=0.84+0.16*p.en;
   if(sprint){sp*=1.3;p.stamina=Math.max(0,p.stamina-dt*0.38*(fxv(p,'turbo',0)?0:1));if(p.stamina<=0)p.exhausted=true;p.sprinting=true;}
   else p.sprinting=false;
   const a=Math.min(1,(p.z>0?2:(storyHaz()&&inZone('slick',p.x,p.y)?2.2:10))*dt);
@@ -1928,7 +1946,8 @@ function updatePlayer(p,dt){
   p.abCd=Math.max(0,p.abCd-dt);for(const k in p.fx){p.fx[k].t-=dt;if(p.fx[k].t<=0)delete p.fx[k];}
   if(p.juke>0){p.juke-=dt;const f=Math.exp(-3.5*dt);p.vx*=f;p.vy*=f;}
   if(p.stumble>0)p.stumble-=dt;
-  if(!p.sprinting){p.stamina=Math.min(1,p.stamina+dt*0.22);if(p.exhausted&&p.stamina>0.3)p.exhausted=false;}
+  if(p.en!==undefined&&phase==='play')p.en=Math.max(0.15,p.en-dt*(p.team===0?0.0034:0.0022)*(p.sprinting?2.2:1));
+  if(!p.sprinting){p.stamina=Math.min(1,p.stamina+dt*0.22*(p.en!==undefined?0.55+0.45*p.en:1));if(p.exhausted&&p.stamina>0.3)p.exhausted=false;}
   if(p.blockAt>=0&&tNow>=p.blockAt){p.blockAt=-1;if(p.z<=0&&!p.stumble&&!p.dunk){p.vz=4.2;p.blocking=0.7;}}
   if(!p.dunk){
     if(p.z>0||p.vz>0){p.vz-=G*dt;p.z+=p.vz*dt;if(p.z<=0){p.z=0;p.vz=0;}}
@@ -2077,7 +2096,7 @@ function update(dt){
   }else{
     if(phase==='scored'){phaseT-=dt;if(phaseT<=0){if(timeLeft<=0)endPeriod();else checkBall(1-scoredTeam);clearPr();return;}}
     if(phase==='over'){overT-=dt;if(overT<=0&&!resultShown)showResult();}
-    if(phase==='play'){gameTime+=dt;timeLeft=Math.max(0,timeLeft-dt);if(timeLeft<=0&&ball.state!=='shot'&&!players.some(p=>p.shot||p.dunk))endPeriod();computeHelper();autoCtrl(dt);if(pvp)inCtx(1,()=>autoCtrl(dt));}
+    if(phase==='play'){gameTime+=dt;if(typeof story!=='undefined'&&story&&story.bench)storyBenchTick(dt);timeLeft=Math.max(0,timeLeft-dt);if(timeLeft<=0&&ball.state!=='shot'&&!players.some(p=>p.shot||p.dunk))endPeriod();computeHelper();autoCtrl(dt);if(pvp)inCtx(1,()=>autoCtrl(dt));}
     for(const p of players){
       if(phase==='play'){if(p===ctrl)humanControl(p,dt);else if(pvp&&p===ctrl2)inCtx(1,()=>humanControl(p,dt));else if(practice&&p.team===1){p.vx=0;p.vy=0;}else aiControl(p,dt);}
       else if(!p.dunk&&!p.shot)steer(p,0,0,1,dt,false);
@@ -2738,7 +2757,7 @@ function showResult(){
   $('rSub').textContent+=addXp(xpg+pendingXp);pendingXp=0;
   if(pvp){$('againBtn').textContent=role==='host'?'Rematch':'Waiting for host';$('againBtn').disabled=role!=='host';$('menuBtn').textContent='Leave';}else $('againBtn').disabled=false;
   let h='<table><thead><tr><th></th><th>PTS</th><th>REB</th><th>STL</th><th>BLK</th><th>DUNK</th></tr></thead><tbody>';
-  players.forEach(p=>{h+='<tr style="--c:'+teams[p.team].color+'"><td><i></i>'+p.name+'</td><td>'+p.stats.pts+'</td><td>'+p.stats.reb+'</td><td>'+p.stats.stl+'</td><td>'+p.stats.blk+'</td><td>'+p.stats.dunk+'</td></tr>';});
+  players.concat(storyBenchBox()).forEach(p=>{h+='<tr style="--c:'+teams[p.team].color+'"><td><i></i>'+p.name+'</td><td>'+p.stats.pts+'</td><td>'+p.stats.reb+'</td><td>'+p.stats.stl+'</td><td>'+p.stats.blk+'</td><td>'+p.stats.dunk+'</td></tr>';});
   $('rTable').innerHTML=h+'</tbody></table>';
   uiSnd($('rTitle').textContent==='VICTORY'?'uiWin':'uiLose');
   show('result');
@@ -3030,7 +3049,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.1.16';
+const GAME_VER='2.1.17';
 const DEV_VER='2.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -3109,7 +3128,7 @@ function mergeCfg(R,L,B){
   const uni=(a,b)=>{const s=(Array.isArray(a)?a:[]).slice();(Array.isArray(b)?b:[]).forEach(x=>{if(s.indexOf(x)<0)s.push(x);});return s;};
   o.owned=uni(R.owned,L.owned);o.redeemed=uni(R.redeemed,L.redeemed);
   const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
-  ['squad','teamCol','teamName','oppIdx','gameLen','gm','pk1','pk2','full','lb','tr','cc','stp','spr'].forEach(k=>{
+  ['squad','teamCol','teamName','oppIdx','gameLen','gm','pk1','pk2','full','lb','tr','cc','stp','spr','sln'].forEach(k=>{
     if(!B||!same(L[k],B[k]))o[k]=L[k]===undefined?R[k]:L[k];
   });
   o.ts=Math.max(num(R.ts),num(L.ts));
@@ -4311,7 +4330,7 @@ function updateTouchLabels(){
 }
 
 /* ===== menu sounds ===== */
-const BACK_IDS=['upBack','stBack','ccBack','daBack','devBack','qcClose','profBack','frBack','dmBack','repCancel','invNo','playBack','offBack','qpBack','tpBack','netBack','setBack','shopClose','codeBack','evBack','acBack','lvBack','lbBack','brBack','chCancel','tutBack','hangNo','coachExit','hangLeave','specStop'];
+const BACK_IDS=['sbBack','upBack','stBack','ccBack','daBack','devBack','qcClose','profBack','frBack','dmBack','repCancel','invNo','playBack','offBack','qpBack','tpBack','netBack','setBack','shopClose','codeBack','evBack','acBack','lvBack','lbBack','brBack','chCancel','tutBack','hangNo','coachExit','hangLeave','specStop'];
 var uiHovT=0,lastCoins=null;
 function uiOk(){return SET.vol.ui!==false;}
 function uiSnd(k){if(uiOk()&&sfx[k])sfx[k]();}
@@ -4448,7 +4467,7 @@ function devStash(cc,stp){
 function devSandboxIn(){
   devRealCfg=curCfg();
   const d=devSaveGet();
-  const start=Object.assign({},devRealCfg,{tr:null,cc:null,stp:0,spr:0});
+  const start=Object.assign({},devRealCfg,{tr:null,cc:null,stp:0,spr:0,sln:null});
   applyCfg(d&&d.owned?Object.assign({},start,d):Object.assign({},start,d?{cc:d.cc||null,stp:d.stp||0,spr:d.spr||0}:{}));
   devSaveNow();
 }
@@ -4509,8 +4528,8 @@ async function devEnter(){
 }
 function devReset(){
   try{localStorage.removeItem(devSaveKey());}catch(e){}
-  if(devRealCfg){devRealOwned=null;applyCfg(Object.assign({},devRealCfg,{tr:null,cc:null,stp:0,spr:0}));}
-  custom=null;customRaw=null;storyDone=0;storyProDone=false;
+  if(devRealCfg){devRealOwned=null;applyCfg(Object.assign({},devRealCfg,{tr:null,cc:null,stp:0,spr:0,sln:null}));}
+  custom=null;customRaw=null;storyDone=0;storyProDone=false;storyLineup=null;
   devApply();devSaveNow();try{refreshAll();}catch(e){}
   uiSnd('uiGood');toast('Dev save reset. Story, MyPLAYER and dev progress start fresh from a copy of your real save.');
 }
@@ -4548,7 +4567,7 @@ const STORY_PRO={
     ["BLAZE","I am *not* nervous."]],
   post:[["","Blaze stares at the score chalked on the wall. Then he laughs, short and surprised."],
     ["BLAZE","Okay. *Okay!* Lucky. But okay."],
-    ["DIME","Welcome to the Ash Hounds."],
+    ["DIME","Welcome to the Ash Hounds.","join:YOU"],
     ["MOOSE","Welcome."],["BLAZE","Whoa. He used a whole *word* on you."],
     ["DIME","Get some sleep. Tomorrow we start the block runs. Ten crews, ten games, and the Rust Rats at the end of it."],
     ["YOU","What happens when we beat the Rats?"],
@@ -4642,19 +4661,33 @@ const DLG=[
  },
  { /* Chapter 2: Hungry Week */
   0:{pre:[["","Under the rail line, trains thunder overhead every few minutes. Oil and rainwater drip through the tracks onto the court.","train"],
+    ["","On the platform above, a skinny kid in a courier vest clicks a stopwatch every time a train goes by."],
     ["DIME","Different rules down here. They don't foul you. They *rob* you. Every dribble."],
     ["YOU","Then I protect the ball."],
     ["DIME","Cross, then go. Nobody can reach you right after a crossover."],
     ["OPP","Sprawl kids under our tracks? You lost?"],["BLAZE","Nah. *You're* about to be."]]},
+
   1:{pre:[["","A giant screen glows above the tracks: KADE VALE. CAPTAIN OF THE SOVEREIGNS. UNBEATEN. UNTOUCHABLE."],
     ["BLAZE","Look at that guy. Perfect hair. Perfect teeth. Never played on concrete in his life."],
     ["DIME","Best player in the King League. Maybe the best in the city."],
     ["YOU","Maybe."],["MOOSE","Hm. Maybe."],
     ["OPP","Hey! Eyes down here! The Spark Plugs go full voltage from the tip!"],
-    ["BLAZE","Great. Another team with a *theme*."]]},
+    ["BLAZE","Great. Another team with a *theme*."]],
+   post:[["","After the game, the courier kid from the platform hops down and walks straight up to Dime."],
+    ["KAI","Forty-one seconds. That's how long you held the ball on your last three possessions. Too long."],
+    ["DIME","...Who are you?"],
+    ["KAI","Kai. I run packages between the rail yards. Twelve trains an hour. I time *everything*."],
+    ["BLAZE","Great. A kid with a stopwatch. Very scary."],
+    ["KAI","You shoot forty percent when you're open, and seventy percent when you're not. You should stop getting open."],
+    ["BLAZE","...Okay, that's a little scary."],
+    ["YOU","Can you play?"],
+    ["KAI","Point guard. I don't waste dribbles. I'd like to try out."],
+    ["DIME","We could use someone who sees the court like that. Welcome to the Hounds, Kai.","join:KAI"],
+    ["KAI","Thank you. I'll make a schedule."]]},
   2:{pre:[["","Black oil pools across the concrete. One wrong step and you're on your back."],
     ["DIME","Same rule as the puddles back home. Make them chase you through it."],
     ["OPP","You think grease scares us? We grew up in it."],
+    ["KAI","Sixty percent of their points come after somebody falls. Stay on your feet and that number goes to zero."],
     ["YOU","Then you won't mind *falling* in it."],
     ["BLAZE","Ohhh! East Blocks talks now! I like this version."]]},
   3:{pre:[["","Moose limps through warmups. He winces every time he lands, and pretends he doesn't."],
@@ -4665,9 +4698,20 @@ const DLG=[
    post:[["","After the game, Moose sits on a crate with ice from a fish stall wrapped around his knee."],
     ["YOU","You played the whole game on that?"],["MOOSE","Team needed me."],
     ["BLAZE","The team needs you *healthy*, you giant idiot."],
-    ["","It's the nicest thing anyone has ever heard Blaze say."]]},
+    ["","It's the nicest thing anyone has ever heard Blaze say."],
+    ["","Then a voice booms down the stairwell, loud enough to rattle the tracks."],
+    ["ROCK","COUSIN! Somebody told me my favourite cousin is limping around under the trains!"],
+    ["MOOSE","...Rock."],
+    ["ROCK","Rock! That's me! Hi! Hello! You're Dime, you're Blaze, and you're the new one everybody's talking about!"],
+    ["BLAZE","Moose. Your cousin *talks*."],["MOOSE","All of it. He got all of it."],
+    ["ROCK","The big guy needs rest. I'm big, I block shots, and I work for noodles. Put me in!"],
+    ["DIME","You're in. At least until Moose's knee heals."],
+    ["ROCK","Until FOREVER!","join:ROCK"],
+    ["","Moose almost smiles."]]},
   4:{pre:[["","Diesel fumes hang thick in the air. The Iron Lungs run laps around the court while they wait for you."],
     ["OPP","We run all night, Sprawl. You'll be gasping by halftime."],
+    ["ROCK","Iron lungs? *I've* got iron lungs! I've been talking since I woke up and I'm not even tired!"],
+    ["KAI","He has. I timed it."],
     ["DIME","Sprint smart. Don't burn your legs early."],
     ["BLAZE","Or score fast so it doesn't matter."],["DIME","...Fine. That works too."]],
    post:[["","The Iron Lungs are bent double, hands on knees. The Hounds are still standing."],
@@ -4676,16 +4720,31 @@ const DLG=[
     ["OPP","Blink and we're gone, Sprawl kids."],
     ["BLAZE","Funny. I was gonna say the same thing about your *lead*."],
     ["DIME","Get back on defense every single time. No easy buckets."],
+    ["KAI","And sub before you're tired, not after. Tired legs lose races."],
     ["YOU","And when we get the ball?"],["DIME","Then *we're* the ones who are gone."]]},
   6:{pre:[["","A woman in a clean grey coat watches from the platform above. She hasn't moved in twenty minutes."],
+    ["","Near her, a man in his thirties leans on a pillar in a faded Gauntlet jersey from ten years ago."],
     ["BLAZE","Gauntlet scout. Has to be. Nobody down here owns a coat that clean."],
     ["SCOUT","..."],
     ["YOU","She's writing something."],["DIME","Then let's give her something *worth* writing."],
     ["OPP","She's here for us, not you. The Coal Crew's been on her list for a year."]],
    post:[["","When you look up again, the scout is gone. One word is chalked on the platform railing: 'Again.'"],
-    ["BLAZE","Again? What does that mean?"],["DIME","It means she wants to know if it was luck."]]},
+    ["BLAZE","Again? What does that mean?"],["DIME","It means she wants to know if it was luck."],
+    ["","The man in the old Gauntlet jersey wanders over, slow and easy, like he has all the time in the world."],
+    ["REX","Nice team. Good legs, good hearts. *Empty bench.*"],
+    ["BLAZE","And you are?"],
+    ["DIME","...That's Rex. He made the Gauntlet final ten years ago. Everyone in the Sprawl knows that name."],
+    ["REX","Lost it on a last-second shot. Spent ten years thinking about that shot, kid."],
+    ["YOU","Why tell us?"],
+    ["REX","Because I'm done thinking. You're going to the Gauntlet. I'd like to go back. Thirty-one is old for this, but I can still shoot."],
+    ["ROCK","Can he shoot? Let's see him shoot!"],
+    ["","Rex picks up a loose ball, turns, and drains it from the far end of the court without looking."],
+    ["ROCK","...He can shoot."],
+    ["DIME","Welcome to the Hounds, Rex.","join:REX"],
+    ["REX","Call me old man and I'll pass to everybody but you."]]},
   7:{pre:[["","The Third Rail play right beside the live tracks. The hum of electricity never stops.","train"],
     ["OPP","Touch the rail and you fry. Touch *us* and it's worse."],
+    ["REX","I played these guys when their captain was in diapers. Same tricks, smaller shoes."],
     ["MOOSE","Loud."],["BLAZE","Everyone's loud down here. They have to yell over the trains."],
     ["DIME","Two more, then the Chain Gang. They've never lost at home."],
     ["YOU","Never?"],["DIME","Not once in six years."]]},
@@ -4698,6 +4757,8 @@ const DLG=[
    pre:[["","The Chain Gang's court is fenced with real chains. They rattle every time a train goes by.","train"],
     ["OPP","Six years. Nobody's beaten us here. Every dribble, every pass, we take it *all*."],
     ["DIME","Protect the ball. Cross, then go."],
+    ["REX","Lock reaches with his left hand every time. Cross him right."],
+    ["KAI","Confirmed. Eleven of his last twelve steals were with his left."],
     ["BLAZE","Hey, Lock. Six years is a long time. You must be *tired*."],
     ["OPP","Cute. Your scrap-heap center can barely walk."],
     ["MOOSE","Can walk. Can *run*."],
@@ -4708,6 +4769,7 @@ const DLG=[
     ["SCOUT","The Gauntlet. Three days. Bring the East Blocks kid."],
     ["DIME","We're a team. We all come."],
     ["SCOUT","Then bring all of you. Don't be late. Late teams don't get a second invitation."],
+    ["SCOUT","And Rex. Ten years. I didn't think I'd see you on a court again."],["REX","Neither did I."],
     ["MOOSE","*Gauntlet.*"],["","It's the most anyone has heard Moose say all week."],
     ["BLAZE","We're really doing this.","crowd"]]}
  },
@@ -4716,8 +4778,10 @@ const DLG=[
     ["BLAZE","Finally. *Clean rims.* I could cry."],
     ["DIME","Cleaner courts, smarter teams. Stay sharp."],
     ["OPP","Look at them. Sprawl kids in borrowed shoes."],
-    ["YOU","They're not borrowed."],["BLAZE","...Mine are borrowed."],["MOOSE","Mine too."]]},
+    ["YOU","They're not borrowed."],["BLAZE","...Mine are borrowed."],["MOOSE","Mine too."],
+    ["ROCK","Clean rims! Clean floor! Is that a *snack bar?*"],["REX","Ten years and it still smells like popcorn and fear."]]},
   1:{pre:[["","Floodlights bounce off a glass backboard. The crowd is three rows deep and hungry for blood."],
+    ["","In the front row, a kid with a phone on a selfie stick narrates everything to his stream at top volume."],
     ["OPP","They call us the Glass Jaws because nobody's ever landed a punch."],
     ["MOOSE","First time for everything."],
     ["DIME","Attack the rim early. Let's see how strong that glass really is."]]},
@@ -4725,20 +4789,34 @@ const DLG=[
     ["OPP","HIGH! VOLTAGE! You hear that crowd? That's for *us*!"],
     ["BLAZE","That crowd's gonna be ours by halftime."],
     ["DIME","Let the noise go. Play our game."],
-    ["YOU","What's our game?"],["DIME","Whatever they're not ready for."]]},
+    ["YOU","What's our game?"],["DIME","Whatever they're not ready for."]],
+   post:[["","The streamer from the front row vaults the barrier, phone first."],
+    ["ORBIT","CHAT! We are LIVE with the Ash Hounds! Say hi to the forty thousand people watching you right now!"],
+    ["BLAZE","Forty *thousand?*"],
+    ["ORBIT","Orbit. Point guard. Step-back specialist. I've streamed every Hounds game since the rail line, and my chat voted. Ninety-one percent say I join the team."],
+    ["KAI","What did the other nine percent say?"],["ORBIT","They're banned."],
+    ["DIME","We don't need a camera crew."],
+    ["ORBIT","You need a guard who can make his own shot when the play breaks. Watch the clip."],
+    ["","He holds up the phone. A step-back three over two defenders. Then another. Then another."],
+    ["REX","...Kid can play."],
+    ["DIME","Fine. The phone stays in the bag during games."],
+    ["ORBIT","Chat, you heard it! Hounds for *LIFE!*","join:ORBIT"]]},
   3:{pre:[["","The Night Shift only play after midnight, and half the floodlights are out.","lights"],
     ["YOU","I can't see half the court."],
     ["DIME","Neither can they. Talk on defense. *Loud.*"],
     ["MOOSE","I'll be loud."],["BLAZE","This I *have* to hear."],
+    ["ORBIT","Chat says it's too dark to stream. Chat says, and I quote, 'just win, then.'"],
     ["OPP","Lights out, Hounds. Nobody sees you go home."]]},
   4:{pre:[["DIME","Every team here has film on us now. They know Blaze shoots. They know Moose blocks."],
     ["YOU","Do they know about me?"],["DIME","Not yet. That's the plan."],
     ["BLAZE","Wait. *I'm* the decoy?"],["DIME","You're the best decoy in the city."],["BLAZE","...I'll take it."],
+    ["ORBIT","And me? What am I?"],["DIME","The surprise."],["ORBIT","Chat *loves* a surprise."],
     ["OPP","We studied you, Hounds. Every play."],["YOU","Study *this*."]],
    post:[["","Static's coach spikes his tablet on the floor. The game plan didn't have a page for you."],
     ["DIME","Now they'll study you too."],["YOU","Good. Let them."]]},
   5:{cap:'JUNO',
    pre:[["","The Red Line's captain jogs out to half court. Dime stops dead."],
+    ["","At the end of the Red Line bench, a hooded player sits apart from the rest, watching without a word."],
     ["DIME","...Juno."],
     ["OPP","Hey, Dime. Blaze. Big guy. Heard you found my replacement."],
     ["BLAZE","You *quit* on us, Juno. One bad loss and you were gone."],
@@ -4749,22 +4827,45 @@ const DLG=[
    post:[["","Juno stands at half court long after the buzzer, staring up at the scoreboard."],
     ["OPP","...You got better, Dime."],["DIME","We got *together*. There's a difference."],
     ["","Juno nods once and walks away. Blaze watches until the door closes."],
-    ["BLAZE","He was good, you know. Really good."],["YOU","So are we."]]},
+    ["BLAZE","He was good, you know. Really good."],["YOU","So are we."],
+    ["","The hooded player from the Red Line bench stops in front of you. The hood hides everything but a calm pair of eyes."],
+    ["HAZE","Juno plays for money."],
+    ["HAZE","You play like the court is the last place you belong. I know that feeling."],
+    ["DIME","You're the Red Line's sixth man. Haze."],
+    ["HAZE","Was."],
+    ["ROCK","Is this a job application? I can't tell. Is this a job application?"],
+    ["HAZE","Yes."],
+    ["BLAZE","Does he ever say more than five words?"],["MOOSE","Good."],
+    ["DIME","Welcome to the Hounds, Haze.","join:HAZE"],
+    ["","Haze pushes the hood back for the first time."],
+    ["HAZE","Thank you. I won't miss."]]},
   6:{pre:[["","Echo Park mirror everything. Run a play, and they run it right back at you, faster."],
     ["DIME","Then we don't run plays. We read and react."],
+    ["HAZE","They copy what they see. So don't let them see it."],
     ["OPP","Whatever you do, we do it better."],
     ["YOU","Copy *this*, then."]]},
   7:{pre:[["","A private skybox lights up above the court. Behind the glass, Kade Vale watches with his arms folded."],
+    ["","Up in the rafters, a construction crew is bolting in new lights. The biggest of them has stopped working to watch."],
     ["BLAZE","That's *him*. That's Vale. What's the King League's golden boy doing at a street tournament?"],
     ["DIME","Shopping. Or scouting the competition."],["MOOSE","Or bored."],
     ["","Vale meets your eyes through the glass. He smiles, then turns away."],
     ["OPP","Smile for the skybox, Hounds. It's your last game in front of it."],
-    ["YOU","Two more. Then we find out who he's really watching."]]},
+    ["YOU","Two more. Then we find out who he's really watching."]],
+   post:[["","After the game, a giant in a yellow hard hat climbs down a ladder from the rafters, one careful rung at a time."],
+    ["DOZER","Sorry. Sorry, excuse me. Hello. I'm Dozer. I knock down buildings for a living."],
+    ["ROCK","Moose, he's *bigger* than you."],["MOOSE","...Hm."],
+    ["DOZER","I've watched all your games from up there. When you play, I forget to work. My boss is very angry with me."],
+    ["YOU","Do you play?"],
+    ["DOZER","I played at the docks, before the docks closed. I'm strong. I'm careful. And I always wear my lucky hat."],
+    ["REX","Wear it on the court, big fella. Defenders will think the building's coming down on them."],
+    ["DIME","Moose and Rock could use help in the paint. Welcome to the Hounds, Dozer.","join:DOZER"],
+    ["DOZER","Oh! Oh, that's wonderful. I'll bring snacks."]]},
   8:{pre:[["","The Mirage throw fakes on top of fakes. Nothing they show you is real."],
     ["DIME","Stay home on defense. Don't *bite*."],
     ["BLAZE","Hey. New blood."],["YOU","What?"],
     ["BLAZE","If they double me tonight, I'm passing to you. Don't make me regret it."],
     ["DIME","Did Blaze just... *offer* to pass?"],["MOOSE","Historic."],
+    ["ORBIT","Chat, did you hear that? BLAZE is PASSING. Clip it. *Clip it.*"],
     ["OPP","Look left, we go right. Look right, we're already gone."]]},
   9:{cap:'STROBE',
    pre:[["","The Neon Jackals strut onto a court lit by their own strobe lights. Their music shakes the rafters.","lights"],
@@ -4772,47 +4873,79 @@ const DLG=[
     ["BLAZE","Make sure you're in the background of *mine*."],
     ["DIME","Win this, and we reach the Threshold. The court halfway up the sky."],
     ["MOOSE","Up?"],["DIME","Up."],
+    ["DOZER","I touched my lucky hat three times. We're going to be fine."],["HAZE","Then let's be fine."],
     ["YOU","Last stop before the sky."],["OPP","Last stop, period."]],
    post:[["","The strobe lights flicker, then die.","flash"],
     ["","Above the court, a glass elevator slides open. A smooth recorded voice says: 'Ash Hounds. Your ascent is approved.'"],
     ["BLAZE","We're going up. *Actually* up!"],
     ["DIME","The Threshold. Halfway to the King League."],
-    ["MOOSE","...Scared of heights."],["YOU","Don't look down, big man."],["MOOSE","Never do."]]}
+    ["MOOSE","...Scared of heights."],["YOU","Don't look down, big man."],["MOOSE","Never do."],
+    ["ORBIT","Chat, we're going UP. Literally. Somebody hold my phone, I'm scared of heights too."]]}
  },
  { /* Chapter 4: The Threshold */
   0:{pre:[["","The Threshold is a spotless court of white stone halfway up the skyline. Sponsors in silk suits look down from floating balconies."],
     ["BLAZE","Smells like *money* up here."],
     ["DIME","Smells like a trap. These farm teams play perfect basketball."],
     ["OPP","You're lost, Sprawl. The service elevator's that way."],
-    ["MOOSE","Not lost."],["YOU","Just early."]]},
+    ["MOOSE","Not lost."],["YOU","Just early."],
+    ["REX","Ten years ago I almost made it this high. The view's better than I imagined."],
+    ["KAI","Six hundred and forty meters above the Sprawl. I counted the floors on the way up."]]},
   1:{pre:[["","The court is made of glass. Far below, the Lower Sprawl glows like embers."],
     ["MOOSE","...Don't look down."],
     ["OPP","Wait. Blaze? Blaze from the Prism youth tryouts? The street kid we cut?"],
-    ["","Blaze goes completely still."],
+    ["","Blaze goes completely still. On the Prism bench, an older man in a grey cardigan sits apart from the coaches, watching him."],
     ["BLAZE","You remember."],
     ["OPP","Coach said you didn't fit the system. Too wild. Too loud. Too *Sprawl*."],
     ["DIME","Blaze. Look at me. You don't have to prove anything to them."],
     ["BLAZE","I know. I'm gonna prove it to *me*."]],
    post:[["","Blaze sinks the last shot, then walks straight past the Prism bench without a word."],
-    ["YOU","You okay?"],["BLAZE","Better than okay. I didn't fit their system."],["BLAZE","Turns out I fit *ours*."]]},
+    ["YOU","You okay?"],["BLAZE","Better than okay. I didn't fit their system."],["BLAZE","Turns out I fit *ours*."],
+    ["","The man in the grey cardigan walks over. None of the Prism coaches try to stop him."],
+    ["SAGE","Blaze. You've grown."],
+    ["BLAZE","...Sage. You were at my tryout."],
+    ["SAGE","I was. I argued for you for an hour. They didn't listen, and I've regretted it every day since."],
+    ["BLAZE","Then why are you still here?"],
+    ["SAGE","I'm not. I resigned this afternoon. They want players who fit a system. I'd rather coach players who *change* the game."],
+    ["DIME","Wait. *The* Sage? You ran the point for Prism for twelve years."],
+    ["SAGE","And I can still run it, a few minutes at a time. If you'll have an old man who asks too many questions."],
+    ["REX","Hey. *I'm* the old man."],["SAGE","Then I'm the older man."],
+    ["BLAZE","...Fine. But you sit next to me on the bench. So I can keep an eye on you."],
+    ["SAGE","I'd like that very much.","join:SAGE"]]},
   2:{pre:[["","Apex Labs players wear sensors on every joint. Screens on the sideline track every step you take."],
     ["OPP","Our models give you a four percent chance of winning."],
     ["YOU","Four isn't zero."],["BLAZE","I *love* those odds."],
-    ["DIME","Their models have never seen the Sprawl. Show them."]]},
+    ["DIME","Their models have never seen the Sprawl. Show them."],
+    ["SAGE","A model is only a guess about the past. What do *you* want the future to look like?"],
+    ["ORBIT","Chat says that was deep."]]},
   3:{pre:[["","Orbital pass in perfect circles and never miss a beat. It's beautiful, like watching the inside of a clock."],
     ["DIME","They're a machine. Machines break when you jam the gears."],
+    ["SAGE","Where is their circle weakest?"],
+    ["KAI","Their left side. They rotate late by half a second."],
+    ["SAGE","Then that's where we play."],
     ["OPP","Gravity doesn't apply to us, Hounds."],
     ["MOOSE","Applies to *everybody*."]]},
   4:{pre:[["","Zenith wear kinetic-assist braces that make them faster, stronger, and never tired."],
+    ["","One Zenith shooter stands apart with her eyes closed, breathing slowly while her teammates calibrate their braces."],
     ["DIME","Clean, structured, professional. That's their game."],
     ["YOU","So we don't play their game."],
     ["OPP","Your game is dead, Sprawl. *This* is the future."],
     ["BLAZE","Funny. Where I'm from, the future breaks if you hit it hard enough."]],
    post:[["","The Zenith players stare at their braces like the gear betrayed them."],
-    ["BLAZE","The future's *overrated*."],["DIME","Halfway up. Keep climbing."]]},
+    ["BLAZE","The future's *overrated*."],["DIME","Halfway up. Keep climbing."],
+    ["","The quiet shooter unbuckles her braces one at a time and sets them on the floor."],
+    ["ZEN","These were never mine. My shot was."],
+    ["DIME","You're Zen. You led Zenith in scoring."],
+    ["ZEN","The braces led Zenith in scoring. I want to know what I can do without them."],
+    ["HAZE","So do we."],
+    ["ZEN","Breathe in. Release at the top. Never at the bottom."],
+    ["ORBIT","Is that a riddle? Chat, is this a riddle?"],
+    ["ZEN","It's a jump shot."],
+    ["DIME","Welcome to the Hounds, Zen.","join:ZEN"],
+    ["ZEN","Thank you. I'll be calm when you can't be."]]},
   5:{pre:[["","In the sky boxes, sponsors sip drinks and barely watch."],
     ["BLAZE","They don't even care. They think we're the warmup act."],
     ["OPP","Smile, Hounds. You're the halftime entertainment."],
+    ["ZEN","Let them sip. We breathe."],
     ["YOU","Then let's put on a *show*.","crowd"]]},
   6:{pre:[["","Before tip-off, a courier hands Dime a white envelope with a gold seal."],
     ["DIME","It's from Vale. 'See you at the top. Try not to embarrass yourselves.'"],
@@ -4822,34 +4955,55 @@ const DLG=[
     ["YOU","Calculate *this*."]],
    post:[["","In the locker room, you catch your reflection in the glass. You barely recognise the kid who got off the bus from the East Blocks."],
     ["DIME","You've grown into it. All the way."],["YOU","Into what?"],["DIME","A Hound."]]},
-  7:{pre:[["BLAZE","Two more and it's the Sovereigns. Two more and it's *Vale*."],["MOOSE","Ready."],
+  7:{pre:[["","In the tunnel, a towering player in a torn Sovereigns warmup jacket watches the Hounds warm up."],
+    ["BLAZE","Two more and it's the Sovereigns. Two more and it's *Vale*."],["MOOSE","Ready."],
     ["OPP","Everything we wear is gold. What do *you* have?"],
     ["DIME","Each other."],
     ["BLAZE","...That was really corny, Dime."],
-    ["DIME","Shut up and play."],["YOU","He's not wrong, though."]]},
+    ["DIME","Shut up and play."],["YOU","He's not wrong, though."]],
+   post:[["","The giant in the torn Sovereigns jacket steps out of the tunnel. Even Dozer has to look up."],
+    ["GOLIATH","You're the ones who are going to play Vale."],
+    ["DOZER","Oh my. Hello, sir."],
+    ["GOLIATH","Goliath. I played center for the Sovereigns for three seasons. Vale cut me last month. Said I was 'inefficient.'"],
+    ["MOOSE","Inefficient?"],
+    ["GOLIATH","I don't run their numbers. I just win the paint. Vale doesn't like players he can't control."],
+    ["REX","So what do you want, big fella?"],
+    ["GOLIATH","One game against him. In *your* jersey."],
+    ["DIME","We play for each other here. Not for revenge."],
+    ["GOLIATH","...Then teach me how. I learn fast."],
+    ["MOOSE","Welcome."],
+    ["","Everyone stares. Moose has never welcomed anyone first."],
+    ["DIME","You heard him. Welcome to the Hounds, Goliath.","join:GOLIATH"],
+    ["GOLIATH","Is it true you eat noodles every day?"],["BLAZE","Every. Single. Day."]]},
   8:{pre:[["","The Crowns are the Sovereigns' practice squad. Their whole job is to look like the real thing."],
     ["OPP","If you can't beat us, don't bother showing up tomorrow."],
     ["YOU","We'll show up."],
+    ["GOLIATH","The Crowns run Vale's plays. I know every one of them."],["KAI","Then so do we."],
     ["DIME","Hey. All of you. Whatever happens tomorrow..."],
     ["DIME","...I'm proud of this team. I wanted to say it before it gets loud."],
-    ["MOOSE","Me too."],["BLAZE","Ugh. Fine. Me *three*."]]},
+    ["MOOSE","Me too."],["BLAZE","Ugh. Fine. Me *three*."],
+    ["ROCK","Can I say something too? I love all of you! Even the new ones! *Especially* the new ones!"],
+    ["DOZER","Me too. Very much."]]},
   9:{cap:'VALE',
    pre:[["","The Sovereigns' stadium floats above the clouds. Eighty thousand people are on their feet before anyone touches the ball.","lights"],
     ["OPP","So the Sprawl rats made it. I'll admit it, Dime. I didn't think you'd last a week."],
     ["DIME","Lots of people didn't."],
+    ["GOLIATH","Hello, Kade."],["OPP","Goliath. Still inefficient, I see."],
     ["OPP","Genetically optimized. Trained since birth. Unbeaten in three seasons. You were never supposed to be here."],
     ["MOOSE","'Supposed to' doesn't matter."],
     ["","Everyone turns. Moose is staring straight at Vale."],
     ["MOOSE","Every rim on our court, I welded. Every board, I nailed down. You got handed a stadium. We *built* ours."],
     ["MOOSE","We're supposed to be wherever we decide to be."],
     ["BLAZE","...Moose just said more words than he has all year."],
+    ["SAGE","Whatever happens tonight, you've already changed the game."],
     ["YOU","Then let's make them count.","shake"]],
    post:[["","The buzzer sounds.","buzzer"],
     ["","For a heartbeat, eighty thousand people are silent. Then the stadium explodes.","glass"],
     ["","The Hounds stand in a shower of shattered backboard glass, glittering like rain over the Sprawl."],
+    ["ORBIT","CHAT. *CHAT!* Are you SEEING this?","crowd"],
     ["OPP","...Good game, Hounds. I mean that."],
     ["MANAGER","Ash Hounds. The King League has been *watching*."],
-    ["","The King League's manager steps onto the court and holds out four golden contracts."],
+    ["","The King League's manager steps onto the court and holds out a golden contract for every Hound."],
     ["MANAGER","Sign, and none of you will ever go hungry again."],
     ["DIME","We're not just here to play."],
     ["YOU","We're here to *take over*.","shake"],
@@ -4893,8 +5047,8 @@ const STORY=[
    dlg:DLG[3]}
 ];
 const STORY_GAMES=STORY.length*10;
-const SYL=['VEX','RO','KAI','DAX','ZED','JUNO','REX','NOX','TAJ','IKE','LUX','BO','CY','DRE','FLIP','GUS','HEX','JAX','KO','MACE','NYX','OZ','PIKE','QUINN','RIOT','SAL','TANK','VOLT','WREN','YAZ'];
-var story=null,storyDone=0,storyProDone=false,custom=null,customRaw=null,storyOpen=-1;
+const SYL=['VEX','RO','KO','DAX','ZED','JUNO','RIGG','NOX','TAJ','IKE','LUX','BO','CY','DRE','FLIP','GUS','HEX','JAX','KO','MACE','NYX','OZ','PIKE','QUINN','RIOT','SAL','TANK','VOLT','WREN','YAZ'];
+var story=null,storyDone=0,storyProDone=false,storyLineup=null,custom=null,customRaw=null,storyOpen=-1;
 function sHash(s){let h=7;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
 function storyProGame(){
   const b=(findChar('BLAZE')||{o:{num:8,skin:'#e0ac69',mod:{}}}).o;
@@ -4942,10 +5096,87 @@ function drawHazards(){
   }
   ctx.restore();
 }
-function storyMine(){
-  const hounds={PG:findChar('DIME'),SG:findChar('BLAZE'),C:findChar('MOOSE')};
-  return SLOTS.map(sl=>custom&&custom.pos===sl?ccRoster(custom):[sl,hounds[sl].o.name,hounds[sl].o.num,hounds[sl].o.skin,hounds[sl].o.mod]);
+/* The Ash Hounds roster grows through the story. A recruit is on the team for every game after the one where they join. */
+const RECRUITS=[
+  {n:'KAI',j:11,street:'#3d4a5c',trim:'#ffb000'},{n:'ROCK',j:13,street:'#6b4a2b',trim:'#ffd166'},{n:'REX',j:16,street:'#2a3a6a',trim:'#d4af37'},
+  {n:'ORBIT',j:22,street:'#5a2a6a',trim:'#ff5ee0'},{n:'HAZE',j:25,street:'#7a2020',trim:'#ff9a9a'},{n:'DOZER',j:27,street:'#c9a227',trim:'#2b2b2b'},
+  {n:'SAGE',j:31,street:'#7d8796',trim:'#e8e8e8'},{n:'ZEN',j:34,street:'#e0e6f0',trim:'#3d6aff'},{n:'GOLIATH',j:37,street:'#d0d4e0',trim:'#c9a227'}];
+const RECRUIT_BY={};RECRUITS.forEach(r=>{RECRUIT_BY[r.n]=r;});
+function storyRowOf(nm){const c=findChar(nm);return c?[c.s,c.o.name,c.o.num,c.o.skin,c.o.mod]:null;}
+function storyRoster(g){
+  const rows=['DIME','BLAZE','MOOSE'].map(storyRowOf);
+  if(custom)rows.unshift(ccRoster(custom));
+  RECRUITS.forEach(r=>{if(g>r.j){const x=storyRowOf(r.n);if(x)rows.push(x);}});
+  return rows.filter(Boolean);
 }
+function storyLineupFor(g){
+  const all=storyRoster(g),by={};all.forEach(r=>{by[r[1]]=r;});
+  let st=[];(storyLineup||[]).forEach(n=>{if(by[n]&&st.indexOf(n)<0)st.push(n);});st=st.slice(0,3);
+  if(st.length<3){
+    if(custom&&st.indexOf(custom.name)<0&&st.length<3)st.push(custom.name);
+    const hound={PG:'DIME',SG:'BLAZE',C:'MOOSE'};
+    SLOTS.forEach(sl=>{if(st.length<3&&!st.some(n=>by[n][0]===sl)&&st.indexOf(hound[sl])<0)st.push(hound[sl]);});
+    all.forEach(r=>{if(st.length<3&&st.indexOf(r[1])<0)st.push(r[1]);});
+  }
+  return {start:st.map(n=>by[n]),bench:all.filter(r=>st.indexOf(r[1])<0)};
+}
+function storyMine(g){return storyLineupFor(g==null?(story?story.g:Math.min(storyDone,STORY_GAMES-1)):g).start;}
+/* ---- substitutes: energy drains while you play, the bench gets it back ---- */
+function storyAutoOn(){try{return localStorage.getItem('sk_autosub')!=='0';}catch(e){return true;}}
+function storyBenchMake(rows){return rows.map(r=>({row:r,en:1,played:false,stats:{pts:0,reb:0,stl:0,blk:0,dunk:0,fgm:0,fga:0,three:0}}));}
+function storyBenchTick(dt){
+  if(!story||!story.bench)return;
+  story.bench.forEach(m=>{m.en=Math.min(1,m.en+dt*0.02);});
+  if(story.bench.length&&!storyAutoOn())players.forEach(p=>{if(p.team===0&&p.en<0.4&&!p._tired){p._tired=1;toast(p.name+' is getting tired. Pause the game to make a substitution.');}});
+}
+function storySwap(p,m){
+  const out={row:p._row,en:p.en,stats:p.stats,played:true};
+  const r=m.row,a=Object.assign({},ARCH[r[0]],r[4]||{});
+  p.type=r[0];p.arch=a;p.name=r[1];p.num=r[2];p.skin=r[3];p.h=a.h;p._row=r;p.stats=m.stats;p.en=m.en;
+  p.stamina=1;p.exhausted=false;p.fx={};p.abCd=Math.max(p.abCd||0,2);p._tired=0;
+  const i=story.bench.indexOf(m);story.bench[i]=out;
+  return out;
+}
+function storyAutoSub(){
+  if(!story||!story.bench||!story.bench.length||!storyAutoOn())return;
+  const msgs=[];
+  players.filter(p=>p.team===0&&p.en<0.5).sort((a,b)=>a.en-b.en).forEach(p=>{
+    const fresh=story.bench.filter(m=>m.en>=0.8);if(!fresh.length)return;
+    const m=fresh.find(x=>x.row[0]===p.type)||fresh.sort((a,b)=>b.en-a.en)[0];
+    const was=p.name;storySwap(p,m);msgs.push(p.name+' in for '+was);
+  });
+  if(msgs.length)toast('Sub: '+msgs.join(', ')+'.');
+}
+function storyBenchBox(){return (story&&story.live&&story.bench)?story.bench.filter(m=>m.played).map(m=>({team:0,name:m.row[1],stats:m.stats})):[];}
+let SB=null;
+function subsOpen(mode,d){SB={mode:mode,d:d,sel:null};$('sbTitle').textContent=mode==='game'?'SUBSTITUTES':'LINEUP';
+  $('sbTip').textContent=mode==='game'?'Tap a player on the court, then a bench player, to swap them. Tired players are slower. Resting on the bench brings energy back.':'Pick your three starters. Tap a starter, then a bench player, to swap them. You can change it during the game from the pause menu.';
+  $('sbAuto').checked=storyAutoOn();subsRender();show('subs');}
+function subsRender(){
+  const mk=(list,el,k)=>{el.innerHTML='';list.forEach(x=>{
+    const b=document.createElement('button');b.type='button';b.className='sbc'+(SB.sel&&SB.sel.k===k&&SB.sel.n===x.name?' sel':'');
+    const n=document.createElement('b');n.textContent=x.name;const p=document.createElement('small');p.textContent=x.pos+(x.info?' · '+x.info:'');b.append(n,p);
+    if(x.en!=null){const bar=document.createElement('div');bar.className='sben';const f=document.createElement('i');f.style.width=Math.round(x.en*100)+'%';f.style.background=x.en>0.6?'#3dffa8':(x.en>0.35?'#ffd166':'#ff5a5a');bar.appendChild(f);b.appendChild(bar);b.setAttribute('aria-label',x.name+', energy '+Math.round(x.en*100)+' percent');}
+    b.onclick=()=>subsPick(k,x.name);el.appendChild(b);});};
+  let court,bench;
+  if(SB.mode==='game'){
+    court=players.filter(p=>p.team===0).map(p=>({name:p.name,pos:p.type,en:p.en,info:p.stats.pts+' pts'}));
+    bench=story.bench.map(m=>({name:m.row[1],pos:m.row[0],en:m.en,info:m.stats.pts+' pts'}));
+  }else{
+    const L=storyLineupFor(SB.d.g),tag=r=>custom&&r[1]===custom.name?'Your MyPLAYER · '+ccOvr(custom)+' OVR':((findChar(r[1])||{o:{tag:''}}).o.tag||'');
+    court=L.start.map(r=>({name:r[1],pos:r[0],info:tag(r)}));bench=L.bench.map(r=>({name:r[1],pos:r[0],info:tag(r)}));
+  }
+  mk(court,$('sbCourt'),'c');mk(bench,$('sbBench'),'b');
+  $('sbBenchH').textContent=bench.length?'Bench':'Bench (empty)';
+}
+function subsPick(k,n){
+  if(!SB.sel||SB.sel.k===k){SB.sel=(SB.sel&&SB.sel.k===k&&SB.sel.n===n)?null:{k:k,n:n};uiSnd('uiTick');subsRender();return;}
+  const cn=k==='c'?n:SB.sel.n,bn=k==='b'?n:SB.sel.n;SB.sel=null;
+  if(SB.mode==='game'){const p=players.find(q=>q.team===0&&q.name===cn),m=story.bench.find(q=>q.row[1]===bn);if(p&&m)storySwap(p,m);}
+  else{const names=storyLineupFor(SB.d.g).start.map(r=>r[1]);const i=names.indexOf(cn);if(i>=0){names[i]=bn;storyLineup=names;saveCfg();}}
+  uiSnd('uiSelect');subsRender();
+}
+function subsClose(){hideEl('subs');const m=SB&&SB.mode,d=SB&&SB.d;SB=null;if(m==='game')showPauseMenu();else if(d)cineMatch(d);}
 function storyShowText(title,lines,btn,fn){cinePlay({ci:0,mode:'intro',label:'VELOCITY BREAK',title:title,sub:"The King's Gambit",lines:lines,done:fn});}
 function storyUnlocked(g){if(g===-1)return true;return devMaster||(storyProDone&&g<=storyDone);}
 function storyRender(){
@@ -4954,10 +5185,10 @@ function storyRender(){
   const n=document.createElement('span');n.className='n';
   if(custom){
     const b=document.createElement('b');b.textContent=custom.name+'  #'+custom.num+'  ·  '+ccOvr(custom)+' OVR  ·  '+archOf(custom).n;
-    const sm=document.createElement('small');sm.textContent='Joins the Ash Hounds in place of '+({PG:'Dime',SG:'Blaze',C:'Moose'})[custom.pos]+'. Upgrade points: '+(custom.pts||0)+'.';
+    const sm=document.createElement('small');sm.textContent='Ash Hounds roster: '+storyRoster(Math.min(storyDone,STORY_GAMES-1)).length+' players. Upgrade points: '+(custom.pts||0)+'.';
     info.append(b,sm);n.textContent=ccOvr(custom);
   }else{
-    const b=document.createElement('b');b.textContent='No player yet';const sm=document.createElement('small');sm.textContent='Create your MyPLAYER to join the Ash Hounds and grow from 60 to 99 overall. You can also play as Dime, Blaze and Moose.';info.append(b,sm);n.textContent='?';
+    const b=document.createElement('b');b.textContent='No player yet';const sm=document.createElement('small');sm.textContent='You need a MyPLAYER to play the story. Create one to try out for the Ash Hounds, then grow from 60 to 99 overall.';info.append(b,sm);n.textContent='?';
   }
   h.append(n,info);
   const e=document.createElement('button');e.className='sbtn';e.style.margin='0';e.textContent=custom?'Edit player':'Create player';e.onclick=()=>openCC();h.appendChild(e);
@@ -4982,11 +5213,12 @@ function storyRender(){
     d.append(b,sm,dots);r.append(n2,d);l.appendChild(r);
   });
   const nb=$('stNext');const ng=storyGame(nextG);
-  nb.textContent=!storyProDone?'Play the prologue: The Tryout':storyDone>=STORY_GAMES?'Story complete! Replay any game':'Play next: Chapter '+(ng.ci+1)+', game '+(ng.gi+1)+' vs '+ng.opp.name;
+  nb.textContent=!custom?'Create your MyPLAYER to start':!storyProDone?'Play the prologue: The Tryout':storyDone>=STORY_GAMES?'Story complete! Replay any game':'Play next: Chapter '+(ng.ci+1)+', game '+(ng.gi+1)+' vs '+ng.opp.name;
   nb.disabled=storyProDone&&storyDone>=STORY_GAMES;
 }
 function openStory(){if(!devFeat('story')){toast('Story mode is only in the dev build right now.');return;}hideScreens();storyRender();show('story');}
 function storyStart(g){
+  if(!custom){toast('Create your MyPLAYER first. The story starts with you.');openCC();return;}
   const d=storyGame(g);if(!d||!storyUnlocked(g))return;
   hideEl('story');
   const first=g===-1?!storyProDone:g>=storyDone,talk=first||devMaster;
@@ -4994,7 +5226,7 @@ function storyStart(g){
   const back=()=>{storyRender();show('story');};
   const pre=(talk&&d.dlg&&d.dlg.pre)||[];
   const lbl=d.pro?'PROLOGUE':'CHAPTER '+(d.ci+1)+' · GAME '+(d.gi+1)+(d.boss?' · FINAL':'');
-  const scene=()=>cinePlay({ci:d.ci,d:d,label:lbl,title:d.pro?'The Tryout':d.where,sub:d.pro?'vs BLAZE · one on one':'vs '+d.opp.name,lines:pre,match:true,done:go,back:back});
+  const scene=()=>cinePlay({ci:d.ci,d:d,g:d.g,label:lbl,title:d.pro?'The Tryout':d.where,sub:d.pro?'vs BLAZE · one on one':'vs '+d.opp.name,lines:pre,match:true,done:go,back:back});
   if(d.pro&&talk)cinePlay({ci:0,mode:'intro',label:'VELOCITY BREAK',title:'THE LOWER SPRAWL',sub:"The King's Gambit",lines:STORY_PRO.intro.map(x=>['',x]),done:scene});
   else scene();
 }
@@ -5013,7 +5245,7 @@ function upgSync(c,k){
 }
 function storyAfter(w){
   const g=story.g;let xp=0,me=null;
-  if(custom){me=players.find(p=>p.team===0&&p.name===custom.name);
+  if(custom){me=players.find(p=>p.team===0&&p.name===custom.name)||storyBenchBox().find(p=>p.name===custom.name);
     if(me){const st=me.stats,mult=[1,1.2,1.45,1.7][story.def.diff]||1;xp=Math.round((60+st.pts*6+st.reb*4+st.stl*10+st.blk*10+(w===0?120:0))*mult);custom.xp=(custom.xp||0)+xp;}}
   if(w===0){if(g===-1)storyProDone=true;else if(storyDone<=g)storyDone=g+1;story.won=true;}else story.won=false;
   let msg=w===0?(g===-1?' You beat Blaze. Welcome to the Ash Hounds!':' Game won!'):(g===-1?' Blaze wins this one. Run it back.':' The Hounds will have to run it back.');
@@ -5032,10 +5264,10 @@ function storyContinue(){
     story=null;createGame();checkBall(0);phase='menu';
     const after=()=>{if(st.g+1<STORY_GAMES&&storyUnlocked(st.g+1))storyStart(st.g+1);else{storyRender();show('story');}};
     const post=(d.dlg&&d.dlg.post)||DLG_WIN[(st.g*7+3)%DLG_WIN.length];
-    if(talk)cinePlay({ci:d.ci,d:d,lines:post,done:after});else after();
+    if(talk)cinePlay({ci:d.ci,d:d,g:st.g,lines:post,done:after});else after();
   }else{
     const again=()=>{story.zones=storyZones(d.haz);startGame();};
-    if(talk)cinePlay({ci:d.ci,d:d,lines:(d.dlg&&d.dlg.lose)||DLG_LOSS[Math.floor(Math.random()*DLG_LOSS.length)],done:again});else again();
+    if(talk)cinePlay({ci:d.ci,d:d,g:st.g,lines:(d.dlg&&d.dlg.lose)||DLG_LOSS[Math.floor(Math.random()*DLG_LOSS.length)],done:again});else again();
   }
 }
 function storyQuit(){story=null;hideEl('result');createGame();checkBall(0);phase='menu';storyRender();show('story');}
@@ -5046,6 +5278,15 @@ const CAST={
   BLAZE:{col:'#ff7a1a',pitch:700,hair:'flat',hc:'#20140c',tip:'#ff7a1a',build:0.95,side:0},
   MOOSE:{col:'#c9a0ff',pitch:250,hair:'bald',beard:'#2a1d14',build:1.32,side:0},
   YOU:{col:'#3dffa8',pitch:440,hair:'buzz',hc:'#16110d',build:1,side:0},
+  KAI:{col:'#7fd1ff',pitch:520,hair:'short',hc:'#120e0a',build:0.92,side:0},
+  ROCK:{col:'#ffb347',pitch:300,hair:'buzz',hc:'#120e0a',build:1.3,side:0},
+  REX:{col:'#e6c27a',pitch:330,hair:'short',hc:'#1a1410',beard:'#2a1f16',build:1.05,side:0},
+  ORBIT:{col:'#ff5ee0',pitch:640,hair:'puff',hc:'#1a120c',band:'#ff5ee0',build:0.95,side:0},
+  HAZE:{col:'#b7a6ff',pitch:410,hair:'short',hc:'#0e0e14',build:0.98,side:0,hood:1},
+  DOZER:{col:'#ffd23f',pitch:220,hair:'bald',hat:'#ffd23f',build:1.38,side:0},
+  SAGE:{col:'#b8f0c0',pitch:290,hair:'slick',hc:'#d6d6d6',beard:'#cfcfcf',build:1,side:0},
+  ZEN:{col:'#a8e2ff',pitch:470,hair:'puff',hc:'#0e0b08',band:'#ffffff',build:0.94,side:0},
+  GOLIATH:{col:'#ff6b6b',pitch:180,hair:'locks',hc:'#100c09',build:1.46,side:0},
   OPP:{col:'#ff4d6d',pitch:360,build:1.05,side:1},
   SCOUT:{label:'THE SCOUT',col:'#b8c0d8',pitch:300,hair:'short',hc:'#111',suit:'#1c2030',shades:1,build:1,side:1,skin:'#a0693a'},
   MANAGER:{label:'MR. HALE',col:'#ffd166',pitch:210,hair:'slick',hc:'#c9ccd6',suit:'#b8902a',shades:1,build:1.1,side:1,skin:'#e0ac69'}
@@ -5059,6 +5300,10 @@ function cineFig(sp,d){
   else if(sp==='YOU'){
     f.skin=custom?custom.skin:'#c68642';f.num=custom?custom.num:'?';f.jc=HOUNDS_JERSEY.c;f.jt=HOUNDS_JERSEY.t;
     f.name=custom?custom.name:'YOU';f.build=custom?(custom.pos==='C'?1.22:(custom.pos==='SG'?1:0.96)):1;if(!custom)f.hood=1;
+    if(d&&d.pro){f.side=1;f.jc='#3a4256';f.jt='#9aa3c7';}
+  }else if(RECRUIT_BY[sp]){
+    const o=ch(sp),R=RECRUIT_BY[sp],g=(CN&&CN.o&&CN.o.g!=null)?CN.o.g:99;f.skin=o.skin;f.num=o.num;f.name=sp;
+    if(g>R.j){f.jc=HOUNDS_JERSEY.c;f.jt=HOUNDS_JERSEY.t;f.side=0;f.hood=0;}else{f.jc=R.street;f.jt=R.trim;f.side=1;}
   }else if(sp==='OPP'){
     const r=d&&d.opp?d.opp.roster[0]:['PG','RIVAL',0,'#c68642'],h=sHash(r[1]);
     f.skin=r[3];f.num=r[2];f.jc=d?d.opp.c:'#555';f.jt=d?d.opp.a:'#fff';f.name=r[1]+(d?' · '+d.opp.name:'');
@@ -5109,6 +5354,7 @@ function drawFig(g,f,X,Y,S,talk,lit,T,mood){
   else if(f.hair==='puff'){g.beginPath();g.arc(hx,hy-ry*0.55,rx*1.18,Math.PI*0.95,Math.PI*2.05);g.fill();}
   else if(f.hair==='slick'){g.beginPath();g.ellipse(hx-dir*rx*0.1,hy-ry*0.4,rx*1.06,ry*0.68,-dir*0.15,Math.PI,0);g.fill();}
   if(f.band){g.fillStyle=f.band;g.fillRect(hx-rx*1.0,hy-ry*0.62,rx*2,S*0.035);}
+  if(f.hat){g.fillStyle=f.hat;g.beginPath();g.ellipse(hx,hy-ry*0.5,rx*1.12,ry*0.7,0,Math.PI,0);g.fill();g.fillRect(hx-rx*1.4,hy-ry*0.55,rx*2.8,S*0.028);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(hx-S*0.012,hy-ry*1.18,S*0.024,ry*0.62);}
   /* face */
   const ex=hx+dir*rx*0.12,ey=hy-ry*0.05,es=rx*0.32;
   const blink=(f.blink<0.12);
@@ -5205,6 +5451,7 @@ function cineBg(g,W,H,T,ci,fx){
 }
 function cineFx(k){
   if(!k||!CN)return;const W=CN.cv.width,H=CN.cv.height,bg=CN.bg;
+  if(k.indexOf('join:')===0){const f=CN.cast.find(c=>c.sp===k.slice(5));if(f){f.side=0;f.jc=HOUNDS_JERSEY.c;f.jt=HOUNDS_JERSEY.t;f.hood=0;CN.hype=1.5;CN.flash=0.25;uiSnd('uiGood');}return;}
   if(k==='shake')CN.shake=0.45;
   if(k==='flash'){CN.flash=1;uiSnd('uiPop');}
   if(k==='train'){CN.train=1.6;CN.shake=1.2;if(uiOk()&&sfx.rumble)sfx.rumble();}
@@ -5225,7 +5472,7 @@ function cinePlay(o){
   Object.assign(CN,{o:o,i:-1,n:0,full:0,seg:null,wait:0,auto:CN.auto||false,log:[],shake:0,flash:0,train:0,hype:0,dark:0,T:0,last:performance.now(),open:true,titleT:o.title?1.9:0,cast:[],ended:false,trainT:9});
   CN.cv=$('cineCv');
   const sps=[];(o.lines||[]).forEach(l=>{if(l[0]&&sps.indexOf(l[0])<0)sps.push(l[0]);});
-  const order=['YOU','DIME','BLAZE','MOOSE','OPP','SCOUT','MANAGER'];sps.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+  const order=['YOU','DIME','BLAZE','MOOSE','KAI','ROCK','REX','ORBIT','HAZE','DOZER','SAGE','ZEN','GOLIATH','OPP','SCOUT','MANAGER'];sps.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
   CN.cast=sps.map(sp=>cineFig(sp,o.d));
   $('cTitleS').textContent=o.label||'';$('cTitleB').textContent=o.title||'';$('cTitleV').textContent=o.sub||'';
   $('cTitle').classList.toggle('on',!!o.title);
@@ -5276,9 +5523,11 @@ function cineClose(){if(!CN)return;CN.open=false;hideEl('cine');if(CN.raf){cance
 function cineMatch(d){
   const m=$('cMatch');m.classList.remove('hide');
   $('cmLbl').textContent=d.pro?'PROLOGUE · ONE ON ONE':'CHAPTER '+(d.ci+1)+' · GAME '+(d.gi+1)+(d.boss?' · FINAL':'');
-  let mine=storyMine().map(r=>r[1]);if(d.solo)mine=[custom?custom.name:'DIME'];const th=d.opp.roster.map(r=>r[1]);
+  const LU=d.solo?null:storyLineupFor(d.g);let mine=d.solo?[custom?custom.name:'DIME']:LU.start.map(r=>r[1]);const th=d.opp.roster.map(r=>r[1]);
   const plate=(el,name,c,dk,acc,names)=>{el.innerHTML='';el.style.background='linear-gradient(135deg,'+c+','+dk+')';el.style.color=acc;const b=document.createElement('b');b.textContent=name;const s=document.createElement('small');s.textContent=names.join(' · ');el.append(b,s);};
   plate($('cmA'),d.solo?(custom?custom.name:'DIME'):'ASH HOUNDS','#c9ced9','#3a3f4f','#10131f',mine);
+  if(LU&&LU.bench.length){const s2=document.createElement('small');s2.textContent='Bench: '+LU.bench.map(r=>r[1]).join(' · ');s2.style.opacity='.7';$('cmA').appendChild(s2);}
+  $('cmLine').classList.toggle('hide',!LU||!LU.bench.length);$('cmLine').onclick=()=>subsOpen('lineup',d);
   plate($('cmB'),d.opp.name,d.opp.c,d.opp.d,d.opp.a,th);
   const chips=[DIFF[d.diff].name,fmt(d.len)+' game',d.where];
   if(d.haz&&(d.haz.slick||d.haz.crack))chips.push('Slick spots and cracked pavement');else chips.push('Clean court');
@@ -5315,15 +5564,16 @@ function cineLoop(now){
   cineBg(g,W,H,CN.T,ci);
   /* cast */
   const left=CN.cast.filter(c=>!c.side),right=CN.cast.filter(c=>c.side),S=H*0.5,bx=$('cBox'),kk=H/(cv.clientHeight||H),boxTop=bx.offsetTop*kk,base=Math.min(H*0.95,boxTop-H*0.02+0.64*S);
-  const place=(arr,side)=>arr.forEach((c,i)=>{const n=arr.length,step=Math.min(0.13,0.34/Math.max(1,n-1)),x0=0.13+(n>1?i*step:0.08);c.tx=(side?1-x0:x0)*W;});
+  const place=(arr,side)=>arr.forEach((c,i)=>{const n=arr.length,room=(side?left:right).length?0.34:0.66,step=Math.min(0.13,room/Math.max(1,n-1)),x0=0.13+(n>1?i*step:0.08);c.tx=(side?1-x0:x0)*W;});
   place(left,0);place(right,1);
+  CN.cast.forEach(c=>{if(c.x===undefined)c.x=c.tx;c.x+=(c.tx-c.x)*Math.min(1,dt*3.2);});
   const speaking=L&&!CN.big?L[0]:null;
   CN.cast.forEach(c=>{c.a=Math.min(1,c.a+dt*2.2);const tgt=c.sp===speaking?1:0;c.k+=(tgt-c.k)*Math.min(1,dt*8);c.blink-=dt;if(c.blink<0)c.blink=2.5+Math.random()*3.5;if(c.sp===speaking&&CN.n<CN.full)c.flap+=dt*22;else c.flap=0;});
   const drawOrder=CN.cast.slice().sort((a,b)=>a.k-b.k);
   const inMatch=!$('cMatch').classList.contains('hide');
   for(const c of drawOrder){
     const enter=(1-c.a)*(c.side?1:-1)*W*0.25,bob=c.k>0.5?Math.sin(CN.T*3)*H*0.004:0;
-    const sc=0.92+0.1*c.k,X=c.tx+enter+(c.side?-1:1)*c.k*W*0.02,Y=base+bob-c.k*H*0.02,SS=S*sc,B=c.build||1;
+    const sc=0.92+0.1*c.k,X=c.x+enter+(c.side?-1:1)*c.k*W*0.02,Y=base+bob-c.k*H*0.02,SS=S*sc,B=c.build||1;
     const ow=Math.ceil(SS*1.25*B),oh=Math.ceil(SS*1.15);
     const oc=c.oc||(c.oc=document.createElement('canvas'));if(oc.width!==ow||oc.height!==oh){oc.width=ow;oc.height=oh;}
     const o2=oc.getContext('2d');o2.clearRect(0,0,ow,oh);
@@ -5337,6 +5587,7 @@ function cineLoop(now){
   if(CN.flash>0){g.fillStyle='rgba(255,255,255,'+Math.min(1,CN.flash)+')';g.fillRect(0,0,W,H);}
 }
 function cineKey(e){
+  if(!$('subs').classList.contains('hide'))return;
   if(!CN||!CN.open||$('cine').classList.contains('hide'))return;
   const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'))return;
   try{sfx.init();}catch(x){}
@@ -5582,6 +5833,9 @@ function upgRender(){
   $('stBack').onclick=()=>{hideEl('story');go('offline');};
   $('stIntro').onclick=()=>{hideEl('story');storyShowText(STORY_INTRO.title,STORY_INTRO.p.map(x=>['',x]),'Back to story',()=>{storyRender();show('story');});};
   $('stNext').onclick=()=>storyStart(storyProDone?Math.min(storyDone,STORY_GAMES-1):-1);
+  $('subBtn').onclick=()=>{hideEl('pause');subsOpen('game');};
+  $('sbBack').onclick=subsClose;
+  $('sbAuto').onchange=()=>{try{localStorage.setItem('sk_autosub',$('sbAuto').checked?'1':'0');}catch(e){}};
   $('offStory').onclick=openStory;
 })();
 function validCustom(c){
