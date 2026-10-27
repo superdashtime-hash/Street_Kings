@@ -787,16 +787,16 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
       <h1 style="font-size:clamp(22px,4.4cqw,58px);margin:0">UPGRADES</h1>
       <div class="uphead"><b class="o" id="upOvr">60</b><div style="text-align:left"><b id="upName" style="font-size:clamp(12px,1.6cqw,21px)"></b><div class="tag" style="margin:0">OVR · 60 at creation, 99 when fully upgraded</div></div></div>
       <div class="xpb"><i id="upXp"></i></div><p class="tag" id="upPts" style="margin:0 0 .4cqw"></p>
-      <p class="tag" style="margin:0">Win story games and fill the box score to earn MyPLAYER XP. Every 25 XP is one upgrade point. Raising an attribute costs 1 point below 70, 2 points from 70 to 84, and 3 points from 85 up. Yellow marks are your potential.</p>
+      <p class="tag" style="margin:0">Win story games and fill the box score to earn MyPLAYER XP, which turns into upgrade points. Story progress sets how many points you can earn so far, and every attribute can reach its potential after Chapter 4, Game 7. Raising an attribute costs 1 point below 70, 2 points from 70 to 84, and 3 points from 85 up. Yellow marks are your potential.</p>
       <div id="upList"></div>
       <div class="row"><button class="go back" id="upBack">Back</button></div>
     </div></div>
   <div id="devAdm" class="ov hide"><div class="card scr wide">
-      <h1 style="font-size:clamp(22px,4.6cqw,62px)">DEV CODES</h1>
-      <p class="tag" style="margin-top:0">Make codes that let testers into the dev build. Each one stops working when it expires.</p>
-      <div class="row"><input id="daNote" maxlength="30" placeholder="Who is it for?" aria-label="Who the code is for" style="width:16cqw"><select id="daExp" aria-label="Expires after"><option value="3600">1 hour</option><option value="86400" selected>1 day</option><option value="259200">3 days</option><option value="604800">1 week</option><option value="2592000">30 days</option></select><input id="daCode" maxlength="16" placeholder="Code (optional)" aria-label="Custom code" style="width:12cqw"><button class="go" id="daMake" style="margin-top:0">Make code</button></div>
+      <h1 style="font-size:clamp(22px,4.6cqw,62px)">DEV PASSES</h1>
+      <p class="tag" style="margin-top:0">Make temporary passes that let testers into the dev build. A pass stops working when it expires, and a one-player pass only works for the first account that uses it.</p>
+      <div class="row"><input id="daNote" maxlength="30" placeholder="Who is it for?" aria-label="Who the code is for" style="width:16cqw"><select id="daExp" aria-label="Expires after"><option value="900">15 minutes</option><option value="3600">1 hour</option><option value="14400">4 hours</option><option value="86400" selected>1 day</option><option value="259200">3 days</option><option value="604800">1 week</option><option value="2592000">30 days</option></select><select id="daUses" aria-label="Who can use it"><option value="1" selected>One player</option><option value="0">Anyone with the code</option></select><input id="daCode" maxlength="16" placeholder="Code (optional)" aria-label="Custom code" style="width:12cqw"><button class="go" id="daMake" style="margin-top:0">Make pass</button></div>
       <p class="tag" id="daMsg" role="status"></p>
-      <h2>Codes</h2><div id="daList"></div>
+      <h2>Passes</h2><div id="daList"></div>
       <h2>Recent dev logins</h2><div id="daLog"></div>
       <div class="row"><button class="go back" id="daBack">Back</button></div>
     </div></div>
@@ -1025,7 +1025,9 @@ function renderSettings(){
       add('h2','Dev build');
       add('p','Unreleased content. Turn features on or off to test them. Nothing here changes your saved progress.','tag');
       DEV_FEATURES.forEach(f=>{const r=document.createElement('div');r.className='srow';const l=document.createElement('span');l.textContent=f.name;l.title=f.desc;const c=document.createElement('input');c.type='checkbox';c.checked=!!devX[f.id];c.setAttribute('aria-label',f.name);c.onchange=()=>{devX[f.id]=c.checked;devApply();};r.append(l,c);body.appendChild(r);const d=add('p',f.desc,'tag');d.style.marginTop='0';});
-      if(devAdmin&&devMaster){const da=add('button','Manage dev codes','sbtn');da.onclick=openDevAdmin;}
+      if(devMaster){const da=add('button','Make dev passes','sbtn');da.onclick=openDevAdmin;}
+      const rs=add('button','Reset dev save','sbtn');rs.title='Start the dev build over: story, MyPLAYER, coins and unlocks go back to a fresh copy of your real save.';
+      rs.onclick=()=>{if(rs.dataset.arm!=='1'){rs.dataset.arm='1';rs.textContent='Press again to reset';setTimeout(()=>{if(rs.isConnected){rs.dataset.arm='';rs.textContent='Reset dev save';}},3500);return;}devReset();renderSettings();};
       const lv=add('button','Leave dev build','sbtn');lv.onclick=()=>{devLeave();renderSettings();};
     }
     const h3=add('button',"What's new",'sbtn');h3.onclick=()=>showDevlog();
@@ -1153,7 +1155,7 @@ Object.assign(ABIL,{
 let coins=300,owned=['DIME','BLAZE','MOOSE'];
 let squad={PG:2,SG:1,C:0},teamCol=0,teamName='NEON';
 let user='';
-function defaults(){tourSave=null;if(typeof custom!=='undefined'){custom=null;customRaw=null;storyDone=0;}wantFull=false;acctShots=[0,0,0];acctQmWins=0;lbShow=true;acctXp=0;coins=300;owned=['DIME','BLAZE','MOOSE'];squad={PG:2,SG:1,C:0};teamCol=0;teamName='NEON';oppIdx=0;gameLen=240;titles=0;gm=3;pk1='DIME';pk2='BLAZE';redeemed=[];}
+function defaults(){tourSave=null;if(typeof custom!=='undefined'){custom=null;customRaw=null;storyDone=0;storyProDone=false;}wantFull=false;acctShots=[0,0,0];acctQmWins=0;lbShow=true;acctXp=0;coins=300;owned=['DIME','BLAZE','MOOSE'];squad={PG:2,SG:1,C:0};teamCol=0;teamName='NEON';oppIdx=0;gameLen=240;titles=0;gm=3;pk1='DIME';pk2='BLAZE';redeemed=[];}
 function applyCfg(cfg){
   defaults();
   if(!cfg||typeof cfg!=='object')return;
@@ -1174,8 +1176,8 @@ function applyCfg(cfg){
     if(Array.isArray(cfg.redeemed))redeemed=cfg.redeemed.filter(x=>typeof x==='string').slice(0,200);
     if([1,2,3].indexOf(cfg.gm)>=0)gm=cfg.gm;
     tourSave=validTour(cfg.tr);
-    if(typeof validCustom==='function'){customRaw=cfg.cc||null;custom=validCustom(cfg.cc);storyDone=clamp(Math.floor(+cfg.stp||0),0,40);if(cfg.stv!==2&&storyDone<=4)storyDone*=10;}
-    if(!(typeof devOn!=='undefined'&&devOn)&&(cfg.cc||cfg.stp)){devStash(cfg.cc,cfg.stp);custom=null;customRaw=null;storyDone=0;}
+    if(typeof validCustom==='function'){customRaw=cfg.cc||null;custom=validCustom(cfg.cc);storyDone=clamp(Math.floor(+cfg.stp||0),0,40);if(cfg.stv!==2&&storyDone<=4)storyDone*=10;storyProDone=!!cfg.spr||storyDone>0;}
+    if(!(typeof devOn!=='undefined'&&devOn)&&(cfg.cc||cfg.stp)){devStash(cfg.cc,cfg.stp);custom=null;customRaw=null;storyDone=0;storyProDone=false;}
     if(typeof cfg.pk1==='string')pk1=cfg.pk1;
     if(typeof cfg.pk2==='string')pk2=cfg.pk2;
     SLOTS.forEach(s=>{if(owned.indexOf(POOL[s][squad[s]].name)<0)squad[s]=POOL[s].findIndex(o=>owned.indexOf(o.name)>=0);});
@@ -1183,7 +1185,7 @@ function applyCfg(cfg){
     if(owned.indexOf(pk2)<0||pk2===pk1)pk2=owned.find(n=>n!==pk1);
   }catch(e){}
 }
-function curCfg(){return {squad:squad,teamCol:teamCol,teamName:teamName,oppIdx:oppIdx,gameLen:gameLen,coins:coins,titles:titles,redeemed:redeemed,gm:gm,pk1:pk1,pk2:pk2,owned:(typeof devRealOwned!=='undefined'&&devRealOwned)?devRealOwned:owned,xp:acctXp,qmw:acctQmWins,full:wantFull,sh:acctShots,lb:lbShow,tr:tourSave?JSON.stringify(tourSave):null,cc:(typeof custom!=='undefined'&&custom)?JSON.stringify(custom):((typeof customRaw!=='undefined'&&customRaw)||null),stp:(typeof storyDone!=='undefined')?storyDone:0,stv:2,ts:Date.now()};}
+function curCfg(){return {squad:squad,teamCol:teamCol,teamName:teamName,oppIdx:oppIdx,gameLen:gameLen,coins:coins,titles:titles,redeemed:redeemed,gm:gm,pk1:pk1,pk2:pk2,owned:(typeof devRealOwned!=='undefined'&&devRealOwned)?devRealOwned:owned,xp:acctXp,qmw:acctQmWins,full:wantFull,sh:acctShots,lb:lbShow,tr:tourSave?JSON.stringify(tourSave):null,cc:(typeof custom!=='undefined'&&custom)?JSON.stringify(custom):((typeof customRaw!=='undefined'&&customRaw)||null),stp:(typeof storyDone!=='undefined')?storyDone:0,spr:(typeof storyProDone!=='undefined'&&storyProDone)?1:0,stv:2,ts:Date.now()};}
 function readAccts(){try{return JSON.parse(localStorage.getItem('sk_accts')||'{}')||{};}catch(e){return {};}}
 function writeAccts(a){try{localStorage.setItem('sk_accts',JSON.stringify(a));}catch(e){}}
 try{
@@ -1282,7 +1284,7 @@ function createGame(){
     {id:1,name:curOpp().name,color:curOpp().c,dark:curOpp().d,accent:curOpp().a,score:0,needClear:false}
   ];
   let mine,theirs=curOpp().roster.slice();const GM=stl?3:(practice?(hangOn?1:2):gm);
-  if(stl)mine=storyMine();
+  if(stl){mine=storyMine();if(story.def.solo){mine=[(custom&&mine.find(r=>r[1]===custom.name))||mine[0]];theirs=theirs.slice(0,1);}}
   else if(GM===3)mine=SLOTS.map(s=>{const o=POOL[s][squad[s]];return [s,o.name,o.num,o.skin,o.mod];});
   else{
     mine=[pk1,pk2].slice(0,GM).map(nm=>{const c=findChar(nm)||findChar('DIME');return [c.s,c.o.name,c.o.num,c.o.skin,c.o.mod];});
@@ -1299,7 +1301,7 @@ function createGame(){
       stamina:1,exhausted:false,sprinting:false,think:rnd(0.3,1),spot:i,spotT:0,tx:0,ty:0,drive:0,probe:rnd(-0.6,0.6),blockAt:-1,passCd:0,stance:false,guard:null,fx:{},abCd:4,
       stats:{pts:0,reb:0,stl:0,blk:0,dunk:0,fgm:0,fga:0,three:0}});
   }
-  if(stl){teams[0].name='ASH HOUNDS';teams[0].color='#c9ced9';teams[0].dark='#3a3f4f';teams[0].accent='#ff7a1a';}
+  if(stl){teams[0].name='ASH HOUNDS';teams[0].color='#c9ced9';teams[0].dark='#3a3f4f';teams[0].accent='#ff7a1a';if(story.def.solo){teams[0].name=custom?custom.name:'DIME';teams[1].name='BLAZE';}}
   if(pvp)[0,1].forEach(i=>{const col=COLORS[netCfg.cols[i]];Object.assign(teams[i],{name:netCfg.names[i],color:col.c,dark:col.d,accent:col.a});});
   players.forEach(p=>{p.guard=players.find(q=>q.team!==p.team&&q.idx===p.idx);});
   ball={x:0,y:0,z:1,vx:0,vy:0,vz:0,state:'loose',holder:null,spin:0,age:0,shooter:null,shooterTeam:0,made:false,three:false,fromShot:false,scored:false,passer:null,target:null,passAge:0};
@@ -2749,7 +2751,7 @@ function startGame(){
   hideScreens();hideEl('result');hideEl('pause');
   hintT=14;
   checkBall(0);
-  if(story&&story.live)showBanner('CHAPTER '+(story.def.ci+1)+' · GAME '+(story.def.gi+1),'vs '+story.def.opp.name+' | '+DIFF[diffIdx].name,'#ff9a3d');
+  if(story&&story.live)showBanner(story.def.pro?'PROLOGUE · THE TRYOUT':'CHAPTER '+(story.def.ci+1)+' · GAME '+(story.def.gi+1),'vs '+story.def.opp.name+' | '+DIFF[diffIdx].name,'#ff9a3d');
   else showBanner('TIP OFF',(pvp?netCfg.gm:gm)+'v'+(pvp?netCfg.gm:gm)+' | '+fmt(pvp?netCfg.len:gameLen)+(pvp?'':' | '+DIFF[diffIdx].name),'#ffe066');
 }
 function seg(id,cb){
@@ -3028,7 +3030,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.1.15';
+const GAME_VER='2.1.16';
 const DEV_VER='2.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -3107,7 +3109,7 @@ function mergeCfg(R,L,B){
   const uni=(a,b)=>{const s=(Array.isArray(a)?a:[]).slice();(Array.isArray(b)?b:[]).forEach(x=>{if(s.indexOf(x)<0)s.push(x);});return s;};
   o.owned=uni(R.owned,L.owned);o.redeemed=uni(R.redeemed,L.redeemed);
   const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
-  ['squad','teamCol','teamName','oppIdx','gameLen','gm','pk1','pk2','full','lb','tr','cc','stp'].forEach(k=>{
+  ['squad','teamCol','teamName','oppIdx','gameLen','gm','pk1','pk2','full','lb','tr','cc','stp','spr'].forEach(k=>{
     if(!B||!same(L[k],B[k]))o[k]=L[k]===undefined?R[k]:L[k];
   });
   o.ts=Math.max(num(R.ts),num(L.ts));
@@ -4446,8 +4448,8 @@ function devStash(cc,stp){
 function devSandboxIn(){
   devRealCfg=curCfg();
   const d=devSaveGet();
-  const start=Object.assign({},devRealCfg,{tr:null,cc:null,stp:0});
-  applyCfg(d&&d.owned?Object.assign({},start,d):Object.assign({},start,d?{cc:d.cc||null,stp:d.stp||0}:{}));
+  const start=Object.assign({},devRealCfg,{tr:null,cc:null,stp:0,spr:0});
+  applyCfg(d&&d.owned?Object.assign({},start,d):Object.assign({},start,d?{cc:d.cc||null,stp:d.stp||0,spr:d.spr||0}:{}));
   devSaveNow();
 }
 function devSandboxOut(){
@@ -4487,228 +4489,391 @@ async function devEnter(){
   if(devTries.length>=5){msg.textContent='Too many tries. Wait a minute and try again.';return;}
   devTries.push(now);
   if(!raw){msg.textContent='Type the dev code first.';return;}
-  const hh=h53('skdev|'+raw);let ok=hh===DEV_HASH,label='master',expired=false;devExp=0;
+  const hh=h53('skdev|'+raw);let ok=hh===DEV_HASH,label='master',expired=false,taken=false;devExp=0;
   if(!ok&&cloudOn&&cloudUser&&fb){
     msg.textContent='Checking...';
-    try{const d=await fb.fs.getDoc(fb.fs.doc(fb.db,'devcodes',hh));if(d.exists()){const x=d.data();label=String(x.note||'code').slice(0,30);if(tms(x.exp)>Date.now()){ok=true;devExp=tms(x.exp);}else expired=true;}}catch(e){}
+    try{const ref=fb.fs.doc(fb.db,'devcodes',hh),d=await fb.fs.getDoc(ref);if(d.exists()){const x=d.data();label=String(x.note||'pass').slice(0,30);
+      if(tms(x.exp)>Date.now()){
+        const used=Array.isArray(x.used)?x.used:[],max=Math.floor(+x.max||0);
+        if(max>0&&used.indexOf(cloudUser.uid)<0){if(used.length>=max)taken=true;else{try{await fb.fs.updateDoc(ref,{used:used.concat([cloudUser.uid])});}catch(e){taken=true;}}}
+        if(!taken){ok=true;devExp=tms(x.exp);}
+      }else expired=true;}}catch(e){}
   }
-  devLog(ok,ok||expired?label:'wrong');
-  if(!ok){uiSnd('uiBad');msg.textContent=expired?'That dev code has expired. Ask for a new one.':'That dev code is not valid. This attempt was logged.';return;}
-  devOn=true;devSandboxIn();devMaster=(hh===DEV_HASH);DEV_FEATURES.forEach(f=>{devX[f.id]=f.on;});
+  devLog(ok,ok||expired||taken?label+(taken?' (already used)':''):'wrong');
+  if(!ok){uiSnd('uiBad');msg.textContent=expired?'That dev pass has expired. Ask for a new one.':(taken?'That dev pass was for one player and someone else already used it.':'That dev code is not valid. This attempt was logged.');return;}
+  devOn=true;devSandboxIn();devMaster=(hh===DEV_HASH);if(devMaster)devClaimAdmin(raw);DEV_FEATURES.forEach(f=>{devX[f.id]=f.on;});
   try{sessionStorage.setItem('sk_devb','1');}catch(e){}
   $('devIn').value='';uiSnd('uiGood');hideEl('devDlg');devApply();
   toast('Welcome to the dev build'+(devExp?' (your code expires '+new Date(devExp).toLocaleString()+')':'')+'. Online play is off while you are in it.');
   setTab='help';openSettings('menu');
 }
+function devReset(){
+  try{localStorage.removeItem(devSaveKey());}catch(e){}
+  if(devRealCfg){devRealOwned=null;applyCfg(Object.assign({},devRealCfg,{tr:null,cc:null,stp:0,spr:0}));}
+  custom=null;customRaw=null;storyDone=0;storyProDone=false;
+  devApply();devSaveNow();try{refreshAll();}catch(e){}
+  uiSnd('uiGood');toast('Dev save reset. Story, MyPLAYER and dev progress start fresh from a copy of your real save.');
+}
+async function devClaimAdmin(raw){
+  if(!(cloudOn&&cloudUser&&fb))return false;
+  if(await devCheckAdmin())return true;
+  try{await fb.fs.setDoc(fb.fs.doc(fb.db,'admins',cloudUser.uid),{k:raw,t:fb.fs.serverTimestamp()});devAdmin=true;}catch(e){devAdmin=false;}
+  return devAdmin;
+}
 function devLeave(){if(devOn)devSaveNow();devOn=false;devMaster=false;devX={};try{sessionStorage.removeItem('sk_devb');}catch(e){}devSandboxOut();devApply();toast('You left the dev build. Your real progress is back.');}
 $('devGo').onclick=devEnter;$('devIn').addEventListener('keydown',e=>{if(e.key==='Enter')devEnter();});
 $('devBack').onclick=()=>{hideEl('devDlg');openSettings(settingsFrom==='pause'?'pause':'menu');};
 /* ===== story mode: Velocity Break, The King's Gambit (dev build) ===== */
-const STORY_INTRO={title:'THE LOWER SPRAWL',p:[
-  "In the Lower Sprawl, basketball wasn't a game; it was a currency. Down in the smog-choked, neon-lit slums, the courts were cracked concrete and rusted chain-link. If you lost, you went hungry. If you won, you survived another week.",
-  "At the center of it all was a trio known as the Ash Hounds: Dime, the quiet architect who could thread a pass through the eye of a needle. Blaze, a walking stick of dynamite who wanted to embarrass the Upper City kids. Moose, the scrap-yard giant who owned the paint.",
-  "Their dream was the King League, a billion-dollar 3v3 syndicate played in hovering glass stadiums above the city. The only way in was the Gauntlet, a brutal street tournament where the prize was a single golden contract.",
-  "And now they have a new fourth: you. Earn your spot, survive the Sprawl, and take the Hounds all the way to the sky."]};
+
 /* Story dialogue. Each line is [speaker, text, effect]. Speakers: '' narrator, DIME, BLAZE, MOOSE, YOU, OPP (the other team's captain), SCOUT, MANAGER.
-   Effects: shake, flash, train, crowd, lights, buzzer, glass, end. Wrap a word in *stars* to make it pop in the speaker's colour. */
+   Effects: shake, flash, train, crowd, lights, buzzer, glass, end. Wrap a word in *stars* to make it pop in the speaker's colour.
+   cap: the other captain's name for that game. lose: a scene that plays after losing that game. */
+const STORY_PRO={
+  intro:[
+    "In the Lower Sprawl, basketball isn't a game. It's money. It's food. It's the only way out anyone down here has ever found.",
+    "The courts are cracked concrete and rusted chain-link, and every one of them belongs to somebody. Win, and you eat this week. Lose, and you don't.",
+    "Far above the smog, the Upper City glitters. Up there, the King League plays in glass stadiums that float above the clouds, and one golden contract can change a life forever.",
+    "Down here, three kids who call themselves the Ash Hounds have decided they want one. They're one player short."],
+  pre:[["","Rain hammers the Hounds' home court. You've got a duffel bag, an address scribbled on a napkin, and a ball you've had since you were eight."],
+    ["DIME","You came. Good. I wasn't sure you'd find the place."],
+    ["YOU","Followed the noise."],
+    ["BLAZE","So *this* is the East Blocks legend? Dime, you said they were taller."],
+    ["DIME","I said they were *good*."],
+    ["MOOSE","..."],["DIME","That's Moose. He says welcome."],
+    ["BLAZE","Here's how it works, new blood. Nobody joins the Hounds because Dime liked their highlight tape."],
+    ["BLAZE","One on one. You and me. Ninety seconds. Beat me, and you're in."],
+    ["YOU","And if I lose?"],
+    ["BLAZE","Then the bus back east leaves at midnight. I'll even walk you to the stop."],
+    ["DIME","Don't let him rattle you. He talks the most when he's nervous."],
+    ["BLAZE","I am *not* nervous."]],
+  post:[["","Blaze stares at the score chalked on the wall. Then he laughs, short and surprised."],
+    ["BLAZE","Okay. *Okay!* Lucky. But okay."],
+    ["DIME","Welcome to the Ash Hounds."],
+    ["MOOSE","Welcome."],["BLAZE","Whoa. He used a whole *word* on you."],
+    ["DIME","Get some sleep. Tomorrow we start the block runs. Ten crews, ten games, and the Rust Rats at the end of it."],
+    ["YOU","What happens when we beat the Rats?"],
+    ["DIME","Then we stop paying them to play on our own court. And then we go *higher*."]],
+  lose:[["BLAZE","Midnight bus, new blood. Unless..."],["DIME","Run it back, Blaze. You never win the first one fair and you know it."],["BLAZE","Fine. *Again.*"]]
+};
 const DLG=[
  { /* Chapter 1: Cracked Concrete */
-  0:{pre:[["","Night in the Lower Sprawl. Rain hisses on the neon signs, and the Hounds' home court has more cracks than concrete."],
-    ["BLAZE","So *you're* the new blood. Dime says you can hoop."],["BLAZE","I say prove it."],
-    ["DIME","Ten runs on our block. Win them and we eat this month. Lose and we don't."],
-    ["MOOSE","...Stay out of my paint."],
-    ["OPP","The Hounds picked up a stray? Cute. Smog Dogs run this corner tonight."],
+  0:{pre:[["","First block run. The Smog Dogs' court sits under a broken billboard that still flickers an ad for the Upper City."],
+    ["DIME","Rules of the Sprawl: no refs, no fouls, no excuses. Winner takes the pot."],
+    ["BLAZE","And the pot is?"],["DIME","Forty credits."],
+    ["BLAZE","...We're risking our knees for *forty credits?*"],["MOOSE","Forty is food."],
+    ["OPP","The Hounds got a new pup? Cute. Hope it bites, because we do."],
     ["YOU","Check ball."]],
-   post:[["","The Smog Dogs slink off into the haze. Somebody on the fence whistles."],["BLAZE","Okay. One game. Means *nothing*."],["DIME","It means we eat tomorrow."]]},
-  1:{pre:[["","Steam pours from a burst pipe beside the court. The Pipe Rats are already warming up in it."],
-    ["OPP","Heard the Hounds lost their edge. Heard they're recruiting scrubs now."],
+   post:[["","The Smog Dogs drift off into the haze. Dime counts the credits twice, then tucks them inside his jacket."],
+    ["DIME","Forty. That's a week of noodles."],["BLAZE","Noodles 24 better have the spicy ones back."],
+    ["YOU","You eat there every day?"],["BLAZE","Every. Single. Day."]]},
+  1:{pre:[["","Steam screams out of a burst pipe beside the court. The Pipe Rats warm up inside the cloud like it's a sauna."],
+    ["OPP","Heard the Hounds were washed. Now they're recruiting from the East Blocks. *Desperate.*"],
     ["BLAZE","Heard you can't go *left*."],["OPP","...Who told you that?"],
-    ["DIME","Everybody. Shade them right, make them go left."],["MOOSE","Hm."]]},
-  2:{pre:[["","Last night's storm left the court flooded in patches. Puddles glint under the streetlights."],
-    ["DIME","Watch the slick spots. Plant your feet in one and you'll slide right past your man."],
-    ["YOU","So stay out of the puddles."],["DIME","No. Make *them* chase you through the puddles."],
-    ["OPP","Crows don't slip, rookie. We were born in the gutter."],
-    ["BLAZE","Then you'll feel right at home when we put you back in it."]]},
-  3:{pre:[["","A tight court boxed in by brick walls. The Alley Cats move like they own every inch of it."],
-    ["OPP","Sixty-forty, Hounds. That's the bet on the fence. *Against* you."],
-    ["BLAZE","Sixty-forty? That's insulting."],["DIME","That's free money. Somebody put our rent on us."],
-    ["YOU","Who?"],["MOOSE","Me."],["","Everyone turns to stare at Moose. He shrugs."]]},
-  4:{pre:[["BLAZE","Halfway. The Drain Kings think the Hounds are *washed*."],
-    ["OPP","Washed? We're the Drain Kings. Everything in this city washes down to us eventually."],
-    ["BLAZE","That's... actually kind of a sick line."],["DIME","Blaze."],["BLAZE","Right. Let's embarrass them."],
-    ["MOOSE","Hungry."],["BLAZE","Moose, you're *always* hungry."]],
-   post:[["","Five down. A street vendor slides the Hounds a bag of fried dough, on the house."],["MOOSE","...Best day."],["DIME","Halfway isn't done. Eat fast."]]},
-  5:{pre:[["","The next court sits inside a junkyard, rims bolted to stacked car frames. The competition just got real."],
+    ["DIME","Everybody. Shade him right. Make him go left."],
+    ["YOU","You scouted them?"],["DIME","I scout everyone. Blaze scouts the snack cart."],
+    ["BLAZE","And I'm always *right* about the snack cart."]]},
+  2:{pre:[["","Last night's storm flooded half the court. Puddles shine like oil under the streetlights."],
+    ["DIME","See the slick spots? Plant your feet in one and you'll slide right past your man."],
+    ["YOU","So I stay out of the puddles."],
+    ["DIME","No. You make *them* chase you through the puddles."],["MOOSE","Smart."],
+    ["OPP","Crows don't slip, East Blocks. We were born in the gutter."],
+    ["BLAZE","Great. Then you'll feel right at home when we put you back in it."]]},
+  3:{pre:[["","Brick walls box in the Alley Cats' court. Bettors hang off the fire escapes, shouting odds."],
+    ["BLAZE","Sixty-forty against us. That's *insulting*."],
+    ["DIME","That's free money. Somebody put their rent on us."],["YOU","Who?"],["MOOSE","Me."],
+    ["","Everyone turns to stare at Moose. He shrugs."],
+    ["MOOSE","Night shift pays Fridays."],
+    ["OPP","Hope your big man can afford to lose it."]],
+   post:[["","Moose collects his winnings from a very unhappy bookie."],
+    ["YOU","Dime. Why does everyone keep talking about the Rust Rats?"],
+    ["","Dime goes quiet. Blaze looks away."],
+    ["DIME","Because we owe them four hundred credits. For the right to play on our own court."],
+    ["BLAZE","Protection money. They 'protect' the court from anyone who doesn't pay them."],
+    ["YOU","So we win enough to pay them off."],
+    ["DIME","No. We win enough to *beat* them. Then we never pay again."]]},
+  4:{pre:[["","Runoff from the whole district pours through the Drain Kings' court. The smell hits you before the noise does."],
+    ["OPP","Hounds! Everything in this city washes down to the Drain Kings eventually. Even you."],
+    ["BLAZE","That's... honestly a sick line."],["DIME","Blaze."],["BLAZE","Right. We hate them."],
+    ["MOOSE","Hungry."],["BLAZE","Moose, you're *always* hungry."],["MOOSE","Hungrier."]],
+   post:[["","Halfway through the block runs. A street vendor slides the Hounds a bag of fried dough, on the house."],
+    ["MOOSE","...Best day."],["DIME","Two hundred and ten credits. Halfway to the Rats."],
+    ["BLAZE","Halfway to *beating* the Rats. Get it right."]]},
+  5:{pre:[["","This court sits inside a junkyard, rims bolted to stacked car frames. Moose pats one of them. He welded it himself."],
     ["DIME","From here on, the crews are serious. The Scrap Heaps have played together since they were nine."],
-    ["OPP","You the new one? Hope you're better than the last kid they tried."],
-    ["YOU","What happened to the last kid?"],["BLAZE","Doesn't matter."],["DIME","He quit. *You* won't."]]},
-  6:{pre:[["","Word is spreading through the Sprawl. A crowd gathers along the chain-link, and somebody's betting against you.","crowd"],
-    ["OPP","Lights out, Hounds! The Fuse Boxes blow your circuit tonight!"],
-    ["BLAZE","Did they *rehearse* that?"],
-    ["DIME","Every crew on the block wants a piece of us now. Good. Let them come."]]},
-  7:{pre:[["","Factory smoke turns the sky the colour of a bruise. The Soot Saints pray before every game."],
-    ["OPP","We'll pray for you too, Hounds. You're gonna need it."],
-    ["MOOSE","Pray loud."],["BLAZE","Ha! The big man's got *jokes*."],
-    ["DIME","Focus. Two more after this, then the Rust Rats."]]},
+    ["OPP","So you're the new one. Hope you last longer than the last kid."],
+    ["YOU","What last kid?"],["BLAZE","Doesn't matter."],
+    ["DIME","Juno. Fast. Talented. Quit after one bad loss."],
+    ["YOU","I'm not Juno."],["DIME","I know. That's why you're here."]]},
+  6:{pre:[["","Word is spreading. A crowd lines the chain-link, and for the first time people are shouting your name.","crowd"],
+    ["OPP","Lights out, Hounds! The Fuse Boxes are about to blow your circuit!"],
+    ["BLAZE","Did they *rehearse* that?"],["MOOSE","Twice. I heard them."],
+    ["DIME","Back of the crowd. Red jackets. The Rust Rats are watching us now."],
+    ["YOU","Good. Let them watch."]]},
+  7:{pre:[["","Factory smoke turns the sky the colour of a bruise. The Soot Saints kneel at half court before every game."],
+    ["OPP","We'll pray for you too, Hounds. You'll need it."],
+    ["MOOSE","Pray loud."],["BLAZE","Ha! The big man's got *jokes* tonight."],
+    ["DIME","Two more after this, then Brick and the Rats. Nobody gets hurt before then."],
+    ["YOU","Who's Brick?"],
+    ["BLAZE","The guy who takes our money. You'll know him. He's the one smiling the whole game."]]},
   8:{pre:[["","Fires burn in steel barrels along the sideline, the only heat for blocks around."],
-    ["BLAZE","The Rust Rats are in the stands. They're scouting us."],["YOU","Let them look."],
-    ["OPP","Eyes on *us*, rookie. You don't get to the Rats without going through the fire.","flash"],
-    ["DIME","Then we go through it."]]},
-  9:{pre:[["","The Rust Rats run this whole block. They take a cut of every game played on these courts."],
-    ["OPP","Ten percent, Hounds. Every bill you've won this month? Ten percent is *ours*."],
-    ["DIME","Not anymore."],["OPP","Big words from the kid who used to fetch our water."],
-    ["BLAZE","Beat them, and nobody in the Sprawl ever looks down on us again."],
-    ["YOU","Then let's finish it.","shake"]],
-   post:[["","The fence erupts. Kids who've paid the Rats' cut for years are shouting the Hounds' name.","crowd"],
-    ["","The Rust Rats walk off empty-handed. Blaze tosses you a crumpled bill."],
-    ["BLAZE","Not bad, new blood. Don't get *comfortable*."],
-    ["DIME","Next stop: the rail line. The real money's under the trains."]]}
+    ["BLAZE","Brick's in the stands. Second row. He's been staring at you for ten minutes."],
+    ["YOU","Let him stare."],
+    ["OPP","Eyes on *us*, East Blocks. You don't get to the Rats without walking through the fire.","flash"],
+    ["DIME","Then we walk through it. Together."]],
+   post:[["","A Rust Rat in a red jacket pushes through the crowd and drops a folded note at Dime's feet."],
+    ["DIME","'Tomorrow. Our court. Bring the four hundred, or bring a miracle.'"],
+    ["BLAZE","We're bringing a miracle."],["MOOSE","And the four hundred. Just in case."]]},
+  9:{cap:'BRICK',
+   pre:[["","The Rust Rats' court is the only one in the Sprawl with new nets. Everyone knows who paid for them."],
+    ["OPP","Dime! My favourite customer. You bring my money?"],
+    ["DIME","We brought a game. We win, the debt's gone and the court's ours. Forever."],
+    ["OPP","And if you lose?"],["DIME","Then you get double."],
+    ["BLAZE","Dime. *Double?*"],["DIME","We're not losing."],
+    ["OPP","I like this kid. Shame I'm about to ruin him."],
+    ["YOU","Check ball, Brick.","shake"]],
+   post:[["","The last shot drops. For a second, nobody on the fence breathes."],
+    ["","Then the whole block erupts. Kids who've paid the Rats' cut for years are screaming the Hounds' name.","crowd"],
+    ["OPP","...The court's yours. Don't get comfortable, Hounds. The Sprawl has a long memory."],
+    ["BLAZE","So do we!"],
+    ["DIME","Debt's gone. We're free."],["MOOSE","Free."],
+    ["","Later, Dime spreads a stained map across the bleachers. A pencil line runs north, to the rail yards."],
+    ["DIME","Under the rail line the pots are ten times bigger. And the Gauntlet scouts watch those games."],
+    ["YOU","Then that's where we go."]]}
  },
  { /* Chapter 2: Hungry Week */
-  0:{pre:[["","Under the rail line, trains thunder overhead every few minutes and the court is slick with oil.","train"],
-    ["DIME","Down here they play dirty. They reach for every dribble."],["YOU","Then I protect the ball."],
-    ["DIME","Crossover, then go. They can't touch you right after a cross."],
-    ["OPP","Fresh meat from the Sprawl. The Rail Runners eat first."],["BLAZE","Not this week."]]},
-  1:{pre:[["","Sparks rain down from the tracks every time a train brakes overhead."],
-    ["OPP","Plug in, Hounds. We go full voltage from the tip."],
-    ["BLAZE","Great. Another team with a *theme*."],["MOOSE","Every team has a theme."],["BLAZE","We don't."],
-    ["DIME","We're hungry. That's our theme."]]},
-  2:{pre:[["","Black oil pools on the concrete. One wrong step and you're on your back."],
+  0:{pre:[["","Under the rail line, trains thunder overhead every few minutes. Oil and rainwater drip through the tracks onto the court.","train"],
+    ["DIME","Different rules down here. They don't foul you. They *rob* you. Every dribble."],
+    ["YOU","Then I protect the ball."],
+    ["DIME","Cross, then go. Nobody can reach you right after a crossover."],
+    ["OPP","Sprawl kids under our tracks? You lost?"],["BLAZE","Nah. *You're* about to be."]]},
+  1:{pre:[["","A giant screen glows above the tracks: KADE VALE. CAPTAIN OF THE SOVEREIGNS. UNBEATEN. UNTOUCHABLE."],
+    ["BLAZE","Look at that guy. Perfect hair. Perfect teeth. Never played on concrete in his life."],
+    ["DIME","Best player in the King League. Maybe the best in the city."],
+    ["YOU","Maybe."],["MOOSE","Hm. Maybe."],
+    ["OPP","Hey! Eyes down here! The Spark Plugs go full voltage from the tip!"],
+    ["BLAZE","Great. Another team with a *theme*."]]},
+  2:{pre:[["","Black oil pools across the concrete. One wrong step and you're on your back."],
     ["DIME","Same rule as the puddles back home. Make them chase you through it."],
-    ["OPP","You think a little grease scares us? We grew up in it."],
-    ["YOU","Then you won't mind *falling* in it."],["BLAZE","Ohhh. The rookie talks now."]]},
-  3:{pre:[["","Moose limps through warmups, wincing every time he lands."],
-    ["MOOSE","Knee hurts."],["BLAZE","You good, big man?"],["MOOSE","...Good enough."],
-    ["DIME","Rookie, crash the boards tonight. Take some weight off him."],
-    ["OPP","Your big man's hurt. We're cutting right through the middle."],["YOU","*Try* it."]]},
-  4:{pre:[["","The air down here is thick with diesel. The Iron Lungs never get tired."],
-    ["OPP","We run all night, Hounds. You'll be gasping by the second half."],
+    ["OPP","You think grease scares us? We grew up in it."],
+    ["YOU","Then you won't mind *falling* in it."],
+    ["BLAZE","Ohhh! East Blocks talks now! I like this version."]]},
+  3:{pre:[["","Moose limps through warmups. He winces every time he lands, and pretends he doesn't."],
+    ["BLAZE","You good, big man?"],["MOOSE","Good."],["DIME","Moose."],["MOOSE","...Knee."],
+    ["DIME","Rookie, you crash the boards tonight. Take the weight off him."],
+    ["OPP","Your big man's limping. We're cutting right through the middle."],
+    ["YOU","*Try* it."]],
+   post:[["","After the game, Moose sits on a crate with ice from a fish stall wrapped around his knee."],
+    ["YOU","You played the whole game on that?"],["MOOSE","Team needed me."],
+    ["BLAZE","The team needs you *healthy*, you giant idiot."],
+    ["","It's the nicest thing anyone has ever heard Blaze say."]]},
+  4:{pre:[["","Diesel fumes hang thick in the air. The Iron Lungs run laps around the court while they wait for you."],
+    ["OPP","We run all night, Sprawl. You'll be gasping by halftime."],
     ["DIME","Sprint smart. Don't burn your legs early."],
-    ["BLAZE","Or just score fast so it doesn't matter."],["DIME","...That works too."]],
-   post:[["","The Iron Lungs are bent over, hands on knees. The Hounds are still standing."],["MOOSE","Knee's better."],["BLAZE","Winning fixes *everything*."]]},
-  5:{pre:[["","The Track Stars are the fastest crew under the rails. Their guards have never been caught from behind."],
+    ["BLAZE","Or score fast so it doesn't matter."],["DIME","...Fine. That works too."]],
+   post:[["","The Iron Lungs are bent double, hands on knees. The Hounds are still standing."],
+    ["MOOSE","Knee's better."],["BLAZE","Winning fixes *everything*."],["DIME","Not everything. But it's a start."]]},
+  5:{pre:[["","The Track Stars are the fastest crew under the rails. Nobody has ever caught their guards from behind."],
     ["OPP","Blink and we're gone, Sprawl kids."],
     ["BLAZE","Funny. I was gonna say the same thing about your *lead*."],
-    ["DIME","Get back on defense every time. No easy buckets."]]},
-  6:{pre:[["","A stranger in a clean jacket watches from the platform. Gauntlet scout, someone whispers."],
-    ["SCOUT","..."],["BLAZE","Don't look at him. Look at the rim."],
-    ["YOU","He's writing something."],["DIME","Then give him something *worth* writing."],
-    ["OPP","He's here for us, not you."]]},
+    ["DIME","Get back on defense every single time. No easy buckets."],
+    ["YOU","And when we get the ball?"],["DIME","Then *we're* the ones who are gone."]]},
+  6:{pre:[["","A woman in a clean grey coat watches from the platform above. She hasn't moved in twenty minutes."],
+    ["BLAZE","Gauntlet scout. Has to be. Nobody down here owns a coat that clean."],
+    ["SCOUT","..."],
+    ["YOU","She's writing something."],["DIME","Then let's give her something *worth* writing."],
+    ["OPP","She's here for us, not you. The Coal Crew's been on her list for a year."]],
+   post:[["","When you look up again, the scout is gone. One word is chalked on the platform railing: 'Again.'"],
+    ["BLAZE","Again? What does that mean?"],["DIME","It means she wants to know if it was luck."]]},
   7:{pre:[["","The Third Rail play right beside the live tracks. The hum of electricity never stops.","train"],
     ["OPP","Touch the rail and you fry. Touch *us* and it's worse."],
-    ["MOOSE","Loud."],["BLAZE","They're always loud down here."],
-    ["DIME","Three more, then the Chain Gang. Stay together."]]},
-  8:{pre:[["","Rain leaks through the tracks above in steady streams."],
-    ["BLAZE","I heard the Chain Gang have never lost at home. Not *once*."],
-    ["YOU","There's a first time for everything."],
-    ["OPP","You'll never get past us to find out."],
-    ["DIME","The Brake Lines slow the game down. Push the pace. Run them."]]},
-  9:{pre:[["","The Chain Gang have never lost on their court. Their hands are always in your pockets."],
-    ["OPP","Every dribble, every pass. We'll take it *all*."],
-    ["DIME","Protect the ball. Cross, then go."],["DIME","Win this, and the Gauntlet invite is ours."],
-    ["BLAZE","Let's break some chains.","shake"]],
-   post:[["","The scout steps down from the platform and hands Dime a black card stamped with a gold crown."],
-    ["SCOUT","The Gauntlet. Three days. Don't be late."],
-    ["MOOSE","*Gauntlet.*"],["","It's the most words anyone has heard Moose say all week."],
+    ["MOOSE","Loud."],["BLAZE","Everyone's loud down here. They have to yell over the trains."],
+    ["DIME","Two more, then the Chain Gang. They've never lost at home."],
+    ["YOU","Never?"],["DIME","Not once in six years."]]},
+  8:{pre:[["","Rain leaks through the tracks above in steady silver strings."],
+    ["BLAZE","I asked around about the Chain Gang. Their captain, Lock, strips the ball like it owes him money."],
+    ["YOU","Everything down here owes somebody money."],["MOOSE","True."],
+    ["OPP","You'll never get past us to find out how good Lock is."],
+    ["DIME","The Brake Lines slow the game down. So we speed it up. Run them."]]},
+  9:{cap:'LOCK',
+   pre:[["","The Chain Gang's court is fenced with real chains. They rattle every time a train goes by.","train"],
+    ["OPP","Six years. Nobody's beaten us here. Every dribble, every pass, we take it *all*."],
+    ["DIME","Protect the ball. Cross, then go."],
+    ["BLAZE","Hey, Lock. Six years is a long time. You must be *tired*."],
+    ["OPP","Cute. Your scrap-heap center can barely walk."],
+    ["MOOSE","Can walk. Can *run*."],
+    ["DIME","The scout's back on the platform. This is the game she came for."],
+    ["YOU","Then let's break some chains.","shake"]],
+   post:[["","Six years of chains rattle as Lock drops to the concrete in disbelief."],
+    ["","The scout steps down from the platform and holds out a black card stamped with a gold crown."],
+    ["SCOUT","The Gauntlet. Three days. Bring the East Blocks kid."],
+    ["DIME","We're a team. We all come."],
+    ["SCOUT","Then bring all of you. Don't be late. Late teams don't get a second invitation."],
+    ["MOOSE","*Gauntlet.*"],["","It's the most anyone has heard Moose say all week."],
     ["BLAZE","We're really doing this.","crowd"]]}
  },
  { /* Chapter 3: The Gauntlet */
-  0:{pre:[["","The Gauntlet is unregulated chaos: no refs, no mercy, and every crew in the city wants the golden contract.","crowd"],
-    ["BLAZE","Finally. *Clean rims.*"],["DIME","Cleaner courts, smarter teams. Stay sharp."],
-    ["OPP","Look at them. Sprawl kids in borrowed shoes."],["YOU","They're not borrowed."],["BLAZE","...Mine are borrowed."]]},
-  1:{pre:[["","Floodlights bounce off a glass backboard. The crowd is three rows deep."],
+  0:{pre:[["","The Gauntlet is held in a gutted stadium at the edge of the city. No refs. No mercy. Thirty-two crews, one golden contract.","crowd"],
+    ["BLAZE","Finally. *Clean rims.* I could cry."],
+    ["DIME","Cleaner courts, smarter teams. Stay sharp."],
+    ["OPP","Look at them. Sprawl kids in borrowed shoes."],
+    ["YOU","They're not borrowed."],["BLAZE","...Mine are borrowed."],["MOOSE","Mine too."]]},
+  1:{pre:[["","Floodlights bounce off a glass backboard. The crowd is three rows deep and hungry for blood."],
     ["OPP","They call us the Glass Jaws because nobody's ever landed a punch."],
-    ["MOOSE","First time."],
+    ["MOOSE","First time for everything."],
     ["DIME","Attack the rim early. Let's see how strong that glass really is."]]},
-  2:{pre:[["","The arena speakers blast so loud the floor shakes.","shake"],
+  2:{pre:[["","The arena speakers blast so loud the floor shakes beneath your feet.","shake"],
     ["OPP","HIGH! VOLTAGE! You hear that crowd? That's for *us*!"],
-    ["BLAZE","That crowd's gonna be ours by halftime."],["DIME","Let the noise go. Play our game."]]},
-  3:{pre:[["","The Night Shift only play after midnight. Half the floodlights are out.","lights"],
-    ["YOU","I can't see half the court."],["DIME","Neither can they. Talk on defense. *Loud.*"],
+    ["BLAZE","That crowd's gonna be ours by halftime."],
+    ["DIME","Let the noise go. Play our game."],
+    ["YOU","What's our game?"],["DIME","Whatever they're not ready for."]]},
+  3:{pre:[["","The Night Shift only play after midnight, and half the floodlights are out.","lights"],
+    ["YOU","I can't see half the court."],
+    ["DIME","Neither can they. Talk on defense. *Loud.*"],
+    ["MOOSE","I'll be loud."],["BLAZE","This I *have* to hear."],
     ["OPP","Lights out, Hounds. Nobody sees you go home."]]},
   4:{pre:[["DIME","Every team here has film on us now. They know Blaze shoots. They know Moose blocks."],
     ["YOU","Do they know about me?"],["DIME","Not yet. That's the plan."],
-    ["OPP","We studied you, Hounds. Every play."],["BLAZE","Study *this*."]],
-   post:[["","Static's coach spikes his tablet. The game plan didn't have a page for you."],["DIME","Now they'll study you too."],["YOU","Good."]]},
-  5:{pre:[["","Halfway through the bracket. Only the hungriest teams are left."],
-    ["OPP","We red-lined three crews this week. You're number four."],
-    ["BLAZE","We've been hungry our whole lives. You've been hungry for a *week*."],["MOOSE","Let's eat."]]},
-  6:{pre:[["","Echo Park mirror everything. Run a play and they run it right back at you."],
+    ["BLAZE","Wait. *I'm* the decoy?"],["DIME","You're the best decoy in the city."],["BLAZE","...I'll take it."],
+    ["OPP","We studied you, Hounds. Every play."],["YOU","Study *this*."]],
+   post:[["","Static's coach spikes his tablet on the floor. The game plan didn't have a page for you."],
+    ["DIME","Now they'll study you too."],["YOU","Good. Let them."]]},
+  5:{cap:'JUNO',
+   pre:[["","The Red Line's captain jogs out to half court. Dime stops dead."],
+    ["DIME","...Juno."],
+    ["OPP","Hey, Dime. Blaze. Big guy. Heard you found my replacement."],
+    ["BLAZE","You *quit* on us, Juno. One bad loss and you were gone."],
+    ["OPP","I didn't quit. I upgraded. The Red Line pays. You were eating noodles out of a can."],
+    ["MOOSE","Still are."],
+    ["YOU","So this is personal."],
+    ["OPP","Nothing's personal in the Gauntlet, new kid. That's lesson one."]],
+   post:[["","Juno stands at half court long after the buzzer, staring up at the scoreboard."],
+    ["OPP","...You got better, Dime."],["DIME","We got *together*. There's a difference."],
+    ["","Juno nods once and walks away. Blaze watches until the door closes."],
+    ["BLAZE","He was good, you know. Really good."],["YOU","So are we."]]},
+  6:{pre:[["","Echo Park mirror everything. Run a play, and they run it right back at you, faster."],
     ["DIME","Then we don't run plays. We read and react."],
-    ["OPP","Whatever you do, we do it better."],["YOU","Copy *this*, then."]]},
-  7:{pre:[["","A King League scout writes a single word on a tablet: 'Interesting.'"],
-    ["MOOSE","They're watching."],["BLAZE","Let them watch."],
-    ["OPP","Smile for the cameras, Hounds. It's your last game on them."],
-    ["DIME","Two more. Keep your heads."]]},
+    ["OPP","Whatever you do, we do it better."],
+    ["YOU","Copy *this*, then."]]},
+  7:{pre:[["","A private skybox lights up above the court. Behind the glass, Kade Vale watches with his arms folded."],
+    ["BLAZE","That's *him*. That's Vale. What's the King League's golden boy doing at a street tournament?"],
+    ["DIME","Shopping. Or scouting the competition."],["MOOSE","Or bored."],
+    ["","Vale meets your eyes through the glass. He smiles, then turns away."],
+    ["OPP","Smile for the skybox, Hounds. It's your last game in front of it."],
+    ["YOU","Two more. Then we find out who he's really watching."]]},
   8:{pre:[["","The Mirage throw fakes on top of fakes. Nothing they show you is real."],
-    ["OPP","Look left, we go right. Look right, we're already gone."],
     ["DIME","Stay home on defense. Don't *bite*."],
-    ["BLAZE","The Jackals are next. I can hear their music from here."]]},
-  9:{pre:[["","The Neon Jackals are fast, flashy and shoot from everywhere. Their strobe lights sweep the court.","lights"],
-    ["OPP","Hounds! Finally. We've been saving a highlight reel just for you."],
+    ["BLAZE","Hey. New blood."],["YOU","What?"],
+    ["BLAZE","If they double me tonight, I'm passing to you. Don't make me regret it."],
+    ["DIME","Did Blaze just... *offer* to pass?"],["MOOSE","Historic."],
+    ["OPP","Look left, we go right. Look right, we're already gone."]]},
+  9:{cap:'STROBE',
+   pre:[["","The Neon Jackals strut onto a court lit by their own strobe lights. Their music shakes the rafters.","lights"],
+    ["OPP","Hounds! Finally! We've been saving a highlight reel just for you."],
     ["BLAZE","Make sure you're in the background of *mine*."],
-    ["DIME","One more win and the Hounds reach the threshold."],["YOU","Last stop before the sky."]],
-   post:[["","The Jackals' lights go dark.","flash"],
-    ["","Above the court, a glass elevator slides open, waiting to carry the Hounds up the skyline."],
-    ["BLAZE","We're going up. *Actually* up."],["DIME","The threshold. Halfway to the King League."],
-    ["MOOSE","...Scared of heights."]]}
+    ["DIME","Win this, and we reach the Threshold. The court halfway up the sky."],
+    ["MOOSE","Up?"],["DIME","Up."],
+    ["YOU","Last stop before the sky."],["OPP","Last stop, period."]],
+   post:[["","The strobe lights flicker, then die.","flash"],
+    ["","Above the court, a glass elevator slides open. A smooth recorded voice says: 'Ash Hounds. Your ascent is approved.'"],
+    ["BLAZE","We're going up. *Actually* up!"],
+    ["DIME","The Threshold. Halfway to the King League."],
+    ["MOOSE","...Scared of heights."],["YOU","Don't look down, big man."],["MOOSE","Never do."]]}
  },
  { /* Chapter 4: The Threshold */
-  0:{pre:[["","The threshold is a pristine court halfway up the skyline. Elite scouts and King League sponsors look down at the street rats."],
-    ["BLAZE","Smells like *money* up here."],["DIME","Smells like a trap. These farm teams play perfect basketball."],
-    ["OPP","You're lost, Sprawl. The service elevator's that way."],["MOOSE","Not lost."]]},
-  1:{pre:[["","The court is made of glass. The city lights glitter a thousand feet below."],
+  0:{pre:[["","The Threshold is a spotless court of white stone halfway up the skyline. Sponsors in silk suits look down from floating balconies."],
+    ["BLAZE","Smells like *money* up here."],
+    ["DIME","Smells like a trap. These farm teams play perfect basketball."],
+    ["OPP","You're lost, Sprawl. The service elevator's that way."],
+    ["MOOSE","Not lost."],["YOU","Just early."]]},
+  1:{pre:[["","The court is made of glass. Far below, the Lower Sprawl glows like embers."],
     ["MOOSE","...Don't look down."],
-    ["OPP","Prism Academy, top of the class. You're the experiment, Hounds."],
-    ["DIME","Every experiment up here assumes we lose. Prove the data *wrong*."]]},
-  2:{pre:[["","Apex Labs players wear sensors on every joint. Screens on the sideline track every step."],
-    ["OPP","Our models give you a four percent chance."],["YOU","Four isn't zero."],["BLAZE","I *like* those odds."]]},
-  3:{pre:[["","Orbital pass in perfect circles and never miss a beat."],
+    ["OPP","Wait. Blaze? Blaze from the Prism youth tryouts? The street kid we cut?"],
+    ["","Blaze goes completely still."],
+    ["BLAZE","You remember."],
+    ["OPP","Coach said you didn't fit the system. Too wild. Too loud. Too *Sprawl*."],
+    ["DIME","Blaze. Look at me. You don't have to prove anything to them."],
+    ["BLAZE","I know. I'm gonna prove it to *me*."]],
+   post:[["","Blaze sinks the last shot, then walks straight past the Prism bench without a word."],
+    ["YOU","You okay?"],["BLAZE","Better than okay. I didn't fit their system."],["BLAZE","Turns out I fit *ours*."]]},
+  2:{pre:[["","Apex Labs players wear sensors on every joint. Screens on the sideline track every step you take."],
+    ["OPP","Our models give you a four percent chance of winning."],
+    ["YOU","Four isn't zero."],["BLAZE","I *love* those odds."],
+    ["DIME","Their models have never seen the Sprawl. Show them."]]},
+  3:{pre:[["","Orbital pass in perfect circles and never miss a beat. It's beautiful, like watching the inside of a clock."],
     ["DIME","They're a machine. Machines break when you jam the gears."],
-    ["OPP","Gravity doesn't apply to us, Hounds."],["MOOSE","It applies to *everybody*."]]},
-  4:{pre:[["","The farm teams wear kinetic-assist gear and play mathematically flawless defense."],
-    ["DIME","Clean, structured, professional. That's their game."],["YOU","So we don't play their game."],
-    ["OPP","Your game is dead, Sprawl. *This* is the future."]],
-   post:[["","The Zenith players stare at their gear like it betrayed them."],["BLAZE","The future's *overrated*."],["DIME","Halfway up. Keep climbing."]]},
-  5:{pre:[["","Sponsors in white suits sip drinks in the sky boxes, barely watching."],
-    ["BLAZE","They don't even care. They think this is a warmup."],
-    ["OPP","Smile, Hounds. You're the halftime entertainment."],["YOU","Then let's put on a *show*.","crowd"]]},
-  6:{pre:[["","Quantum's players seem to know where the ball is going before it's thrown."],
-    ["DIME","They read passing lanes. Fake the pass, then go."],
-    ["OPP","We already know how this ends."],["MOOSE","You *don't*."]]},
-  7:{pre:[["BLAZE","Two more and it's the Sovereigns."],["MOOSE","Ready."],
-    ["OPP","Everything we wear is gold. What do *you* have?"],["DIME","Each other."],
-    ["BLAZE","...That was really corny, Dime."],["DIME","Shut up and play."]]},
+    ["OPP","Gravity doesn't apply to us, Hounds."],
+    ["MOOSE","Applies to *everybody*."]]},
+  4:{pre:[["","Zenith wear kinetic-assist braces that make them faster, stronger, and never tired."],
+    ["DIME","Clean, structured, professional. That's their game."],
+    ["YOU","So we don't play their game."],
+    ["OPP","Your game is dead, Sprawl. *This* is the future."],
+    ["BLAZE","Funny. Where I'm from, the future breaks if you hit it hard enough."]],
+   post:[["","The Zenith players stare at their braces like the gear betrayed them."],
+    ["BLAZE","The future's *overrated*."],["DIME","Halfway up. Keep climbing."]]},
+  5:{pre:[["","In the sky boxes, sponsors sip drinks and barely watch."],
+    ["BLAZE","They don't even care. They think we're the warmup act."],
+    ["OPP","Smile, Hounds. You're the halftime entertainment."],
+    ["YOU","Then let's put on a *show*.","crowd"]]},
+  6:{pre:[["","Before tip-off, a courier hands Dime a white envelope with a gold seal."],
+    ["DIME","It's from Vale. 'See you at the top. Try not to embarrass yourselves.'"],
+    ["BLAZE","Oh, he is *so* dead."],
+    ["MOOSE","Focus."],["BLAZE","Did Moose just tell *me* to focus?"],
+    ["OPP","Quantum has already calculated every outcome. You lose in all of them."],
+    ["YOU","Calculate *this*."]],
+   post:[["","In the locker room, you catch your reflection in the glass. You barely recognise the kid who got off the bus from the East Blocks."],
+    ["DIME","You've grown into it. All the way."],["YOU","Into what?"],["DIME","A Hound."]]},
+  7:{pre:[["BLAZE","Two more and it's the Sovereigns. Two more and it's *Vale*."],["MOOSE","Ready."],
+    ["OPP","Everything we wear is gold. What do *you* have?"],
+    ["DIME","Each other."],
+    ["BLAZE","...That was really corny, Dime."],
+    ["DIME","Shut up and play."],["YOU","He's not wrong, though."]]},
   8:{pre:[["","The Crowns are the Sovereigns' practice squad. Their whole job is to look like the real thing."],
-    ["OPP","If you can't beat us, don't bother showing up tomorrow."],["YOU","We'll show up."],
-    ["DIME","One more. Then the whole city finds out who the Hounds are."]]},
-  9:{pre:[["","The Sovereigns: genetically optimized, flawless, unbeaten. Their stadium hovers above the clouds.","lights"],
-    ["OPP","You were never supposed to get this far. This ends *now*."],
-    ["BLAZE","They're too fast."],["DIME","We don't play clean. Drag them down to the Sprawl."],
-    ["YOU","Let's go home the long way.","shake"]],
-   post:[["","The buzzer sounds.","buzzer"],["","For a heartbeat the stadium is dead silent. Then it explodes.","glass"],
-    ["","The Hounds stand in a shower of shattered backboard glass."],
+    ["OPP","If you can't beat us, don't bother showing up tomorrow."],
+    ["YOU","We'll show up."],
+    ["DIME","Hey. All of you. Whatever happens tomorrow..."],
+    ["DIME","...I'm proud of this team. I wanted to say it before it gets loud."],
+    ["MOOSE","Me too."],["BLAZE","Ugh. Fine. Me *three*."]]},
+  9:{cap:'VALE',
+   pre:[["","The Sovereigns' stadium floats above the clouds. Eighty thousand people are on their feet before anyone touches the ball.","lights"],
+    ["OPP","So the Sprawl rats made it. I'll admit it, Dime. I didn't think you'd last a week."],
+    ["DIME","Lots of people didn't."],
+    ["OPP","Genetically optimized. Trained since birth. Unbeaten in three seasons. You were never supposed to be here."],
+    ["MOOSE","'Supposed to' doesn't matter."],
+    ["","Everyone turns. Moose is staring straight at Vale."],
+    ["MOOSE","Every rim on our court, I welded. Every board, I nailed down. You got handed a stadium. We *built* ours."],
+    ["MOOSE","We're supposed to be wherever we decide to be."],
+    ["BLAZE","...Moose just said more words than he has all year."],
+    ["YOU","Then let's make them count.","shake"]],
+   post:[["","The buzzer sounds.","buzzer"],
+    ["","For a heartbeat, eighty thousand people are silent. Then the stadium explodes.","glass"],
+    ["","The Hounds stand in a shower of shattered backboard glass, glittering like rain over the Sprawl."],
+    ["OPP","...Good game, Hounds. I mean that."],
     ["MANAGER","Ash Hounds. The King League has been *watching*."],
-    ["","The King League's manager steps onto the court, holding out golden digital contracts."],
-    ["DIME","We're not just here to play."],["YOU","We're here to *take over*.","shake"],
+    ["","The King League's manager steps onto the court and holds out four golden contracts."],
+    ["MANAGER","Sign, and none of you will ever go hungry again."],
+    ["DIME","We're not just here to play."],
+    ["YOU","We're here to *take over*.","shake"],
     ["","TO BE CONTINUED","end"]]}
  }
 ];
 /* Short scenes for games without their own after-game scene, and for losses. */
 const DLG_WIN=[
   [["BLAZE","That's how we do it!"],["MOOSE","Next."]],
-  [["DIME","Clean. Keep that energy."],["YOU","Who's next?"]],
-  [["BLAZE","Did you see my last shot? Tell me you saw it."],["DIME","We all saw it, Blaze."]],
-  [["MOOSE","Good win."],["BLAZE","Two words! He's in a *great* mood."]],
-  [["DIME","One step closer."],["BLAZE","Closer to what? *Everything.*"]]
+  [["DIME","Clean game. Keep that energy."],["YOU","Who's next?"]],
+  [["BLAZE","Tell me you saw my last shot."],["DIME","We all saw it, Blaze. You won't let us forget it."]],
+  [["MOOSE","Good win."],["BLAZE","Two whole words! He's in a *great* mood."]],
+  [["DIME","One step closer."],["BLAZE","Closer to what?"],["YOU","Everything."]],
+  [["BLAZE","New blood. That move in the second half? Teach me."],["YOU","Ask nicely."],["BLAZE","...Never mind."]]
 ];
 const DLG_LOSS=[
-  [["DIME","Shake it off. We run it back."],["BLAZE","They got lucky. Watch."]],
+  [["DIME","Shake it off. We run it back."],["BLAZE","They got lucky. Watch this time."]],
   [["BLAZE","No way. *No way.* Again."],["MOOSE","Again."]],
-  [["DIME","We lost the boards. Box out, then run."],["YOU","Got it. One more."]],
+  [["DIME","We lost the boards. Box out first, then run."],["YOU","Got it. One more."]],
   [["MOOSE","..."],["DIME","Yeah, Moose. Me too. Let's go again."]],
-  [["BLAZE","The Sprawl doesn't quit."],["DIME","Run it back."]]
+  [["BLAZE","The Sprawl doesn't quit."],["DIME","Then neither do we. Run it back."]],
+  [["YOU","That one's on me."],["DIME","It's on all of us. That's what a team is. Again."]]
 ];
+const STORY_INTRO={title:'THE LOWER SPRAWL',p:STORY_PRO.intro};
 const STORY=[
   {title:'Cracked Concrete',where:'The Lower Sprawl',diffs:[0,0,0,0,0,1,1,1,1,1],haz:{slick:3,crack:5},fade:0.5,
    style:{spd:0.95,shoot:0.9,steal:1.1,block:0.9,three:0.9,drive:1.1},str:[0,0.35],
@@ -4729,9 +4894,16 @@ const STORY=[
 ];
 const STORY_GAMES=STORY.length*10;
 const SYL=['VEX','RO','KAI','DAX','ZED','JUNO','REX','NOX','TAJ','IKE','LUX','BO','CY','DRE','FLIP','GUS','HEX','JAX','KO','MACE','NYX','OZ','PIKE','QUINN','RIOT','SAL','TANK','VOLT','WREN','YAZ'];
-var story=null,storyDone=0,custom=null,customRaw=null,storyOpen=-1;
+var story=null,storyDone=0,storyProDone=false,custom=null,customRaw=null,storyOpen=-1;
 function sHash(s){let h=7;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
+function storyProGame(){
+  const b=(findChar('BLAZE')||{o:{num:8,skin:'#e0ac69',mod:{}}}).o;
+  return {g:-1,ci:0,gi:-1,pro:true,solo:true,boss:false,title:'Prologue',where:"The Hounds' Court",diff:0,len:90,haz:null,
+    opp:{name:'BLAZE',c:'#ff7a1a',d:'#6b2e08',a:'#ffffff',desc:'',style:STORY[0].style,roster:[['SG','BLAZE',b.num,b.skin,b.mod]]},
+    dlg:{pre:STORY_PRO.pre,post:STORY_PRO.post,lose:STORY_PRO.lose}};
+}
 function storyGame(g){
+  if(g===-1)return storyProGame();
   const ci=Math.floor(g/10),gi=g%10,C=STORY[ci];if(!C)return null;
   const t=C.teams[gi],k=gi/9,s=C.str[0]+(C.str[1]-C.str[0])*k,boss=gi===9,h=sHash(t[0]);
   const nm=i=>SYL[(h+i*7)%SYL.length]+(i===2&&((h>>3)&1)?'O':'');
@@ -4741,6 +4913,7 @@ function storyGame(g){
     ['PG',nm(0),(h%30)+1,skins[h%6],{spd:+(5.4+s*0.9).toFixed(2),handle:+(1.3+s*0.6).toFixed(2),steal:+(0.85+s*0.45).toFixed(2),shoot:+(0.62+s*0.2).toFixed(2)}],
     ['SG',nm(1),(h%40)+10,skins[(h>>>2)%6],{sureP:+(0.5+s*0.33).toFixed(2),shoot:+(0.74+s*0.16).toFixed(2),spd:+(5.0+s*0.8).toFixed(2)}],
     ['C',nm(2),(h%50)+40,skins[(h>>>4)%6],{h:+(2.06+s*0.14).toFixed(2),block:+(0.9+s*0.6).toFixed(2),reb:+(0.9+s*0.5).toFixed(2),dunk:+(3.0+s*0.9).toFixed(2),spd:+(4.4+s*0.6).toFixed(2)}]];
+  const dl=C.dlg[gi]||{};if(dl.cap)roster[0][1]=dl.cap;
   const haz=C.haz?{slick:Math.max(0,Math.round(C.haz.slick*(1-k*C.fade))),crack:Math.max(0,Math.round(C.haz.crack*(1-k*C.fade)))}:null;
   return {g:g,ci:ci,gi:gi,boss:boss,title:C.title,where:C.where,diff:C.diffs[gi],len:boss?(ci>=2?240:180):120,haz:haz,
     opp:{name:t[0],c:col,d:dk,a:ac,desc:'',style:C.style,roster:roster},dlg:(C.dlg[gi]||{})};
@@ -4774,7 +4947,7 @@ function storyMine(){
   return SLOTS.map(sl=>custom&&custom.pos===sl?ccRoster(custom):[sl,hounds[sl].o.name,hounds[sl].o.num,hounds[sl].o.skin,hounds[sl].o.mod]);
 }
 function storyShowText(title,lines,btn,fn){cinePlay({ci:0,mode:'intro',label:'VELOCITY BREAK',title:title,sub:"The King's Gambit",lines:lines,done:fn});}
-function storyUnlocked(g){return devMaster||g<=storyDone;}
+function storyUnlocked(g){if(g===-1)return true;return devMaster||(storyProDone&&g<=storyDone);}
 function storyRender(){
   const h=$('stHero');h.innerHTML='';
   const info=document.createElement('div');
@@ -4791,6 +4964,12 @@ function storyRender(){
   if(custom){const u=document.createElement('button');u.className='go';u.style.margin='0';u.textContent='Upgrades'+((custom.pts||0)>0?' ('+custom.pts+')':'');u.onclick=()=>openUpg();h.appendChild(u);}
   const l=$('stList');l.innerHTML='';
   const nextG=Math.min(storyDone,STORY_GAMES-1);
+  {const r=document.createElement('div');r.className='chap'+(storyProDone?' done':'');
+   const n2=document.createElement('span');n2.className='n';n2.textContent=storyProDone?'✓':'P';
+   const d=document.createElement('div');const b=document.createElement('b');b.textContent='Prologue: The Tryout';
+   const sm=document.createElement('small');sm.textContent="The Hounds' court · one on one against Blaze to earn your spot";
+   const dots=document.createElement('div');dots.className='gdots';const bt=document.createElement('button');bt.textContent='P';bt.title='Prologue: one on one vs Blaze';bt.className=storyProDone?'done':'next';bt.onclick=()=>storyStart(-1);dots.appendChild(bt);
+   d.append(b,sm,dots);r.append(n2,d);l.appendChild(r);}
   STORY.forEach((C,ci)=>{
     const done=Math.max(0,Math.min(10,storyDone-ci*10)),lock=!storyUnlocked(ci*10);
     const r=document.createElement('div');r.className='chap'+(lock?' lock':'')+(done>=10?' done':'');
@@ -4803,38 +4982,52 @@ function storyRender(){
     d.append(b,sm,dots);r.append(n2,d);l.appendChild(r);
   });
   const nb=$('stNext');const ng=storyGame(nextG);
-  nb.textContent=storyDone>=STORY_GAMES?'Story complete! Replay any game':'Play next: Chapter '+(ng.ci+1)+', game '+(ng.gi+1)+' vs '+ng.opp.name;
-  nb.disabled=storyDone>=STORY_GAMES;
+  nb.textContent=!storyProDone?'Play the prologue: The Tryout':storyDone>=STORY_GAMES?'Story complete! Replay any game':'Play next: Chapter '+(ng.ci+1)+', game '+(ng.gi+1)+' vs '+ng.opp.name;
+  nb.disabled=storyProDone&&storyDone>=STORY_GAMES;
 }
 function openStory(){if(!devFeat('story')){toast('Story mode is only in the dev build right now.');return;}hideScreens();storyRender();show('story');}
 function storyStart(g){
   const d=storyGame(g);if(!d||!storyUnlocked(g))return;
   hideEl('story');
-  const go=()=>{story={live:true,g:g,def:d,opp:d.opp,zones:storyZones(d.haz)};startGame();};
+  const first=g===-1?!storyProDone:g>=storyDone,talk=first||devMaster;
+  const go=()=>{story={live:true,g:g,def:d,opp:d.opp,first:first,zones:storyZones(d.haz)};startGame();};
   const back=()=>{storyRender();show('story');};
-  const first=g>=storyDone,talk=first||devMaster;
   const pre=(talk&&d.dlg&&d.dlg.pre)||[];
-  const scene=()=>cinePlay({ci:d.ci,d:d,label:'CHAPTER '+(d.ci+1)+' · GAME '+(d.gi+1)+(d.boss?' · FINAL':''),title:d.where,sub:'vs '+d.opp.name,lines:pre,match:true,done:go,back:back});
-  if(g===0&&talk)cinePlay({ci:0,mode:'intro',label:'VELOCITY BREAK',title:STORY_INTRO.title,sub:"The King's Gambit",lines:STORY_INTRO.p.map(x=>['',x]),done:scene});
+  const lbl=d.pro?'PROLOGUE':'CHAPTER '+(d.ci+1)+' · GAME '+(d.gi+1)+(d.boss?' · FINAL':'');
+  const scene=()=>cinePlay({ci:d.ci,d:d,label:lbl,title:d.pro?'The Tryout':d.where,sub:d.pro?'vs BLAZE · one on one':'vs '+d.opp.name,lines:pre,match:true,done:go,back:back});
+  if(d.pro&&talk)cinePlay({ci:0,mode:'intro',label:'VELOCITY BREAK',title:'THE LOWER SPRAWL',sub:"The King's Gambit",lines:STORY_PRO.intro.map(x=>['',x]),done:scene});
   else scene();
 }
-function storyXp(w){
-  if(!custom)return '';
-  const me=players.find(p=>p.team===0&&p.name===custom.name);if(!me)return '';
-  const st=me.stats,mult=[1,1.2,1.45,1.7][story.def.diff]||1;
-  const xp=Math.round((60+st.pts*6+st.reb*4+st.stl*10+st.blk*10+(w===0?120:0))*mult);
-  const before=Math.floor((custom.xp||0)/UPG_XP);custom.xp=(custom.xp||0)+xp;const gained=Math.floor(custom.xp/UPG_XP)-before;custom.pts=(custom.pts||0)+gained;
-  return ' '+custom.name+' earned '+xp+' MyPLAYER XP'+(gained?' and '+gained+' upgrade point'+(gained===1?'':'s'):'')+'.';
+/* Upgrade points follow story progress: every attribute can reach its potential after the 37th story game
+   (Chapter 4, Game 7), three games before the finale. XP from good games fills the points in, but never past
+   what the story allows, and a first-time win never leaves you more than one game behind the schedule. */
+const UPG_FULL_AT=37;
+function upgTotal(c){const a0=c.a0||ccStart(c);let t=0;AKEYS.forEach(k=>{for(let v=a0[k];v<c.pot[k];v++)t+=upgCost(v);});return t;}
+function upgSpent(c){const a0=c.a0||ccStart(c);let t=0;AKEYS.forEach(k=>{for(let v=a0[k];v<c.a[k];v++)t+=upgCost(v);});return t;}
+function upgCap(c,k){const T=upgTotal(c);if(k>=UPG_FULL_AT)return T;return Math.floor(T*Math.pow(Math.max(0,k)/UPG_FULL_AT,1.15));}
+function upgRate(c){let e=0;for(let g=0;g<UPG_FULL_AT;g++){const d=STORY[Math.floor(g/10)].diffs[g%10];e+=260*([1,1.2,1.45,1.7][d]||1);}return e/Math.max(1,upgTotal(c));}
+function upgEnsure(c){if(typeof c.earn!=='number'){const sp=upgSpent(c);c.earn=Math.max(sp,Math.min(sp+(c.pts||0),upgCap(c,storyDone)));c.pts=c.earn-sp;}}
+function upgSync(c,k){
+  upgEnsure(c);const cap=upgCap(c,k),fl=k>=UPG_FULL_AT?cap:upgCap(c,k-1),byXp=Math.floor((c.xp||0)/upgRate(c));
+  const want=Math.max(c.earn,Math.min(cap,Math.max(fl,byXp))),g=want-c.earn;c.earn=want;c.pts=(c.pts||0)+g;return g;
 }
 function storyAfter(w){
-  const g=story.g;let msg=storyXp(w);
-  if(w===0){if(storyDone<=g){storyDone=g+1;}story.won=true;msg=' Game won!'+msg;}
-  else{story.won=false;msg=' The Hounds will have to run it back.'+msg;}
+  const g=story.g;let xp=0,me=null;
+  if(custom){me=players.find(p=>p.team===0&&p.name===custom.name);
+    if(me){const st=me.stats,mult=[1,1.2,1.45,1.7][story.def.diff]||1;xp=Math.round((60+st.pts*6+st.reb*4+st.stl*10+st.blk*10+(w===0?120:0))*mult);custom.xp=(custom.xp||0)+xp;}}
+  if(w===0){if(g===-1)storyProDone=true;else if(storyDone<=g)storyDone=g+1;story.won=true;}else story.won=false;
+  let msg=w===0?(g===-1?' You beat Blaze. Welcome to the Ash Hounds!':' Game won!'):(g===-1?' Blaze wins this one. Run it back.':' The Hounds will have to run it back.');
+  if(custom&&me){
+    const gained=upgSync(custom,storyDone),T=upgTotal(custom);
+    msg+=' '+custom.name+' earned '+xp+' MyPLAYER XP'+(gained?' and '+gained+' upgrade point'+(gained===1?'':'s'):'')+'.';
+    if(custom.earn>=T&&gained)msg+=' Every attribute can now reach its potential!';
+    else if(!gained&&custom.earn<T)msg+=' Beat the next story game to earn more upgrade points.';
+  }
   saveCfg();return msg;
 }
 function storyContinue(){
   const st=story;if(!st)return;hideEl('result');
-  const d=st.def,first=st.g+1>=storyDone,talk=first||devMaster;
+  const d=st.def,first=st.first!==false,talk=first||devMaster;
   if(st.won){
     story=null;createGame();checkBall(0);phase='menu';
     const after=()=>{if(st.g+1<STORY_GAMES&&storyUnlocked(st.g+1))storyStart(st.g+1);else{storyRender();show('story');}};
@@ -4842,7 +5035,7 @@ function storyContinue(){
     if(talk)cinePlay({ci:d.ci,d:d,lines:post,done:after});else after();
   }else{
     const again=()=>{story.zones=storyZones(d.haz);startGame();};
-    if(talk)cinePlay({ci:d.ci,d:d,lines:DLG_LOSS[Math.floor(Math.random()*DLG_LOSS.length)],done:again});else again();
+    if(talk)cinePlay({ci:d.ci,d:d,lines:(d.dlg&&d.dlg.lose)||DLG_LOSS[Math.floor(Math.random()*DLG_LOSS.length)],done:again});else again();
   }
 }
 function storyQuit(){story=null;hideEl('result');createGame();checkBall(0);phase='menu';storyRender();show('story');}
@@ -4854,8 +5047,8 @@ const CAST={
   MOOSE:{col:'#c9a0ff',pitch:250,hair:'bald',beard:'#2a1d14',build:1.32,side:0},
   YOU:{col:'#3dffa8',pitch:440,hair:'buzz',hc:'#16110d',build:1,side:0},
   OPP:{col:'#ff4d6d',pitch:360,build:1.05,side:1},
-  SCOUT:{col:'#b8c0d8',pitch:300,hair:'short',hc:'#111',suit:'#1c2030',shades:1,build:1,side:1,skin:'#a0693a'},
-  MANAGER:{col:'#ffd166',pitch:210,hair:'slick',hc:'#c9ccd6',suit:'#b8902a',shades:1,build:1.1,side:1,skin:'#e0ac69'}
+  SCOUT:{label:'THE SCOUT',col:'#b8c0d8',pitch:300,hair:'short',hc:'#111',suit:'#1c2030',shades:1,build:1,side:1,skin:'#a0693a'},
+  MANAGER:{label:'MR. HALE',col:'#ffd166',pitch:210,hair:'slick',hc:'#c9ccd6',suit:'#b8902a',shades:1,build:1.1,side:1,skin:'#e0ac69'}
 };
 const HOUNDS_JERSEY={c:'#c9ced9',t:'#ff7a1a'};
 let CN=null;
@@ -4871,7 +5064,7 @@ function cineFig(sp,d){
     f.skin=r[3];f.num=r[2];f.jc=d?d.opp.c:'#555';f.jt=d?d.opp.a:'#fff';f.name=r[1]+(d?' · '+d.opp.name:'');
     f.hair=['short','flat','locks','buzz','puff'][h%5];f.hc=['#141010','#2b1a10','#3a2a1a','#0e0e14'][(h>>>3)%4];f.col=(d&&d.opp.c&&parseInt(d.opp.c.slice(1),16)>0x303030)?d.opp.c:'#ff4d6d';
     if((h>>>5)%3===0)f.band=d?d.opp.a:'#fff';
-  }else{f.name=sp;}
+  }else{f.name=base.label||sp;}
   f.x=0;f.tx=0;f.a=0;f.k=0;f.blink=2+Math.random()*3;f.flap=0;
   return f;
 }
@@ -5082,10 +5275,10 @@ function cineEnd(){
 function cineClose(){if(!CN)return;CN.open=false;hideEl('cine');if(CN.raf){cancelAnimationFrame(CN.raf);CN.raf=0;}}
 function cineMatch(d){
   const m=$('cMatch');m.classList.remove('hide');
-  $('cmLbl').textContent='CHAPTER '+(d.ci+1)+' · GAME '+(d.gi+1)+(d.boss?' · FINAL':'');
-  const mine=storyMine().map(r=>r[1]),th=d.opp.roster.map(r=>r[1]);
+  $('cmLbl').textContent=d.pro?'PROLOGUE · ONE ON ONE':'CHAPTER '+(d.ci+1)+' · GAME '+(d.gi+1)+(d.boss?' · FINAL':'');
+  let mine=storyMine().map(r=>r[1]);if(d.solo)mine=[custom?custom.name:'DIME'];const th=d.opp.roster.map(r=>r[1]);
   const plate=(el,name,c,dk,acc,names)=>{el.innerHTML='';el.style.background='linear-gradient(135deg,'+c+','+dk+')';el.style.color=acc;const b=document.createElement('b');b.textContent=name;const s=document.createElement('small');s.textContent=names.join(' · ');el.append(b,s);};
-  plate($('cmA'),'ASH HOUNDS','#c9ced9','#3a3f4f','#10131f',mine);
+  plate($('cmA'),d.solo?(custom?custom.name:'DIME'):'ASH HOUNDS','#c9ced9','#3a3f4f','#10131f',mine);
   plate($('cmB'),d.opp.name,d.opp.c,d.opp.d,d.opp.a,th);
   const chips=[DIFF[d.diff].name,fmt(d.len)+' game',d.where];
   if(d.haz&&(d.haz.slick||d.haz.crack))chips.push('Slick spots and cracked pavement');else chips.push('Clean court');
@@ -5350,8 +5543,8 @@ function openUpg(){if(!custom)return;hideEl('story');upgRender();show('upg');}
 function upgRender(){
   const c=custom;if(!c)return;
   $('upOvr').textContent=ccOvr(c);$('upName').textContent=c.name+'  #'+c.num+'  ·  '+archOf(c).n;
-  const inLv=(c.xp||0)%UPG_XP;$('upXp').style.width=(inLv/UPG_XP*100)+'%';
-  $('upPts').textContent=(c.pts||0)+' upgrade point'+((c.pts||0)===1?'':'s')+' · next point in '+(UPG_XP-inLv)+' XP · total MyPLAYER XP '+(c.xp||0);
+  upgEnsure(c);const T=upgTotal(c),capNow=upgCap(c,storyDone);$('upXp').style.width=(T?c.earn/T*100:100)+'%';
+  $('upPts').textContent=(c.pts||0)+' upgrade point'+((c.pts||0)===1?'':'s')+' to spend · earned '+c.earn+' of '+T+' · MyPLAYER XP '+(c.xp||0)+' · '+(c.earn>=T?'every attribute can reach its potential':(c.earn>=capNow?'beat the next story game to earn more':'good games earn more, up to '+capNow+' for now'));
   const l=$('upList');l.innerHTML='';
   ATTRS.forEach(g=>{
     const h=document.createElement('div');h.className='agrp';h.textContent=g[0].toUpperCase();l.appendChild(h);
@@ -5388,7 +5581,7 @@ function upgRender(){
   $('upBack').onclick=()=>{hideEl('upg');storyRender();show('story');};
   $('stBack').onclick=()=>{hideEl('story');go('offline');};
   $('stIntro').onclick=()=>{hideEl('story');storyShowText(STORY_INTRO.title,STORY_INTRO.p.map(x=>['',x]),'Back to story',()=>{storyRender();show('story');});};
-  $('stNext').onclick=()=>storyStart(Math.min(storyDone,STORY_GAMES-1));
+  $('stNext').onclick=()=>storyStart(storyProDone?Math.min(storyDone,STORY_GAMES-1):-1);
   $('offStory').onclick=openStory;
 })();
 function validCustom(c){
@@ -5398,7 +5591,7 @@ function validCustom(c){
     const o={name:cleanName(String(c.name||'ROOKIE')).slice(0,10)||'ROOKIE',num:clamp(Math.floor(+c.num||0),0,99),pos:c.pos,arch:(ARCHS[c.pos].find(x=>x.id===c.arch)||ARCHS[c.pos][0]).id,
       skin:CC_SKINS.indexOf(c.skin)>=0?c.skin:CC_SKINS[2],h:clamp(+c.h||CC_H[c.pos][0],CC_H[c.pos][0],CC_H[c.pos][1]),w:clamp(Math.round(+c.w||d.w),CC_W[c.pos][0],CC_W[c.pos][1]),ws:clamp(Math.round(+c.ws||0),-2,8),
       pot:{},b:(Array.isArray(c.b)?c.b:[]).filter(id=>BADGES.some(x=>x.id===id)).slice(0,BADGE_SLOTS),ab:CC_ABS.indexOf(c.ab)>=0?c.ab:'rex',
-      locked:c.locked!==false,xp:Math.max(0,Math.floor(+c.xp||0)),pts:Math.max(0,Math.floor(+c.pts||0))};
+      locked:c.locked!==false,xp:Math.max(0,Math.floor(+c.xp||0)),pts:Math.max(0,Math.floor(+c.pts||0)),earn:(typeof c.earn==='number'?Math.max(0,Math.floor(c.earn)):undefined)};
     AKEYS.forEach(k=>{o.pot[k]=Math.round(+pot[k]||AT_MIN);});ccFit(o);
     o.a0=c.a0&&c.pot?{}:ccStart(o);if(c.a0&&c.pot)AKEYS.forEach(k=>{o.a0[k]=clamp(Math.round(+c.a0[k]||AT_MIN),AT_MIN,o.pot[k]);});
     o.a={};const cur=(c.a0&&c.pot&&c.a)?c.a:o.a0;AKEYS.forEach(k=>{o.a[k]=clamp(Math.round(+cur[k]||o.a0[k]),o.a0[k],o.pot[k]);});
@@ -5424,13 +5617,14 @@ async function daLoad(){
     rows.forEach(x=>{
       const r=document.createElement('div');r.className='codeRow';const live=tms(x.exp)>Date.now();
       const c=document.createElement('code');c.textContent=x.c||'(hidden)';
-      const n=document.createElement('span');n.textContent=(x.note||'')+' · '+(live?'expires '+new Date(tms(x.exp)).toLocaleString():'expired '+new Date(tms(x.exp)).toLocaleString());
+      const nu=Array.isArray(x.used)?x.used.length:0,mx=Math.floor(+x.max||0);
+      const n=document.createElement('span');n.textContent=(x.note||'')+' · '+(mx?'used '+nu+' of '+mx:'anyone with the code')+' · '+(live?'expires '+new Date(tms(x.exp)).toLocaleString():'expired '+new Date(tms(x.exp)).toLocaleString());
       const st=document.createElement('b');st.className=live?'ok':'x';st.textContent=live?'Active':'Expired';
       const cp=document.createElement('button');cp.className='sbtn mini';cp.textContent='Copy';cp.onclick=()=>{try{navigator.clipboard.writeText(x.c).then(()=>toast('Copied.'),()=>toast('Select the code and copy it by hand.'));}catch(e){}};
       const rv=document.createElement('button');rv.className='sbtn mini';rv.textContent=live?'Revoke':'Delete';rv.onclick=async()=>{try{await F.deleteDoc(F.doc(fb.db,'devcodes',x.id));daLoad();}catch(e){toast('Could not remove it.');}};
       r.append(c,n,st,cp,rv);l.appendChild(r);
     });
-  }catch(e){l.textContent='Could not load codes. Make sure your account is in the admins collection and the new rules are published.';}
+  }catch(e){l.textContent='Could not load passes. Publish the new firestore.rules, then re-enter the dev build with the permanent code.';}
   try{
     const s=await F.getDocs(F.query(F.collection(fb.db,'devlog'),F.orderBy('t','desc'),F.limit(20)));
     if(!s.docs.length)g.textContent='No logins yet.';
@@ -5442,13 +5636,19 @@ async function daMake(){
   if(custom&&custom.length<6){$('daMsg').textContent='Custom codes need at least 6 letters or numbers.';return;}
   const h=h53('skdev|'+daNorm(code)),secs=+$('daExp').value;
   try{
-    await F.setDoc(F.doc(fb.db,'devcodes',h),{c:code,note:($('daNote').value||'').slice(0,30),exp:new Date(Date.now()+secs*1000),t:F.serverTimestamp(),by:cloudUser.uid});
-    $('daMsg').textContent='New code: '+code+' (expires '+new Date(Date.now()+secs*1000).toLocaleString()+').';$('daCode').value='';$('daNote').value='';
+    const max=+$('daUses').value||0;
+    await F.setDoc(F.doc(fb.db,'devcodes',h),{c:code,note:($('daNote').value||'').slice(0,30),exp:new Date(Date.now()+secs*1000),t:F.serverTimestamp(),by:cloudUser.uid,max:max,used:[]});
+    $('daMsg').textContent='New pass: '+code+' ('+(max?'one player':'anyone with the code')+', expires '+new Date(Date.now()+secs*1000).toLocaleString()+').';$('daCode').value='';$('daNote').value='';
     try{navigator.clipboard.writeText(code).catch(()=>{});}catch(e){}
     daLoad();
-  }catch(e){$('daMsg').textContent='Could not make the code. Is your account in the admins collection and are the new rules published?';}
+  }catch(e){$('daMsg').textContent='Could not make the pass. Publish the new firestore.rules, then re-enter the dev build with the permanent code.';}
 }
-function openDevAdmin(){if(!(devAdmin&&devMaster&&devOn)){toast('Only the permanent dev code can manage dev codes.');return;}hideEl('settings');$('daMsg').textContent='';show('devAdm');daLoad();}
+async function openDevAdmin(){
+  if(!(devMaster&&devOn)){toast('Only the permanent dev code can make dev passes.');return;}
+  if(!(cloudOn&&cloudUser&&fb)){toast('Dev passes need cloud accounts. Log in first.');return;}
+  if(!devAdmin){toast('Setting up dev pass access...');await devCheckAdmin();}
+  hideEl('settings');$('daMsg').textContent=devAdmin?'':'Your account is not set up to make passes yet. Publish the new firestore.rules in the Firebase console, then leave and re-enter the dev build with the permanent code.';show('devAdm');daLoad();
+}
 $('daMake').onclick=daMake;$('daBack').onclick=()=>{hideEl('devAdm');setTab='help';openSettings(settingsFrom==='pause'?'pause':'menu');};
 setInterval(()=>{if(devOn&&devExp&&Date.now()>devExp){devExp=0;devLeave();toast('Your dev code expired, so you left the dev build.');}},30000);
 /* ===== update check: tell players running an old cached copy to refresh ===== */

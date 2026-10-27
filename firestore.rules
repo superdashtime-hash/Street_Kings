@@ -63,16 +63,32 @@ service cloud.firestore {
       allow delete: if signedIn() && me() == uid;
     }
 
-    // Game admins: add a document here in the Firebase console whose ID is your account's User UID (see Authentication).
+    // Game admins. Entering the permanent dev code sets this up automatically: the account may create its own admin
+    // document only if it holds the permanent code (checked by its SHA-256 fingerprint). You can also add one by hand
+    // in the Firebase console (document ID = the account's User UID).
     function isAdmin() { return signedIn() && exists(/databases/$(database)/documents/admins/$(me())); }
-    match /admins/{uid} { allow get: if signedIn() && me() == uid; }
+    function masterOk(k) {
+      return k is string && (hashing.sha256(k).toBase64() == 'dY1JI6G6JYKGaFwG0PFJAhg+2lwRjjnDfycorMMBvpc='
+        || hashing.sha256(k).toHexString().lower() == '758d4923a1ba258286685c06d0f14902183eda5c118e39c37f2728acc301be97');
+    }
+    match /admins/{uid} {
+      allow get: if signedIn() && me() == uid;
+      allow create: if signedIn() && me() == uid && request.resource.data.keys().hasOnly(['k', 't'])
+        && request.resource.data.t == request.time && masterOk(request.resource.data.k);
+    }
 
-    // Dev codes made by admins. Document ID is the scrambled code, so players can only look one up if they know it.
+    // Dev passes made by admins. Document ID is the scrambled code, so players can only look one up if they know it.
+    // A one-player pass (max 1) records the first account that uses it; nobody else can add themselves after that.
     match /devcodes/{h} {
       allow get: if signedIn();
       allow list, delete: if isAdmin();
-      allow create, update: if isAdmin() && request.resource.data.keys().hasOnly(['c', 'note', 'exp', 't', 'by'])
+      allow create, update: if isAdmin() && request.resource.data.keys().hasOnly(['c', 'note', 'exp', 't', 'by', 'max', 'used'])
         && request.resource.data.exp is timestamp && request.resource.data.by == me();
+      allow update: if signedIn() && resource.data.exp > request.time
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['used'])
+        && resource.data.get('max', 0) > 0
+        && resource.data.get('used', []).size() < resource.data.max
+        && request.resource.data.used == resource.data.get('used', []).concat([me()]);
     }
 
     // Dev build login log: every attempt (right or wrong code) by a signed-in player. Admins can read it in the game or the console.
