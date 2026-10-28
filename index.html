@@ -1216,7 +1216,7 @@ let ST=OPP[0].style;
 /* ==== CLOUD SAVES (optional) ====
    Paste your Firebase web app config here to turn on cloud accounts. See README.md.
    Leave apiKey and projectId empty and the game uses accounts saved in the browser instead. */
-const CLOUD={apiKey:'',authDomain:'',projectId:'',appId:''};
+const CLOUD={apiKey:'AIzaSyAmdd0ZXHTEyZBtTTPNHqhx9uMIQNjfCPM',authDomain:'streetkings-ac9b1.firebaseapp.com',projectId:'streetkings-ac9b1',appId:'1:702893758436:web:610831e7437a4b4ff219f1'};
 const cloudOn=!!(CLOUD.apiKey&&CLOUD.projectId);
 let cloudUser=null,fb=null;
 let specs=[],pub={P:null,c:null,ok:false,t:0,r:0},hang=null,hangOn=false,acctShots=[0,0,0],practice=false,lastShotHum=false,stealLock={team:-1,until:0},acctQmWins=0,qmGame=false,lbShow=true,acctXp=0,pendingXp=0,redeemed=[],pvp=false,role='',ctxTeam=0,ctrl2=null,ctrlLock2=0,netCfg=null,evq=[];
@@ -4558,7 +4558,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.1.38';
+const GAME_VER='2.1.39';
 const DEV_VER='2.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
