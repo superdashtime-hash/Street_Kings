@@ -423,7 +423,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 .attr.upg{grid-template-columns:9em 2.4em 1fr 3em 6.5em}
 .attr.upg button{height:1.8em;padding:0 .6em}
 
-/* ===== player profiles (dev build) ===== */
+/* ===== player profiles ===== */
 .pcpic{position:relative;display:block;width:100%;padding:0;margin:0 0 .3cqw;border:0;border-radius:.8cqw;overflow:hidden;cursor:pointer;background:#0b0e1c;aspect-ratio:16/8}
 .pcpic canvas{display:block;width:100%;height:100%}
 .pcpic span{position:absolute;right:.6cqw;bottom:.5cqw;font-weight:800;font-size:clamp(9px,1cqw,13px);font-family:inherit;color:#fff;background:rgba(8,10,22,.75);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.15cqw .8cqw;opacity:.85;transition:opacity .15s,transform .15s}
@@ -461,7 +461,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 #ppBack{background:var(--ink);color:#10131f}
 @media (max-width:700px){.ppgrid{grid-template-columns:1fr}.ppbody{max-height:none}}
 
-/* ===== tournament bench picker (dev build) ===== */
+/* ===== tournament bench picker ===== */
 .tbrow{align-items:flex-start}
 .tbench{display:flex;flex-wrap:wrap;gap:.4cqw;justify-content:flex-start;max-width:62cqw;max-height:14cqw;overflow:auto}
 .tbench button{display:inline-flex;align-items:center;gap:.4em;font-weight:700;font-size:clamp(9px,1.1cqw,14px);font-family:inherit;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:999px;padding:.3cqw .9cqw;cursor:pointer}
@@ -540,7 +540,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     <div id="qpMount">
       <div id="setPanel">
         <div class="row" id="rowDiff"><b>Difficulty</b><div class="seg" id="segDiff"><button data-v="0">Rookie</button><button data-v="1" class="sel">Pro</button><button data-v="2">All-Star</button><button data-v="3">Legend</button></div></div>
-        <div class="row" id="rowLen"><b>Game length</b><div class="seg" id="segLen"><button data-v="120">2:00</button><button data-v="240" class="sel">4:00</button><button data-v="360">6:00</button><button data-v="480" class="lenx hide">8:00</button><button data-v="600" class="lenx hide">10:00</button></div></div>
+        <div class="row" id="rowLen"><b>Game length</b><div class="seg" id="segLen"><button data-v="120">2:00</button><button data-v="240" class="sel">4:00</button><button data-v="360">6:00</button><button data-v="480" class="lenx">8:00</button><button data-v="600" class="lenx">10:00</button></div></div>
         <div class="row" id="rowCourt"><b>Court</b><div class="seg" id="segCourt"><button data-v="0" class="sel">Half</button><button data-v="1">Full</button></div></div>
         <div class="row" id="rowMode"><b>Mode</b><div class="seg" id="segMode"><button data-v="3" class="sel">3v3</button><button data-v="2">2v2</button><button data-v="1">1v1</button></div></div>
         <div class="row" id="rowOpp"><b>Opponent</b><div class="seg" id="segOpp"></div></div><p class="tag" id="oppDesc"></p>
@@ -777,17 +777,13 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     <div class="row"><b>Game length</b><div class="seg" id="chLen"><button data-v="120">2:00</button><button data-v="240">4:00</button><button data-v="360">6:00</button></div></div>
     <div class="row"><button class="go" id="chGo">Challenge</button><button class="go back" id="chCancel">Cancel</button></div></div></div>
 
-  <div id="devlog" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(24px,5cqw,66px)">WHAT'S NEW</h1><p class="tag">Update 2.1</p>
+  <div id="devlog" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(24px,5cqw,66px)">WHAT'S NEW</h1><p class="tag">Update 2.2</p>
     <ul class="dl">
-      <li><b>Player profiles</b><span>Tap a name on the leaderboards, friends list or hangout (or your own name) to see their level, quick match wins and online status, and send a friend request.</span></li>
-      <li><b>Tournaments save</b><span>Leave a tournament at any time and resume it later from the same round, even on another device with a cloud account.</span></li>
-      <li><b>Friends and messages</b><span>Add friends, see who is online, challenge them in one click and send filtered messages. Block, Report and privacy settings are in Settings &gt; Social.</span></li>
-      <li><b>Hangout quick chat</b><span>Press 1-8 in the hangout to send a quick chat bubble.</span></li>
-      <li><b>Online status</b><span>Leaderboards now show who is online.</span></li>
-      <li><b>New animations</b><span>New passing, shooting, stealing, blocking, crossover and celebration animations.</span></li>
-      <li><b>Fair steals and blocks</b><span>No more dice rolls. Reach the ball side of the dribbler to steal, jump on time to block, and stand in the lane to pick off passes. Rings show when you can steal.</span></li>
-      <li><b>Apex rework</b><span>His new Afterimage lets him blink back to a marked spot and leave defenders behind.</span></li>
-      <li><b>Free coins</b><span>Use code <b>NEWUI</b> for 1,000 coins.</span></li>
+      <li><b>New player models</b><span>Every player has their own look: hair, headbands, hats, masks, sleeves, shoes and build, in every game and in the shop.</span></li>
+      <li><b>New shop</b><span>Every card shows the player's portrait. Tap a player to open their profile, with an animated scene of them in action, real ratings, a backstory, their play style and fun facts. Buy or equip right from the profile.</span></li>
+      <li><b>Substitutions</b><span>Bring up to five bench players into a tournament. Players tire as they play. Pause and choose Substitutes, or let auto subs bring in fresh legs.</span></li>
+      <li><b>Legend tournaments</b><span>Take on the hardest opponents for 50% bigger coin and XP bonuses.</span></li>
+      <li><b>Longer games</b><span>Quick play and tournaments can now be 8 or 10 minutes long.</span></li>
     </ul>
     <div class="row"><button class="go" id="devOk">Got it</button></div></div></div>
 
@@ -1266,7 +1262,7 @@ function applyCfg(cfg){
     if(cfg.teamCol>=0&&cfg.teamCol<COLORS.length)teamCol=cfg.teamCol;
     if(typeof cfg.teamName==='string'&&cfg.teamName)teamName=cfg.teamName.slice(0,10);
     if(cfg.oppIdx>=0&&cfg.oppIdx<OPP.length)oppIdx=cfg.oppIdx;
-    if([120,240,360].concat(typeof devOn!=='undefined'&&devOn?[480,600]:[]).indexOf(cfg.gameLen)>=0)gameLen=cfg.gameLen;
+    if([120,240,360,480,600].indexOf(cfg.gameLen)>=0)gameLen=cfg.gameLen;
     if(Array.isArray(cfg.owned))owned=['DIME','BLAZE','MOOSE'].concat(cfg.owned.filter(n=>PRICE[n]>0));
     if(typeof cfg.coins==='number'&&cfg.coins>=0)coins=Math.floor(cfg.coins);
     if(typeof cfg.titles==='number'&&cfg.titles>=0)titles=Math.floor(cfg.titles);
@@ -2485,7 +2481,7 @@ function ik(ax,ay,bx,by,l1,l2,bend){
   const a=(l1*l1-l2*l2+dd*dd)/(2*dd),h=Math.sqrt(Math.max(0,l1*l1-a*a)),ux=dx/dd,uy=dy/dd;
   return {jx:ax+ux*a-uy*h*bend,jy:ay+uy*a+ux*h*bend,ex:bx,ey:by};
 }
-/* ===== unique player looks (dev build): hair, gear and shoes for every player ===== */
+/* ===== unique player looks: hair, gear and shoes for every player ===== */
 const LOOKS={
   DIME:{hair:'short',hc:'#1b1410',band:'#17d6ff',wrist:'#17d6ff',shoe:'#f4f6ff',sole:'#17d6ff',build:0.96},
   BLAZE:{hair:'flat',hc:'#20140c',tip:'#ff7a1a',sleeve:'#ff7a1a',sleeveArm:'F',shoe:'#ff7a1a',sole:'#20140c',build:0.95},
@@ -2531,7 +2527,7 @@ const LOOK_CACHE={};
 function lookOf(name){if(LOOK_CACHE[name])return LOOK_CACHE[name];const L=Object.assign({build:1,shoe:'#f4f6ff',sole:'#c9ced9'},LOOKS[name]||lookGen(name));LOOK_CACHE[name]=L;return L;}
 /* Adapt's gear follows his live level: 0.3 at tip-off, 1 when fully adapted, up to 1.35 */
 function lkLvl(p){try{return p&&p.arch&&p.arch.adapt&&typeof adk==='function'?adk(p):1;}catch(e){return 1;}}
-function lookOn(){return typeof devFeat==='function'&&devFeat('looks');}
+function lookOn(){return true;}
 function lookForPlayer(p){if(!p||!p.name||!lookOn())return null;if(typeof custom!=='undefined'&&custom&&p.name===custom.name)return lookOf('YOU');return lookOf(p.name);}
 /* ---- in-game head: hair, headwear and face gear on the small court figures ---- */
 function lkHead(c,L,hx,hy,r,d,skin,acc,T,p){
@@ -2632,7 +2628,7 @@ function lkChest(c,L,shX,shY,hipX,hipY,HP,d,T,p,fxOnly){
   if(L.fx==='speed'&&p&&Math.hypot(p.vx||0,p.vy||0)>4.5){c.strokeStyle='rgba(198,255,61,.55)';c.lineWidth=2;for(let i=0;i<4;i++){const y=shY+HP*(0.05+i*0.12),len=HP*(0.25+0.15*Math.sin(T*20+i));c.beginPath();c.moveTo(hipX-d*HP*0.18,y);c.lineTo(hipX-d*(HP*0.18+len),y);c.stroke();}}
 }
 
-/* ===== player art (dev build): shop portraits and animated profile scenes ===== */
+/* ===== player art: shop portraits and animated profile scenes ===== */
 const ART=(function(){
 const P2=Math.PI*2,D=Math.PI/180;
 const hx2=h=>{const n=parseInt(String(h).slice(1),16);return [n>>16,(n>>8)&255,n&255];};
@@ -4102,7 +4098,7 @@ $('shopList').addEventListener('click',e=>{
 });
 $('shopBtn').onclick=()=>{hideScreens();renderShop();show('shop');};
 $('shopClose').onclick=()=>{hideEl('shop');renderSquad();show('menu');};
-/* ===== player profiles (dev build): art, backstory, play style and fun facts ===== */
+/* ===== player profiles: art, backstory, play style and fun facts ===== */
 const HOUNDS_KIT={c:'#c9ced9',t:'#ff7a1a',s:'#3a3f4f'},HELL_KIT={c:'#16080a',t:'#ff3b1f',s:'#22090c'};
 const PROFILES={
   DIME:{nick:'The Captain',from:'Lower Sprawl',wt:175,kit:HOUNDS_KIT,
@@ -4440,8 +4436,8 @@ $('brBack').onclick=()=>{
   brArm=false;$('brBack').textContent='Back';tour=null;hideEl('bracket');show('menu');createGame();checkBall(0);phase='menu';renderSquad();
 };
 $('tourResume').onclick=resumeTour;
-/* ===== tournament upgrades (dev build): Legend, a bench with substitutes, longer games ===== */
-function tPlus(){return typeof devFeat==='function'&&devFeat('tourplus');}
+/* ===== tournament upgrades: Legend, a bench with substitutes, longer games ===== */
+function tPlus(){return true;}
 var tDiffSel=2;try{tDiffSel=localStorage.getItem('sk_tdiff')==='3'?3:2;}catch(e){}
 function tStarters(){return gm===3?SLOTS.map(s=>POOL[s][squad[s]].name):[pk1,pk2].slice(0,gm);}
 function tBenchGet(){
@@ -4558,8 +4554,8 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.1.39';
-const DEV_VER='2.1';let tutI=0,tutChecked=false;
+const GAME_VER='2.2.0';
+const DEV_VER='2.2';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
   $('tutTitle').textContent=s.t;$('tutBody').innerHTML=tok(s.b);$('tutStep').textContent='Step '+(tutI+1)+' of '+TUT.length;
@@ -5993,8 +5989,6 @@ const DEV_HASH='11cal5ouw9s';
 const DEV_FEATURES=[
   {id:'all',name:'All players unlocked',desc:'Every player, including hidden ones, is available to pick. Your real unlocks and coins are not changed.',on:true},
   {id:'story',name:'Story mode: Velocity Break',desc:'A four-chapter campaign with the Ash Hounds, from the cracked courts of the Lower Sprawl to the Sovereigns on the threshold, plus a custom player creator. Find it in Play, Offline.',on:true},
-  {id:'looks',name:'Player looks and profiles',desc:'Every player has their own hair, gear and shoes in games and in the shop. Tap a player in the shop to open their profile, with art of them in action, a backstory, a play-style breakdown and fun facts.',on:true},
-  {id:'tourplus',name:'Tournament upgrades and longer games',desc:'Tournaments can be played on Legend for bigger coin bonuses, you can bring up to five bench players and make substitutions as they tire, and any game can be 8 or 10 minutes long.',on:true},
   {id:'blaze',name:'Blaze shooting fix',desc:'Inside his zone, a release that misses the green tops out at 55% so green (65%) is always best, and his shots close to the rim are no longer capped at 30%.',on:true}
 ];
 var devTaps=0,devTapT=0,devMaster=false,devOn=false,devX={},devRealOwned=null,devTries=[];
@@ -6010,8 +6004,6 @@ function devApply(){
   else if(devRealOwned){const real=devRealOwned;devRealOwned=null;owned=real;SLOTS.forEach(sl=>{if(owned.indexOf(POOL[sl][squad[sl]].name)<0)squad[sl]=POOL[sl].findIndex(o=>owned.indexOf(o.name)>=0);});if(owned.indexOf(pk1)<0)pk1='DIME';if(owned.indexOf(pk2)<0||pk2===pk1)pk2=owned.find(n=>n!==pk1);}
   $('devBadge').classList.toggle('hide',!devOn);
   $('offStory').classList.toggle('hide',!devFeat('story'));
-  document.querySelectorAll('#segLen .lenx').forEach(b=>b.classList.toggle('hide',!devFeat('tourplus')));
-  if(!devFeat('tourplus')&&gameLen>360){gameLen=240;}
   try{renderOpp();renderTBench();}catch(e){}
   try{renderSquad();}catch(e){}
 }
