@@ -566,7 +566,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     <h1>TOURNAMENT</h1>
     <p id="tpIntro">Win three rounds in an 8-team bracket to take the title. Tournaments are always played on <b>All-Star</b> difficulty on the half court.</p>
     <button class="mbtn hide" id="tourResume" style="width:100%;box-sizing:border-box;margin:.4cqw 0 .8cqw;border-color:var(--gold)"><span>Resume</span><small></small></button>
-    <div id="tpDevA" class="hide"><div class="row" id="rowTDiff"><b>Difficulty</b><div class="seg" id="segTDiff"><button data-v="2" class="sel">All-Star</button><button data-v="3">Legend</button></div></div><p class="tag" id="tdiffTag"></p></div>
+    <div id="tpDevA" class="hide"><div class="row" id="rowTDiff"><b>Difficulty</b><div class="seg" id="segTDiff"><button data-v="0">Rookie</button><button data-v="1">Pro</button><button data-v="2" class="sel">All-Star</button><button data-v="3">Legend</button></div></div><p class="tag" id="tdiffTag"></p></div>
     <div id="tpMount"></div>
     <div id="tpDevB" class="hide"><div class="row tbrow"><b>Bench</b><div id="tpBench" class="tbench" role="group" aria-label="Bench players"></div></div><p class="tag" id="tbenchTag"></p></div>
     <div class="row"><button class="go" id="tourBtn" style="background:var(--cyan)">Play</button><button class="go back" id="tpBack">Back</button></div>
@@ -784,6 +784,11 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
       <li><b>Substitutions</b><span>Bring up to five bench players into a tournament. Players tire as they play. Pause and choose Substitutes, or let auto subs bring in fresh legs.</span></li>
       <li><b>Legend tournaments</b><span>Take on the hardest opponents for 50% bigger coin and XP bonuses.</span></li>
       <li><b>Longer games</b><span>Quick play and tournaments can now be 8 or 10 minutes long.</span></li>
+      <li><b>New shooting</b><span>The meter runs from 0% at the bottom to 100% at the top. The small green at the very top always goes in. Blaze and Snipe get a 25% bigger green in their zones, and Adapt gets 20% bigger at 100% and 30% at 135%.</span></li>
+      <li><b>Steals</b><span>Press K (or the steal button) to reach when the dribbler is exposed. Reach during a crossover and you go down. Mashing drains your stamina.</span></li>
+      <li><b>Pressure defense</b><span>Hold K (or the steal button) to shadow the ball instead of your man: you jump passing lanes and scoop up loose balls.</span></li>
+      <li><b>Block guide</b><span>When someone shoots near you, a ring shows where you need to be, and in the air you see whether your hands are high enough.</span></li>
+      <li><b>Rookie and Pro tournaments</b><span>Practice tournaments for fewer coins. Only All-Star and Legend wins count as titles.</span></li>
     </ul>
     <div class="row"><button class="go" id="devOk">Got it</button></div></div></div>
 
@@ -991,14 +996,15 @@ addEventListener('keydown',e=>{
   const acts=CODE2A[e.code]||[];
   for(const a of acts){
     if(a==='shoot'){held.shoot=true;press('shoot');}
-    else if(a==='pass'||a==='juke'||a==='sw'||a==='ab')press(a);
+    else if(a==='pass'){held.pass=true;press(a);}
+    else if(a==='juke'||a==='sw'||a==='ab')press(a);
     else if(a==='sprint')held.sprint=true;
     else if(a==='pause')requestPause();
     else if(a==='mute')toggleMute();
   }
 });
-addEventListener('keyup',e=>{downKeys.delete(e.code);held.shoot=isDown('shoot');held.sprint=isDown('sprint');});
-addEventListener('blur',()=>{downKeys.clear();held.shoot=false;held.sprint=false;if(phase==='play'&&!pvp&&!hang)togglePause();});
+addEventListener('keyup',e=>{downKeys.delete(e.code);held.shoot=isDown('shoot');held.sprint=isDown('sprint');held.pass=isDown('pass');});
+addEventListener('blur',()=>{downKeys.clear();held.shoot=false;held.sprint=false;held.pass=false;if(phase==='play'&&!pvp&&!hang)togglePause();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&phase==='play'&&!pvp&&!hang)togglePause();});
 function sendDc(m){try{if(dc&&dc.readyState==='open')dc.send(JSON.stringify(m));}catch(e){}}
 function showPauseMenu(){
@@ -1148,7 +1154,7 @@ const ARCH={
 const SLOTS=['PG','SG','C'];
 const SLOT_INFO={
   PG:'Best passer and ball handler: faster, harder-to-steal passes and crossovers that freeze defenders. Shooting fades fast away from the rim.',
-  SG:'Best green zone on the team: a guaranteed make in the right spots.',
+  SG:'Best shooters on the team, with bigger greens in their spots.',
   C:'Owns the paint: finishing, dunks, rebounds and blocks. Barely a threat outside it.'
 };
 const POOL={
@@ -1160,11 +1166,11 @@ const POOL={
     {name:'GLOVE',num:15,skin:'#c68642',tag:'Defensive pest with sticky hands.',mod:{steal:1.25,spd:5.8,handle:1.2,shoot:0.6,pass:1.1}}
   ],
   SG:[
-    {name:'REX',num:23,skin:'#8d5524',tag:'Good from everywhere. His green goes in 75% of the time.',mod:{rng:'all',sureP:0.75}},
-    {name:'BLAZE',num:8,skin:'#e0ac69',tag:'Quick release. Green goes in 65% of the time from mid-range out to just past the three-point line.',mod:{sureIn:0.65,zk:0.85,spd:5.8,dunk:3.3,steal:0.8,shoot:0.76,rng:'mid',sureLo:3.2,sureHi:7.4,shotK:0.8}},
-    {name:'SNIPE',num:30,skin:'#a0693a',tag:'Slow release. Green is a lock from 11.5 m and back.',mod:{shoot:0.92,spd:4.9,h:1.92,rng:'deep',sureLo:11.5,sureHi:99,shotK:1.5}},
-    {name:'HAZE',num:6,skin:'#e0ac69',tag:'Shifty scorer. Green goes in 70% of the time.',mod:{spd:5.9,shoot:0.8,rng:'all',sureP:0.7,steal:0.8}},
-    {name:'VOLT',num:99,skin:'#8d5524',tag:'Athletic slasher who lives above the rim. Green goes in 70% of the time.',mod:{spd:5.6,dunk:3.6,shoot:0.74,rng:'mid',sureP:0.7,h:2.0,steal:0.7}}
+    {name:'REX',num:23,skin:'#8d5524',tag:'Good from everywhere, with a steady green at any range.',mod:{rng:'all',sureP:0.75}},
+    {name:'BLAZE',num:8,skin:'#e0ac69',tag:'Quick release. His green is 25% bigger from mid-range out to just past the three-point line.',mod:{sureIn:0.65,zk:0.85,spd:5.8,dunk:3.3,steal:0.8,shoot:0.76,rng:'mid',sureLo:3.2,sureHi:7.4,shotK:0.8}},
+    {name:'SNIPE',num:30,skin:'#a0693a',tag:'Slow release. His green is 25% bigger from 11.5 m and back.',mod:{shoot:0.92,spd:4.9,h:1.92,rng:'deep',sureLo:11.5,sureHi:99,shotK:1.5}},
+    {name:'HAZE',num:6,skin:'#e0ac69',tag:'Shifty scorer who is hard to stay in front of.',mod:{spd:5.9,shoot:0.8,rng:'all',sureP:0.7,steal:0.8}},
+    {name:'VOLT',num:99,skin:'#8d5524',tag:'Athletic slasher who lives above the rim.',mod:{spd:5.6,dunk:3.6,shoot:0.74,rng:'mid',sureP:0.7,h:2.0,steal:0.7}}
   ],
   C:[
     {name:'MOOSE',num:44,skin:'#e0ac69',tag:'Immovable anchor.',mod:{}},
@@ -1176,13 +1182,13 @@ const POOL={
 };
 POOL.PG.push({name:'SAGE',num:11,skin:'#a0693a',tag:'Legendary maestro who makes everyone around him better.',mod:{pass:1.6,handle:1.8,spd:5.9,shoot:0.75,steal:1.05}},
   {name:'PHANTOM',num:1,skin:'#c68642',tag:'Mythic. Untouchable speed and the best hands in the game.',mod:{spd:6.3,handle:2.0,pass:1.6,steal:1.3,shoot:0.8}});
-POOL.SG.push({name:'ZEN',num:77,skin:'#e0ac69',tag:'Legendary marksman. Green goes in 85% of the time, from anywhere.',mod:{spd:5.6,shoot:0.86,rng:'all',sureP:0.85,steal:0.75,dunk:3.0}},
-  {name:'APEX',num:24,skin:'#8d5524',tag:'Mythic. Green goes in 92% of the time, from anywhere. His Afterimage lets him blink back to an open spot and leave his defender behind.',mod:{spd:5.9,shoot:0.9,rng:'all',sureP:0.92,dunk:3.6,h:2.02,steal:0.8}});
+POOL.SG.push({name:'ZEN',num:77,skin:'#e0ac69',tag:'Legendary marksman. Lethal from anywhere.',mod:{spd:5.6,shoot:0.86,rng:'all',sureP:0.85,steal:0.75,dunk:3.0}},
+  {name:'APEX',num:24,skin:'#8d5524',tag:'Mythic. Lethal from anywhere. His Afterimage lets him blink back to an open spot and leave his defender behind.',mod:{spd:5.9,shoot:0.9,rng:'all',sureP:0.92,dunk:3.6,h:2.02,steal:0.8}});
 POOL.SG.push({name:'ADAPT',num:42,skin:'#8d5524',hidden:true,tag:'Special. Starts at 30% of everything and grows as he plays: +5% for a completed pass or a block, +10% for a steal, +15% for a made shot or for crossing someone up, and +20% when his dash steals the ball or flattens a defender while he has it. Each boost upgrades his speed, green zone, make % and range. At 100% any shot released in the green goes in from anywhere and he moves much faster. At 135% he can see every shot\'s arc and meter, other players\' special cooldowns and every opponent\'s shooting range.',mod:{adapt:true,rng:'all',shoot:0.84,spd:5.4,dunk:3.0,steal:0.7}});
 POOL.C.push({name:'GOLIATH',num:13,skin:'#6b4423',tag:'Legendary giant. Dominates the paint on both ends.',mod:{h:2.18,dunk:3.8,block:1.3,reb:1.3,spd:4.6,paint:0.28}},
   {name:'KRAKEN',num:5,skin:'#6b4423',tag:'Mythic. A 2.2 m monster who ends possessions at the rim.',mod:{h:2.2,dunk:4.0,block:1.5,reb:1.5,spd:5.0,paint:0.3}});
 POOL.PG.push({name:'WARDEN',num:3,skin:'#7a4a2b',tag:'Legendary pest. Picks pockets like no one else and turns the whole team into a press.',mod:{spd:6.0,handle:1.5,pass:1.3,shoot:0.72,steal:1.5}});
-POOL.SG.push({name:'HEATER',num:9,skin:'#d9a066',tag:'Legendary streak shooter. Every make builds heat, with a bigger green window and better odds up to 5 in a row. A miss cools him off.',mod:{spd:5.6,shoot:0.8,dunk:3.0,steal:0.8,heat:true}});
+POOL.SG.push({name:'HEATER',num:9,skin:'#d9a066',tag:'Legendary streak shooter. Every make builds heat, with a bigger green window, up to 5 in a row. A miss cools him off.',mod:{spd:5.6,shoot:0.8,dunk:3.0,steal:0.8,heat:true}});
 POOL.C.push({name:'RALLY',num:34,skin:'#6b4423',tag:'Legendary comeback big. The further his team trails, the faster and stronger he gets, up to 30%.',mod:{h:2.1,dunk:3.5,block:1.25,reb:1.25,spd:4.8,paint:0.27,rally:true}});
 const RARS=[{k:'common',n:'Common',c:'#9aa3c7'},{k:'rare',n:'Rare',c:'#4da6ff'},{k:'epic',n:'Epic',c:'#b78bff'},{k:'legendary',n:'Legendary',c:'#ffd166'},{k:'mythic',n:'Mythic',c:'#ff5ee0'},{k:'special',n:'Special',c:'#3dffa8'}];
 const RARMAP={rare:['ROCK','FLASH','GLOVE','ATLAS','ORBIT'],epic:['SNIPE','BOOM','VOLT','HAZE','DOZER'],legendary:['SAGE','ZEN','GOLIATH','WARDEN','HEATER','RALLY'],mythic:['PHANTOM','APEX','KRAKEN'],special:['ADAPT']};
@@ -1396,8 +1402,8 @@ let teams=[],players=[],ball=null,ctrl=null,ctrlLock=0,poss=0,shotClock=SC,gameT
 let shake=0,netT=0,helperId=-1,hintT=14;
 let floaters=[],banner=null,vfx=[],freezeT=0,slowT=0,freezeInfo=null;
 const inp={mx:0,my:0,sprint:false};
-const gin={mx:0,my:0,sprint:false},gheld={shoot:false,sprint:false},gpr={shoot:false,pass:false,juke:false,sw:false,ab:false};
-const held={shoot:false,sprint:false};
+const gin={mx:0,my:0,sprint:false},gheld={shoot:false,sprint:false,pass:false},gpr={shoot:false,pass:false,juke:false,sw:false,ab:false};
+const held={shoot:false,sprint:false,pass:false};
 const pr={shoot:false,pass:false,juke:false,sw:false,ab:false};
 const keys={};
 const touch={active:false,x:0,y:0};
@@ -1476,8 +1482,8 @@ function rangeBonus(p,dh){
 function rangeZone(p,dh){
   const r=p.arch.rng;if(!r||dh<3.2)return 1;
   if(r==='all')return 1.15;
-  if(r==='mid')return dh<4.5?1.1:dh<=7.4?1.4:dh<8.6?1:0.75;
-  if(r==='deep')return dh<ARC-0.05?0.9:Math.min(1.5,1+(dh-ARC)*0.2);
+  if(r==='mid')return dh<8.6?1:0.75;
+  if(r==='deep')return dh<ARC-0.05?0.9:1;
   return 1;
 }
 function sureLoOf(p){const lo=p.arch.sureLo;return fxv(p,'range',0)?Math.min(lo,8.5):lo;}
@@ -1519,9 +1525,14 @@ function swapCtx(){swapObj(inp,gin);swapObj(held,gheld);swapObj(pr,gpr);let t=ct
 function inCtx(tm,fn){if(!pvp||tm===ctxTeam)return fn();swapCtx();try{return fn();}finally{swapCtx();}}
 function setCtrl(p,lock){if(p.team===ctxTeam){ctrl=p;ctrlLock=lock;}else if(pvp){ctrl2=p;ctrlLock2=lock;}}
 function skillOf(p){return clamp(p.arch.shoot*(isCPU(p)?DIFF[diffIdx].cpuShoot*ST.shoot:1)*(p.arch.adapt?adk(p):1)*(p.arch.heat?1+0.05*(p.heat||0):1)*rallyK(p),p.arch.adapt?0.1:0.3,1);}
+/* half the height of the green, in seconds of meter. Blaze and Snipe get +25% inside their zones; Adapt +20% at 100% and +30% at 135% */
+function inZoneSG(p,dh){return p.arch.sureLo!==undefined&&dh>=sureLoOf(p)&&dh<=p.arch.sureHi;}
+function adZone(p){return !p.arch.adapt?1:(adMaxed(p)?1.3:(adFull(p)?1.2:adSoft(p)));}
+function greenWin(p,s){const Tf=0.5*s.k,zh=Math.min(zoneHalf(p),0.2*Tf);return {Tf:Tf,zh:zh,tp:Tf-zh,lo:Tf-2*zh};}
+function skillZ(p){if(!p.arch.adapt||!adFull(p))return skillOf(p);const L=p.lvl;p.lvl=7;const v=skillOf(p);p.lvl=L;return v;}
 function zoneHalf(p){
   const dh=dst(p.x,p.y,HX,HY),c=contest(p);
-  return 0.032*adSoft(p)*(p.arch.heat?1+0.12*(p.heat||0):1)*(0.7+0.6*skillOf(p))*(dh<2.4?p.arch.pz:1)*rangeZone(p,dh)*(p.arch.zk||1)*(p.arch.bRange&&dh>=ARC-0.05?1.2:1)*fxv(p,'zone',1)*(1-0.5*c)*(isCPU(p)?1:DIFF[diffIdx].forgive);
+  return 0.0225*adZone(p)*(inZoneSG(p,dh)?1.25:1)*(p.arch.heat?1+0.12*(p.heat||0):1)*(0.7+0.6*skillZ(p))*(dh<2.4?p.arch.pz:1)*rangeZone(p,dh)*(p.arch.zk||1)*(p.arch.bRange&&dh>=ARC-0.05?1.2:1)*fxv(p,'zone',1)*(1-0.5*c)*(isCPU(p)?1:DIFF[diffIdx].forgive);
 }
 function computeHelper(){
   helperId=-1;if(ball.state!=='held')return;
@@ -1652,7 +1663,11 @@ function tryShoot(p,human){
   p.dir=sgn(HX-p.x);
   const noise=isCPU(p)?DIFF[diffIdx].noise:0.075;
   const sk=fxv(p,'quick',0)?0.55:(p.arch.shotK||1);
-  p.shot={t:0,k:sk,tp:T_PERF*sk,ai:!human,aiRel:T_PERF*sk+(Math.random()+Math.random()+Math.random()-1.5)*2*noise};
+  const g0=greenWin(p,{k:sk});
+  /* the computer hits the green only now and then (more on higher difficulties); otherwise it lets go a little early */
+  const gp=isCPU(p)?[0.05,0.08,0.12,0.17][diffIdx]:0.12,gs=(Math.random()+Math.random()+Math.random()-1.5)*2;
+  const aiRel=Math.random()<gp?g0.tp+(Math.random()-0.5)*g0.zh*1.6:g0.lo-0.006-Math.abs(gs)*Math.max(0.03,noise)*1.6*sk;
+  p.shot={t:0,k:sk,tp:g0.tp,ai:!human,aiRel:aiRel};
   p.vz=JUMP_VZ*sk;p.vx*=0.35;p.vy*=0.35;sfx.release();
   scheduleBlocks(p);
   return true;
@@ -1661,33 +1676,33 @@ function releaseShot(p,t){
   const s=p.shot;p.shot=null;p.follow=0.55;
   const hum=!s.ai;lastShotHum=hum;if(hum&&p.team===0){pEvt('shoot');shotStat('att');}
   const dh=dst(p.x,p.y,HX,HY),three=dh>=ARC-0.05,c=contest(p),skill=skillOf(p);
-  const tp=s.tp,zh=zoneHalf(p),err=Math.abs(t-tp),green=err<=zh;
-  const q=green?1:clamp(1-(err-zh)/0.17,0,1);
+  const GW=greenWin(p,s),tp=GW.tp,zh=GW.zh,green=t>=GW.lo-0.004&&t<=GW.Tf+0.012;
+  const q=green?1:(t<GW.lo?clamp(t/GW.lo,0,1):clamp(1-(t-GW.Tf)/(0.12*s.k),0,1));
   const df=dh<1.6?0.92:dh<3.2?0.72:dh<5?0.55:dh<ARC-0.05?0.5:0.46;
-  const sp_=green?sureP(p,dh):0;const paint=dh<3.2?p.arch.paint:0;
-  const pm=clamp((df*0.55+skill*0.55)*(0.15+0.85*q)+paint+rangeBonus(p,dh)+(green&&sp_<1?(p.arch.sure?0.03:0.1):0)-c*0.38*(1-paint*1.5),0.03,0.97);
+  const sp_=green?1:0;const paint=dh<3.2?p.arch.paint:0;
+  /* off the green, your chance is the bar height times how good the look is */
+  const pm=q*clamp((df*0.55+skill*0.55)+paint+rangeBonus(p,dh)-c*0.38*(1-paint*1.5),0.03,0.97);
   const oz=p.arch.sureLo!==undefined&&!(dh>=sureLoOf(p)&&dh<=p.arch.sureHi);
   let pmx=pm;
   if(p.arch.adapt&&dh>adMax(p))pmx*=Math.max(0.1,1-(dh-adMax(p))*0.3);
   if(p.arch.fall)pmx*=fallOff(dh);
-  if(p.type==='C'&&dh>=3.2){const tgt=dh<5?0.25:dh<8.6?0.15:0.10;pmx=Math.max(0.02,tgt*(0.55+0.45*q)-c*0.15);}
-  if(devFeat('blaze')&&p.arch.sureIn&&!green&&!oz)pmx=Math.min(pmx,0.55);
-  const ozCap=(devFeat('blaze')&&p.arch.sureIn&&dh<3.2)?1:0.3;
-  const made=(dch('make')&&p.team===0)||(sp_>0?Math.random()<sp_:Math.random()<(oz?Math.min(pmx,ozCap):pmx));
+  if(p.type==='C'&&dh>=3.2){const tgt=dh<5?0.25:dh<8.6?0.15:0.10;pmx=Math.max(0,tgt*q-c*0.15);}
+  const ozCap=(p.arch.sureIn&&dh<3.2)?1:0.3;
+  const made=(dch('make')&&p.team===0)||green||Math.random()<(oz?Math.min(pmx,ozCap):pmx);
   if(hum&&p.team===0)shotStat(made?'make':'miss');
   if(p.arch.heat){if(made){p.heat=Math.min(5,(p.heat||0)+1);if(p.heat===3)popup('ON FIRE','#ff9a3d',p);}else p.heat=0;}
   if(!s.ai){
-    if(green)popup(sp_>0?'PERFECT':'GREEN','#5dff8a',p);
+    if(green)popup('GREEN','#5dff8a',p);
     if(green&&hum&&p.team===0){pEvt('green');shotStat('green');}
-    else if(q<0.4)popup(t<tp?'EARLY':'LATE','#ff9d6b',p);
-    else popup(t<tp?'Slightly early':'Slightly late','#ffe066',p);
+    else if(t>GW.Tf)popup(q<0.5?'LATE':'Slightly late','#ff9d6b',p);
+    else popup(q<0.6?'EARLY':'Slightly early','#ffe066',p);
   }
   let ox,oy;
   if(made){ox=rnd(-0.05,0.05);oy=rnd(-0.05,0.05);}
   else{
     const mag=0.27+rnd(0,0.15)+(1-q)*rnd(0,0.5),a=Math.random()*6.283;
     ox=Math.cos(a)*mag;oy=Math.sin(a)*mag;
-    if(t<tp-zh)ox=Math.abs(ox)*1.1;else if(t>tp+zh)ox=-Math.abs(ox)*1.1;
+    if(t<GW.lo)ox=Math.abs(ox)*1.1;else if(t>GW.Tf)ox=-Math.abs(ox)*1.1;
   }
   const tx=HS>0?Math.max(1.32,HX+ox):Math.min(CL-1.32,HX+ox),ty=HY+oy;
   const x0=p.x+p.dir*0.2,y0=p.y,z0=p.z+p.h+0.15;
@@ -1705,7 +1720,7 @@ function updateShot(p,dt){
   s.t+=dt;
   let rel=false;
   if(s.ai){if(s.t>=s.aiRel)rel=true;}
-  else if((!held.shoot&&s.t>=0.14*s.k)||s.t>=0.62*s.k)rel=true;
+  else if((!held.shoot&&s.t>=0.14*s.k)||s.t>=0.58*s.k)rel=true;
   if(rel)releaseShot(p,s.t);
 }
 function updateDunk(p,dt){
@@ -1867,7 +1882,7 @@ function stealCheck(p,h){
   if(dst(hd[0],hd[1],bp[0],bp[1])<=r)return '';
   return dst(p.x,p.y,h.x,h.y)<=r+0.75?'WRONG SIDE':'TOO FAR';
 }
-function intR(q){return (0.38+0.18*q.arch.steal)*fxv(q,'sreach',1)*(fxv(q,'steal',0)?1.2:1)*(isCPU(q)?[0.75,0.9,1,1.1][diffIdx]:1);}
+function intR(q){return (q.pressing?1.5:1)*(0.38+0.18*q.arch.steal)*fxv(q,'sreach',1)*(fxv(q,'steal',0)?1.2:1)*(isCPU(q)?[0.75,0.9,1,1.1][diffIdx]:1);}
 function segD(px,py,ax,ay,bx,by){const dx=bx-ax,dy=by-ay,l=dx*dx+dy*dy;let t=l?((px-ax)*dx+(py-ay)*dy)/l:0;t=clamp(t,0,1);return dst(px,py,ax+dx*t,ay+dy*t);}
 function laneThief(a,b){
   let best=null,bd=9;
@@ -1881,6 +1896,11 @@ function laneThief(a,b){
 function trySteal(p){
   if(phase!=='play'||p.stealCd>0||p.stumble>0||p.shot||p.dunk)return;
   const hum=(p===ctrl||p===ctrl2)&&!isCPU(p);
+  /* no mashing: every reach costs stamina, and quick repeats cost a lot more */
+  if(p.stamina<0.08){if(hum&&tNow-(p.gasPop||-9)>1)popup('OUT OF GAS','#ff9d6b',p),p.gasPop=tNow;return;}
+  const spam=tNow-(p.lastReach||-9)<0.9;p.lastReach=tNow;
+  p.stamina=Math.max(0,p.stamina-(spam?0.2:0.05));if(p.stamina<=0)p.exhausted=true;
+  if(spam&&hum&&tNow-(p.spamPop||-9)>1.2){p.spamPop=tNow;popup('DON\'T MASH: STAMINA','#ff9d6b',p);}
   p.stealCd=0.5;p.lunge=0.26;
   if(ball.state==='pass'&&ball.passer&&ball.passer.team!==p.team&&!ball.laser&&!(stealLock.team===p.team&&tNow<stealLock.until)){
     const hd=[p.x+p.dir*0.35,p.y];
@@ -1894,6 +1914,9 @@ function trySteal(p){
   if(!h||h.team===p.team)return;
   const why=stealCheck(p,h);
   if(!why){giveBall(p,'steal');return;}
+  /* reaching while the dribbler breaks ankles: you go down */
+  if(why==='PROTECTED'&&(h.juke>0||h.dribSafe>tNow)&&dst(p.x,p.y,h.x,h.y)<stealReach(p)+0.8){
+    p.stumble=Math.max(p.stumble,1.1);p.stealCd=1.2;p.vx=-p.dir*1.5;p.vy=0;popup('ANKLES BROKEN!','#ff6b6b',p);shake=Math.max(shake,0.35);sfx.squeak();return;}
   p.stealCd=0.85;p.reachT=0.3;
   if(hum&&dst(p.x,p.y,h.x,h.y)<4)popup(why,'#9fb6ff',p);
 }
@@ -1933,8 +1956,23 @@ function steer(p,dx,dy,mul,dt,sprint){
   const a=Math.min(1,(p.z>0?2:(storyHaz()&&inZone('slick',p.x,p.y)?2.2:10))*dt);
   p.vx+=(dx*sp-p.vx)*a;p.vy+=(dy*sp-p.vy)*a;
 }
+function pressTarget(p){
+  if(ball.state==='held'&&ball.holder&&ball.holder.team!==p.team){const h=ball.holder;
+    let r=null,rd=1e9;for(const q of players){if(q.team!==h.team||q===h)continue;const d=dst(q.x,q.y,p.x,p.y);if(d<rd){rd=d;r=q;}}
+    if(!r)return [h.x,h.y];return [h.x+(r.x-h.x)*0.45,h.y+(r.y-h.y)*0.45];}
+  if(ball.state==='pass'&&ball.passer&&ball.passer.team!==p.team)return [ball.x+ball.vx*0.25,ball.y+ball.vy*0.25];
+  if(ball.state==='loose')return [ball.x,ball.y];
+  return null;
+}
 function humanControl(p,dt){
   let mx=inp.mx,my=inp.my;
+  p.pressing=false;
+  if(!p.hasBall&&held.pass&&!p.exhausted&&p.stumble<=0&&!p.dunk&&poss!==p.team&&tNow-(p.passDownT||-9)>0.22&&p.stamina>0.02){
+    const tg=pressTarget(p);
+    if(tg){p.pressing=true;p.stamina=Math.max(0,p.stamina-dt*0.12);if(p.stamina<=0)p.exhausted=true;
+      const dx=tg[0]-p.x,dy=tg[1]-p.y,d=Math.hypot(dx,dy);
+      if(d>0.12){const ax=dx/d*Math.min(1,d*1.5),ay=dy/d*Math.min(1,d*1.5);if(Math.hypot(mx,my)<0.1){mx=ax;my=ay;}else{mx=(mx+ax)/2;my=(my+ay)/2;}}}
+  }
   if(p.stumble>0){steer(p,0,0,1,dt,false);return;}
   if(p.dunk)return;
   const moving=Math.hypot(mx,my)>0.1;
@@ -1951,7 +1989,7 @@ function humanControl(p,dt){
   }else{
     p.stance=poss!==p.team;
     if(pr.shoot){pr.shoot=false;if(ball.state==='pass'&&ball.target===p)p.queueShot=tNow+0.8;else tryBlock(p);}
-    if(pr.pass){pr.pass=false;trySteal(p);}
+    if(pr.pass){pr.pass=false;p.passDownT=tNow;trySteal(p);}
   }
 }
 
@@ -2065,7 +2103,7 @@ function updatePlayer(p,dt){
   if(p.juke>0){p.juke-=dt;const f=Math.exp(-3.5*dt);p.vx*=f;p.vy*=f;}
   if(p.stumble>0)p.stumble-=dt;
   if(p.en!==undefined&&phase==='play')p.en=Math.max(0.15,p.en-dt*(p.team===0?0.0034:(tour&&tour.live?0.0012:0.0022))*(p.sprinting?2.2:1));
-  if(!p.sprinting){p.stamina=Math.min(1,p.stamina+dt*0.22*(p.en!==undefined?0.55+0.45*p.en:1));if(p.exhausted&&p.stamina>0.3)p.exhausted=false;}
+  if(!p.sprinting&&!p.pressing){p.stamina=Math.min(1,p.stamina+dt*0.22*(p.en!==undefined?0.55+0.45*p.en:1));if(p.exhausted&&p.stamina>0.3)p.exhausted=false;}
   if(p.blockAt>=0&&tNow>=p.blockAt){p.blockAt=-1;if(p.z<=0&&!p.stumble&&!p.dunk){p.vz=4.2;p.blocking=0.7;}}
   if(!p.dunk){
     if(p.z>0||p.vz>0){p.vz-=G*dt;p.z+=p.vz*dt;if(p.z<=0){p.z=0;p.vz=0;}}
@@ -2179,9 +2217,9 @@ function updateBall(dt){
     for(const p of players){
       if(p.stumble>0||p.dunk)continue;
       const d=dst(p.x,p.y,b.x,b.y);
-      const rc=fxv(p,'reach',1);if(d>(0.75+(p.z>0.2?0.2:0))*rc)continue;
+      const rc=fxv(p,'reach',1);if(d>(0.75+(p.z>0.2?0.2:0))*rc*(p.pressing?1.55:1))continue;
       if(b.z>p.z+p.h+0.45*rc+(rc>1?0.5:0))continue;
-      const s=p.arch.reb*rnd(0.6,1.2)+(p.z>0.2?0.35:0)-d*0.5;
+      const s=p.arch.reb*rnd(0.6,1.2)+(p.z>0.2?0.35:0)-d*0.5+(p.pressing?0.6:0);
       if(s>bs){bs=s;best=p;}
     }
     if(best)giveBall(best,'loose');
@@ -2417,16 +2455,18 @@ function drawSightGround(){
   }
   ctx.restore();
 }
-function drawMeterFor(q){
-  const mx=sx(q.x)-q.dir*60,bot=sy(q.y,q.z)-20,h=110,w=14,top=bot-h;
-  const pos=v=>clamp(v/(0.5*q.shot.k),0,1);
+function drawShotMeter(q){
+  const mx=sx(q.x)-q.dir*60,bot=sy(q.y,q.z)-20,h=110,w=14,top=bot-h,GW=greenWin(q,q.shot);
+  const cur=clamp(q.shot.t/GW.Tf,0,1),over=q.shot.t>GW.Tf+0.012,z1=GW.lo/GW.Tf;
   ctx.fillStyle='rgba(8,11,26,.85)';rr(mx-w/2-3,top-3,w+6,h+6,6);ctx.fill();
-  const zh=zoneHalf(q),z1=pos(q.shot.tp-zh),z2=pos(q.shot.tp+zh);
-  ctx.fillStyle=sureP(q,dst(q.x,q.y,HX,HY))>0?'rgba(93,255,138,.95)':'rgba(199,244,100,.8)';ctx.fillRect(mx-w/2,bot-h*z2,w,h*(z2-z1));
-  const cur=pos(q.shot.t);
-  ctx.fillStyle='rgba(255,255,255,.9)';ctx.fillRect(mx-w/2-3,bot-h*cur-1.5,w+6,3);
-  ctx.strokeStyle=teams[q.team].color;ctx.lineWidth=2;ctx.strokeRect(mx-w/2-3,top-3,w+6,h+6);
+  const fg=ctx.createLinearGradient(0,bot,0,top);fg.addColorStop(0,'rgba(255,90,90,.55)');fg.addColorStop(0.6,'rgba(255,209,102,.6)');fg.addColorStop(1,'rgba(255,240,170,.7)');
+  ctx.fillStyle=fg;ctx.fillRect(mx-w/2,bot-h*cur,w,h*cur);
+  ctx.fillStyle=over?'rgba(255,90,90,.95)':'rgba(93,255,138,.97)';ctx.fillRect(mx-w/2,top,w,h*(1-z1));
+  if(cur>=z1&&!over){ctx.save();ctx.shadowColor='#5dff8a';ctx.shadowBlur=14;ctx.fillStyle='rgba(180,255,200,.9)';ctx.fillRect(mx-w/2,top,w,h*(1-z1));ctx.restore();}
+  ctx.fillStyle='rgba(255,255,255,.95)';ctx.fillRect(mx-w/2-3,bot-h*cur-1.5,w+6,3);
+  ctx.strokeStyle=q.team===undefined?'#fff':teams[q.team].color;ctx.lineWidth=2;ctx.strokeRect(mx-w/2-3,top-3,w+6,h+6);
 }
+function drawMeterFor(q){drawShotMeter(q);}
 function drawSightPlayers(){
   for(const q of players){
     if(q===ctrl)continue;
@@ -3688,20 +3728,36 @@ function drawIndicators(){
       ctx.strokeStyle='rgba(255,90,90,.9)';ctx.lineWidth=3;ctx.setLineDash([5,4]);ctx.beginPath();ctx.arc(bx,by,17,0,6.283);ctx.stroke();ctx.setLineDash([]);
     }
   }
+  if(ctrl.pressing){const X2=sx(ctrl.x),Y2=sy(ctrl.y,0);ctx.save();ctx.setLineDash([6,5]);ctx.lineDashOffset=-tNow*40;ctx.strokeStyle='rgba(23,214,255,.9)';ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(X2,Y2,34,12,0,0,6.283);ctx.stroke();ctx.restore();
+    ctx.font='900 11px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.8)';ctx.strokeText('PRESSURE',X2,Y2+22);ctx.fillStyle='#17d6ff';ctx.fillText('PRESSURE',X2,Y2+22);}
   if(SET.vis.hints&&phase==='play'&&!ctrl.hasBall&&ctrl.z<=0.02&&!(ctrl.blocking>0)){
     const sh=players.find(q=>q.team!==ctrl.team&&q.shot&&dst(q.x,q.y,ctrl.x,ctrl.y)<1.9);
     if(sh){const Xb=sx(ctrl.x),Yb=sy(ctrl.y,ctrl.z)-HP*1.12-44;ctx.font='900 15px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=4;ctx.strokeStyle='rgba(0,0,0,.8)';ctx.strokeText('JUMP!',Xb,Yb);ctx.fillStyle='#ff6b6b';ctx.fillText('JUMP!',Xb,Yb);}
   }
-  if(ctrl.shot&&!ctrl.shot.ai){
-    const mx=sx(ctrl.x)-ctrl.dir*60,bot=sy(ctrl.y,ctrl.z)-20,h=110,w=14,top=bot-h;
-    const pos=v=>clamp(v/(0.5*ctrl.shot.k),0,1);
-    ctx.fillStyle='rgba(8,11,26,.85)';rr(mx-w/2-3,top-3,w+6,h+6,6);ctx.fill();
-    const zh=zoneHalf(ctrl);
-    const z1=pos(ctrl.shot.tp-zh),z2=pos(ctrl.shot.tp+zh);
-    ctx.fillStyle=sureP(ctrl,dst(ctrl.x,ctrl.y,HX,HY))>0?'rgba(93,255,138,.95)':'rgba(199,244,100,.8)';ctx.fillRect(mx-w/2,bot-h*z2,w,h*(z2-z1));
-    const cur=pos(ctrl.shot.t);
-    ctx.fillStyle='rgba(255,255,255,.9)';ctx.fillRect(mx-w/2-3,bot-h*cur-1.5,w+6,3);
-  }
+  if(ctrl.shot&&!ctrl.shot.ai)drawShotMeter(ctrl);
+  drawBlockGuide();
+}
+function drawBlockGuide(){
+  if(!ctrl||phase!=='play'||ctrl.hasBall)return;
+  const sh=players.find(q=>q.team!==ctrl.team&&(q.shot||(q.dunk&&!q.dunk.done))&&dst(q.x,q.y,ctrl.x,ctrl.y)<4.5);
+  const air=ctrl.z>0.02;if(!sh&&!air)return;
+  ctx.save();
+  if(sh){const r=blockReach(ctrl),inR=dst(ctrl.x,ctrl.y,sh.x,sh.y)<=r,X=sx(sh.x),Y=sy(sh.y,0);
+    ctx.setLineDash([7,6]);ctx.lineDashOffset=-tNow*30;ctx.lineWidth=3;ctx.strokeStyle=inR?'rgba(93,255,138,.95)':'rgba(255,170,80,.95)';
+    ctx.beginPath();ctx.ellipse(X,Y,r*PPM,r*DEP,0,0,6.283);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle=inR?'rgba(93,255,138,.12)':'rgba(255,170,80,.1)';ctx.fill();
+    ctx.font='900 12px Arial,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.8)';
+    const lab=inR?'IN BLOCK RANGE':'GET IN THE RING';ctx.strokeText(lab,X,Y+r*DEP+14);ctx.fillStyle=inR?'#5dff8a':'#ffb050';ctx.fillText(lab,X,Y+r*DEP+14);
+    /* the height you need: the ball over the shooter */
+    const bz=ball.state==='held'&&ball.holder===sh?Math.max(ball.z,sh.z+sh.h+0.15):sh.z+sh.h+0.3,bxs=sx(sh.x),bys=sy(sh.y,bz);
+    ctx.strokeStyle='rgba(255,255,255,.75)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(bxs-18,bys);ctx.lineTo(bxs+18,bys);ctx.stroke();}
+  if(air){const X=sx(ctrl.x),Y0=sy(ctrl.y,0),hy=sy(ctrl.y,handTop(ctrl));
+    const high=sh?handTop(ctrl)>=(ball.state==='held'&&ball.holder===sh?ball.z:sh.z+sh.h+0.3):true,col=high?'#5dff8a':'#ff6b6b';
+    ctx.strokeStyle='#17d6ff';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(X,Y0,22,7,0,0,6.283);ctx.stroke();
+    ctx.setLineDash([4,4]);ctx.strokeStyle='rgba(23,214,255,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(X,Y0);ctx.lineTo(X,hy);ctx.stroke();ctx.setLineDash([]);
+    ctx.strokeStyle=col;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(X-14,hy);ctx.lineTo(X+14,hy);ctx.stroke();
+    if(sh){ctx.font='900 12px Arial,sans-serif';ctx.textAlign='left';ctx.textBaseline='middle';ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.8)';const t=high?'HIGH ENOUGH':'TOO LOW';ctx.strokeText(t,X+18,hy);ctx.fillStyle=col;ctx.fillText(t,X+18,hy);}}
+  ctx.restore();
 }
 function drawSteal(){
   const s=freezeInfo;if(!s)return;
@@ -3920,7 +3976,7 @@ function drawHUD(){
   }
   if(hintT>0&&SET.vis.hints&&!touch.active&&!('ontouchstart' in window)){
     ctx.globalAlpha=Math.min(1,hintT/2);
-    const txt=kn('shoot')+' shoot (release in the green)   '+kn('pass')+' pass / steal   '+kn('juke')+' crossover   '+kn('sprint')+' turbo   '+kn('sw')+' switch   '+kn('ab')+' ability';
+    const txt=kn('shoot')+' shoot (release in the green)   '+kn('pass')+' pass / steal (hold: pressure D)   '+kn('juke')+' crossover   '+kn('sprint')+' turbo   '+kn('sw')+' switch   '+kn('ab')+' ability';
     ctx.font='700 14px Arial,sans-serif';ctx.textAlign='center';
     const w=ctx.measureText(txt).width+30;
     const hy=teamHud()?VH-104:VH-44;
@@ -4006,7 +4062,7 @@ function showResult(){
 function startGame(){
   hangShutdown();practice=false;hangOn=false;hideEl('coach');hideEl('hang');hideEl('hangChal');hideEl('qchat');
   sfx.init();
-  diffIdx=(story&&story.live)?story.def.diff:((tour&&tour.live)?(tour.diff===3?3:2):selDiff);
+  diffIdx=(story&&story.live)?story.def.diff:((tour&&tour.live)?tDiffOk(tour.diff):selDiff);
   createGame();
   hideScreens();hideEl('result');hideEl('pause');
   hintT=14;
@@ -4109,7 +4165,7 @@ const PROFILES={
     scene:{bg:'sprawl',anim:'dime',fx:'laser',x:0.36}},
   BLAZE:{nick:'Flash Point',from:'Lower Sprawl, by way of the Prism tryouts',wt:182,kit:HOUNDS_KIT,
     story:["Blaze was the best shooter at the Prism tryout and still got sent home: too loud, too fast, not a 'system player'. Sage argued for him for an hour. Nobody listened.","He came back to the Sprawl furious, joined Dime's Hounds, and decided the best revenge would be beating every system in the city. He's still working on the 'quiet' part."],
-    style:"A quick-release scorer who lives on the first step. Flash Burst blows past defenders (the close ones can fall) and loads a lightning-fast release, and inside his zone his green goes in 65% of the time.",
+    style:"A quick-release scorer who lives on the first step. Flash Burst blows past defenders (the close ones can fall) and loads a lightning-fast release, and inside his zone his green is 25% bigger.",
     facts:["Dyes the tips of his flat-top orange before every big game. Moose helps with the back.","Has a comeback ready for everything. Kai keeps a tally: 412 and counting.","Still has the Prism rejection letter. He uses it as a coaster.","Can't whistle. Has tried every day for three years."],
     quote:"Four percent? I love those odds.",cap:"Flash Burst: one hard step and he's already gone.",
     scene:{bg:'sprawl',anim:'blaze',fx:'burst',x:0.42,hoop:[0.9,0.38,0.85]}},
@@ -4163,43 +4219,43 @@ const PROFILES={
     scene:{bg:'cage',anim:'warden',fx:'press',x:0.45,eyes:'fierce'}},
   REX:{nick:'Old Man',from:'Lower Sprawl',wt:195,kit:{c:'#2a3a6a',t:'#d4af37',s:'#1a2546'},
     story:["Ten years ago Rex made the Gauntlet final and lost it on a last-second shot. He spent the next decade in an empty gym, putting up two hundred jumpers a night and thinking about that one.","When the Hounds started winning, he walked in, told them their bench was empty, and asked for one more run at the Gauntlet. At thirty-one he's the oldest guard on the team. He'd rather you didn't mention it."],
-    style:"Good from everywhere. His greens go in 75% of the time from any range, and Pure Stroke opens up a much wider green window on his next shot.",
+    style:"Good from everywhere. His green is steady from any range, and Pure Stroke opens up a much wider green window on his next shot.",
     facts:["Still shoots 200 jumpers every night, counting them out loud.","Has watched the tape of the Gauntlet miss 1,000 times. He says the release was fine and the rim was wrong.","Has passed to everybody except the guy who called him 'old man'. Twice.","The gray at his temples showed up the year after the final."],
     quote:"Call me old man and I'll pass to everybody but you.",cap:"Pure Stroke, in the same old gym where he spent ten years practicing it.",
     scene:{bg:'gym',anim:'rex',hoop:[0.86,0.36,1.05],x:0.32}},
   SNIPE:{nick:'Dead Eye',from:'The Rooftops',wt:176,kit:{c:'#3e4a2a',t:'#8aff8a',s:'#283019'},
     story:["Snipe learned to shoot on a rooftop court where only the far hoop still had a net, so he shot at that one, from the other end, for years.","His release is slow and his range is ridiculous. He wears a red-dot lens over his shooting eye and insists it's purely for style."],
-    style:"Slow release, endless range. From 11.5 metres and back his green is a guaranteed make, and Long Range pulls that line in to 8.5 metres for seven seconds.",
+    style:"Slow release, endless range. From 11.5 metres and back his green is 25% bigger, and Long Range pulls that line in to 8.5 metres for seven seconds.",
     facts:["His red-dot lens has no prescription. He's had it tested.","Measures every court with a tape measure before warm-ups.","Has made a shot from 21 metres. There's video. It's grainy.","Has tied his hair back with the same green band since high school."],
     quote:"From where I stand, everything's close.",cap:"Lining up a deep one from the far end of the roof.",
     scene:{bg:'rooftop',anim:'snipe',fx:'scope',hoop:[0.9,0.44,0.6],x:0.24}},
   HAZE:{nick:'The Ghost',from:'The Red Line',wt:174,kit:{c:'#7a2020',t:'#ff9a9a',s:'#4a1212'},
     story:["Haze came off the Red Line's bench for three seasons and never missed a game, a free throw or a word, mostly because he never says any. When his teammate Juno started playing for money, Haze walked away.","He found the Hounds after they lost to the Red Line, said nine words and got a jersey. He plays with his hood up. Nobody has ever seen him take it off."],
-    style:"A shifty scorer whose green goes in 70% of the time. Ghost Step slips him through defenders with no collisions and 25% more speed for four seconds.",
+    style:"A shifty scorer who is hard to stay in front of. Ghost Step slips him through defenders with no collisions and 25% more speed for four seconds.",
     facts:["Answered 'Yes.' when Rock asked if his visit was a job application. It's his favourite word.","Owns eleven identical charcoal hoodies.","Rock once talked to him for a full hour. Haze nodded twice.","Ties his shoes with a double knot, then a triple knot."],
     quote:"Thank you. I won't miss.",cap:"Ghost Step: through the gap before it's even there, as the Red Line roars past.",
     scene:{bg:'rail',anim:'haze',x:0.56}},
   VOLT:{nick:'Live Wire',from:'The Substation courts',wt:198,kit:{c:'#1a2350',t:'#ffee3a',s:'#10163a'},
     story:["Volt grew up on a court next to the old power substation, where the lights hummed and the air smelled like a storm. He jumps like the ground is electric.","He wears goggles he doesn't need and number 99 because he thinks it looks fast. When he gets going, the rim keeps rattling for a full second after."],
-    style:"An athletic slasher who lives above the rim. His green goes in 70% of the time, and Rim Rocker stretches his dunk range and makes every dunk go in for six seconds.",
+    style:"An athletic slasher who lives above the rim. Rim Rocker stretches his dunk range and makes every dunk go in for six seconds.",
     facts:["His goggles have no prescription. He says they 'focus the energy'.","Once hung on a rim so long the game had to be paused.","His shoes light up. He wired them himself.","Has a 112 cm vertical. He'll tell you it's 115."],
     quote:"Stand under the rim if you want. Bring an umbrella.",cap:"Rim Rocker in a thunderstorm. Lightning hits the moment he throws it down.",
     scene:{bg:'sprawl',preset:'dunk',fx:'spark',x:0.56,scale:0.8}},
   HEATER:{nick:'On Fire',from:'The Foundry gym',wt:184,kit:{c:'#8a1a10',t:'#ffd166',s:'#5a100a'},
     story:["Heater learned to shoot in a gym next to the old foundry, where the walls were always warm and the windows never opened.","He's a streak shooter in the purest sense: every make makes the next one easier, and after three in a row he swears the rim gets wider. One miss and he's cold again, so he simply doesn't think about misses."],
-    style:"A legendary streak shooter. Every make builds heat, with a bigger green window and better odds, up to five in a row. Ignite adds two heat on demand.",
+    style:"A legendary streak shooter. Every make builds heat, with a bigger green window, up to five in a row. Ignite adds two heat on demand.",
     facts:["Wears his hair in a bun so it doesn't 'block the heat'.","Once made 31 in a row in practice, missed an easy one, and went home.","Never says 'miss'. He calls them misunderstandings.","Has a fire-extinguisher sticker on each shoe. For safety."],
     quote:"Three in a row and the rim gets wider. That's science.",cap:"Five in a row. The net is on fire, and so is he.",
     scene:{bg:'gym',anim:'heater',fx:'fire',hoop:[0.86,0.36,1.05],hoopO:{fire:1},x:0.32}},
   ZEN:{nick:'Calm',from:'Zenith',wt:150,kit:{c:'#e0e6f0',t:'#3d6aff',s:'#c4cde0'},
     story:["Zen led Zenith in scoring while wearing the team's famous shooting braces, tuned sleeves that steadied every release. Then she started wondering how many of those shots were really hers.","She left the braces on the floor of the Zenith gym and walked into Hounds practice with nothing but her jump shot and a breathing routine. It turned out the shot was hers all along."],
-    style:"A legendary marksman whose green goes in 85% of the time, from anywhere. Heat Check gives her next shot a huge green window and a lightning-quick release.",
+    style:"A legendary marksman who is lethal from anywhere. Heat Check gives her next shot a huge green window and a lightning-quick release.",
     facts:["Breathes in for four counts before every free throw. Crowds have started counting with her.","Kept one of her old braces. It's a bookend now.","Has never raised her voice on a court. She doesn't need to.","Practices with her eyes closed, and still makes more than you."],
     quote:"Breathe in. Release at the top. Never at the bottom.",cap:"No braces. Eyes closed. Nothing but net.",
     scene:{bg:'zenith',anim:'zen',fx:'breath',eyes:'closed',hoop:[0.86,0.35,1.05],x:0.32,rim:'#3d6aff'}},
   APEX:{nick:'The Last Word',from:'The Neo League',wt:196,kit:HELL_KIT,
     story:["Apex is the Hellfire Squad's closer and its loudest voice. He has never lost a game in the Neo League, and he has never let an opponent forget it.","His Afterimage leaves a copy of him behind; by the time a defender reaches it, the real Apex is somewhere else, already shooting. He watched the Ash Hounds beat the Sovereigns and came down to deliver a message in person."],
-    style:"Mythic. His green goes in 92% of the time, from anywhere. Afterimage marks a spot, and pressing again blinks him back to it, leaving his defender lost.",
+    style:"Mythic. Lethal from anywhere. Afterimage marks a spot, and pressing again blinks him back to it, leaving his defender lost.",
     facts:["Dyes his mohawk the exact red of the Neo League logo.","Has written trash talk for every player in the King League. It's alphabetised.","Hates the word 'second'. He's never been it.","His afterimage once got a technical foul. The ref still insists it was the real one."],
     quote:"Enjoy the moment, Sprawl. It's the last one you'll get.",cap:"Afterimage: the defender closes out on a ghost while the real Apex lets it fly.",
     scene:{bg:'neo',anim:'apex',x:0.4,hoop:[0.9,0.38,0.85],rim:'#ff6a4a'}},
@@ -4338,10 +4394,10 @@ function validTour(t){
     if(!t||typeof t!=='object'||!(t.r>=0&&t.r<=2)||!Array.isArray(t.rounds)||!Array.isArray(t.rate)||t.rate.length!==TOPP.length)return null;
     const okId=v=>Number.isInteger(v)&&v>=-1&&v<TOPP.length;
     for(let r=0;r<=t.r;r++){const rd=t.rounds[r];if(!Array.isArray(rd)||rd.length!==(8>>r)||!rd.every(okId)||rd.indexOf(-1)<0)return null;}
-    return {r:t.r,rounds:t.rounds.slice(0,t.r+1),scores:Array.isArray(t.scores)?t.scores.slice(0,t.r):[],rate:t.rate.map(Number),diff:t.diff===3?3:2};
+    return {r:t.r,rounds:t.rounds.slice(0,t.r+1),scores:Array.isArray(t.scores)?t.scores.slice(0,t.r):[],rate:t.rate.map(Number),diff:tDiffOk(t.diff)};
   }catch(e){return null;}
 }
-function tourStore(){tourSave=(tour&&tour.live&&!tour.out&&tour.r<3)?JSON.parse(JSON.stringify({r:tour.r,rounds:tour.rounds,scores:tour.scores,rate:tour.rate,diff:tour.diff===3?3:2})):null;}
+function tourStore(){tourSave=(tour&&tour.live&&!tour.out&&tour.r<3)?JSON.parse(JSON.stringify({r:tour.r,rounds:tour.rounds,scores:tour.scores,rate:tour.rate,diff:tDiffOk(tour.diff)})):null;}
 function resumeTour(){
   const t=validTour(tourSave);if(!t){tourSave=null;tpRender();return;}
   tour={live:true,r:t.r,rounds:t.rounds,scores:t.scores,opp:0,rate:t.rate,out:false,diff:t.diff};
@@ -4352,7 +4408,7 @@ function tpRender(){
   $('tourResume').classList.toggle('hide',!has);
   if(has){const t=tourSave,i=t.rounds[t.r].indexOf(-1),o=t.rounds[t.r][i^1];$('tourResume').querySelector('span').textContent='Resume '+RNAME[t.r].toLowerCase();$('tourResume').querySelector('small').textContent='vs '+TOPP[o].name+'. Pick up your saved tournament where you left off.';}
   $('tourBtn').textContent=has?'New tournament':'Play';renderTBench();
-  if(has&&tourSave.diff===3)$('tourResume').querySelector('small').textContent+=' (Legend)';
+  if(has&&tourSave.diff!==2)$('tourResume').querySelector('small').textContent+=' ('+DIFF[tDiffOk(tourSave.diff)].name+')';
   $('tourBtn').onclick=()=>{
     if(validTour(tourSave)&&!arm){arm=true;$('tourBtn').textContent='Press again to start over';toast('Starting over replaces your saved tournament.');return;}
     startTour();
@@ -4383,9 +4439,9 @@ function tourAfterGame(w){
   const t=tour;let msg='';
   tourSim(t.r,w===0);
   if(w===0){
-    const lk=t.diff===3?1.5:1,bonus=Math.round((t.r===2?200:30*(t.r+1))*lk);coins+=bonus;pendingXp=Math.round((t.r===2?300:50)*lk);
-    msg=t.r===2?' You won the tournament! Bonus: '+bonus+' coins.':' Round bonus: '+bonus+' coins.';
-    if(t.r===2)titles++;
+    const lk=[0.5,0.75,1,1.5][tDiffOk(t.diff)],bonus=Math.round((t.r===2?200:30*(t.r+1))*lk);coins+=bonus;pendingXp=Math.round((t.r===2?300:50)*lk);
+    msg=t.r===2?' You won the tournament! Bonus: '+bonus+' coins.'+(t.diff<2?' Rookie and Pro wins don\'t count as titles.':''):' Round bonus: '+bonus+' coins.';
+    if(t.r===2&&tDiffOk(t.diff)>=2)titles++;
     t.r++;
   }else{
     t.out=true;
@@ -4416,11 +4472,11 @@ function showBracket(){
     h+='</div>';
   }
   $('brGrid').innerHTML=h;
-  if(t.r>=3){$('brTitle').textContent='CHAMPIONS';$('brSub').textContent='You won the Street Kings tournament'+(t.diff===3?' on Legend':'')+'. Titles: '+titles+'.';}
+  if(t.r>=3){$('brTitle').textContent='CHAMPIONS';$('brSub').textContent='You won the Street Kings tournament'+(t.diff!==2?' on '+DIFF[tDiffOk(t.diff)].name:'')+'. '+(t.diff<2?'Rookie and Pro wins don\'t count as titles. ':'')+'Titles: '+titles+'.';}
   else if(t.out){$('brTitle').textContent='ELIMINATED';$('brSub').textContent='Champion: '+tName(t.rounds[3][0])+'. Run it back for another shot.';}
   else{
     const i=t.rounds[t.r].indexOf(-1);t.opp=t.rounds[t.r][i^1];
-    $('brTitle').textContent=t.diff===3?'LEGEND TOURNAMENT':'TOURNAMENT';$('brSub').textContent=RNAME[t.r]+': '+teamName+' vs '+TOPP[t.opp].name+'. '+TOPP[t.opp].desc;
+    $('brTitle').textContent=['ROOKIE TOURNAMENT','PRO TOURNAMENT','TOURNAMENT','LEGEND TOURNAMENT'][tDiffOk(t.diff)];$('brSub').textContent=RNAME[t.r]+': '+teamName+' vs '+TOPP[t.opp].name+'. '+TOPP[t.opp].desc;
   }
   $('brGo').textContent=over?'Menu':'Play '+RNAME[t.r].toLowerCase();
   show('bracket');
@@ -4438,7 +4494,8 @@ $('brBack').onclick=()=>{
 $('tourResume').onclick=resumeTour;
 /* ===== tournament upgrades: Legend, a bench with substitutes, longer games ===== */
 function tPlus(){return true;}
-var tDiffSel=2;try{tDiffSel=localStorage.getItem('sk_tdiff')==='3'?3:2;}catch(e){}
+function tDiffOk(v){return [0,1,2,3].indexOf(v)>=0?v:2;}
+var tDiffSel=2;try{tDiffSel=tDiffOk(+localStorage.getItem('sk_tdiff'));if(localStorage.getItem('sk_tdiff')===null)tDiffSel=2;}catch(e){}
 function tStarters(){return gm===3?SLOTS.map(s=>POOL[s][squad[s]].name):[pk1,pk2].slice(0,gm);}
 function tBenchGet(){
   let a=null;try{a=JSON.parse(localStorage.getItem('sk_tbench')||'null');}catch(e){}
@@ -4450,10 +4507,10 @@ function tBenchGet(){
 function tBenchSet(a){try{localStorage.setItem('sk_tbench',JSON.stringify(a));}catch(e){}}
 function renderTBench(){
   const on=tPlus();$('tpDevA').classList.toggle('hide',!on);$('tpDevB').classList.toggle('hide',!on);
-  $('tpIntro').innerHTML=on?'Win three rounds in an 8-team bracket to take the title. Tournaments are played on the half court, on <b>All-Star</b> or <b>Legend</b>.':'Win three rounds in an 8-team bracket to take the title. Tournaments are always played on <b>All-Star</b> difficulty on the half court.';
+  $('tpIntro').innerHTML=on?'Win three rounds in an 8-team bracket to take the title. Tournaments are played on the half court, from <b>Rookie</b> to <b>Legend</b>. Only All-Star and Legend wins count as titles.':'Win three rounds in an 8-team bracket to take the title. Tournaments are always played on <b>All-Star</b> difficulty on the half court.';
   if(!on)return;
   $('segTDiff').querySelectorAll('button').forEach(b=>b.classList.toggle('sel',+b.dataset.v===tDiffSel));
-  $('tdiffTag').textContent=tDiffSel===3?'Legend: the toughest opponents in the game. Round and title bonuses pay 50% more. Applies to a new tournament.':'All-Star: the classic tournament. Applies to a new tournament.';
+  $('tdiffTag').textContent=['Rookie: the easiest opponents. Half the coins and XP, and winning does not count as a title. Applies to a new tournament.','Pro: easier opponents. 75% of the coins and XP, and winning does not count as a title. Applies to a new tournament.','All-Star: the classic tournament. Applies to a new tournament.','Legend: the toughest opponents in the game. Round and title bonuses pay 50% more. Applies to a new tournament.'][tDiffSel];
   const st=tStarters(),sel=tBenchGet(),el=$('tpBench');el.innerHTML='';
   const list=owned.filter(n=>st.indexOf(n)<0&&findChar(n)).sort((x,y)=>SLOTS.indexOf(findChar(x).s)-SLOTS.indexOf(findChar(y).s)||rarIdx(y)-rarIdx(x));
   list.forEach(n=>{const b=document.createElement('button');b.type='button';const isOn=sel.indexOf(n)>=0;b.className=isOn?'sel':'';b.setAttribute('aria-pressed',isOn?'true':'false');
@@ -4462,7 +4519,7 @@ function renderTBench(){
     el.appendChild(b);});
   $('tbenchTag').textContent=!list.length?'Buy more players in the shop to fill a bench.':(sel.length?sel.length+' of 5 picked. Everyone tires as they play. Pause and choose Substitutes to swap players, or leave auto subs on.':'No bench picked: your starters play the whole game and do not get tired.');
 }
-seg('segTDiff',v=>{tDiffSel=v===3?3:2;try{localStorage.setItem('sk_tdiff',String(tDiffSel));}catch(e){}renderTBench();});
+seg('segTDiff',v=>{tDiffSel=tDiffOk(v);try{localStorage.setItem('sk_tdiff',String(tDiffSel));}catch(e){}renderTBench();});
 
 /* ===== account levels ===== */
 const RANKS=[[1,'Rookie'],[5,'Hooper'],[10,'Starter'],[20,'All-Star'],[35,'Captain'],[50,'Legend'],[75,'King'],[100,'Street King']];
@@ -4499,7 +4556,7 @@ const PSTEPS=[
  {id:'move',t:'Move around',k:'Use {up} {left} {down} {right} to run around the court.',m:'Drag the joystick on the left to run around the court.'},
  {id:'turbo',t:'Use turbo',k:'Hold {sprint} while you move to sprint. Turbo uses stamina, so use it in bursts.',m:'Hold TURBO while you move to sprint. It uses stamina, so use it in bursts.'},
  {id:'shoot',t:'Take a shot',k:'Hold {shoot}, then let go to shoot. Your shot meter fills while you hold.',m:'Hold SHOOT, then let go to shoot. Your shot meter fills while you hold.'},
- {id:'green',t:'Hit the green',k:'Let go of {shoot} while the bar is in the green zone. A green release gives you the best chance to score. Keep trying!',m:'Let go of SHOOT while the bar is in the green zone. A green release gives you the best chance to score. Keep trying!'},
+ {id:'green',t:'Hit the green',k:'Let go of {shoot} while the bar is in the green zone. The green is at the very top of the bar, and a green release always goes in. Keep trying!',m:'Let go of SHOOT while the bar is in the green zone. The green is at the very top of the bar, and a green release always goes in. Keep trying!'},
  {id:'score',t:'Score a basket',k:'Make a shot. Closer shots and good timing go in more often. Near the rim, hold {sprint} and press {shoot} to dunk.',m:'Make a shot. Closer shots and good timing go in more often. Near the rim, hold TURBO and tap SHOOT to dunk.'},
  {id:'pass',t:'Pass the ball',k:'Press {pass} to pass to your teammate. The pass goes toward the way you are moving.',m:'Tap PASS to pass to your teammate. The pass goes toward the way you are moving.'},
  {id:'cross',t:'Crossover',k:'Press {juke} while you have the ball. It fakes out defenders, and nobody can steal from you for a moment.',m:'Tap JUKE while you have the ball. It fakes out defenders, and nobody can steal from you for a moment.'},
@@ -4554,8 +4611,8 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.2.0';
-const DEV_VER='2.2';let tutI=0,tutChecked=false;
+const GAME_VER='2.2.1';
+const DEV_VER='2.2.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
   $('tutTitle').textContent=s.t;$('tutBody').innerHTML=tok(s.b);$('tutStep').textContent='Step '+(tutI+1)+' of '+TUT.length;
@@ -5164,12 +5221,12 @@ function fastSend(m){
 /* inputs carry running press counts, so a lost or late packet never drops or repeats a press */
 function guestInput(){
   PR_KEYS.forEach((k,i)=>{if(pr[k])inCnt[i]++;});
-  fastSend({t:'in',q:++inSeq,mn:!!(SET.ctl&&SET.ctl.manual),mx:inp.mx,my:inp.my,sp:held.sprint,sh:held.shoot,c:inCnt});
+  fastSend({t:'in',q:++inSeq,mn:!!(SET.ctl&&SET.ctl.manual),mx:inp.mx,my:inp.my,sp:held.sprint,sh:held.shoot,pp:held.pass,c:inCnt});
 }
 function hostInput(m){
   if(Array.isArray(m.c))PR_KEYS.forEach((k,i)=>{const v=m.c[i]|0;if(v>gCnt[i]){gCnt[i]=v;gpr[k]=true;gprT[k]=tNow;}});
   if(m.q){if(m.q<=gInQ)return;gInQ=m.q;}
-  gManual=!!m.mn;gin.mx=m.mx;gin.my=m.my;gin.sprint=m.sp;gheld.shoot=m.sh;gheld.sprint=m.sp;
+  gManual=!!m.mn;gin.mx=m.mx;gin.my=m.my;gin.sprint=m.sp;gheld.shoot=m.sh;gheld.sprint=m.sp;gheld.pass=!!m.pp;
   if(m.p)for(const k in m.p)if(m.p[k]){gpr[k]=true;gprT[k]=tNow;}
 }
 function fastData(conn,d){
@@ -5820,7 +5877,7 @@ function bindBtn(id,down,up){
   el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
 }
 bindBtn('bShoot',()=>{held.shoot=true;press('shoot');},()=>{held.shoot=false;});
-bindBtn('bPass',()=>{press('pass');});
+bindBtn('bPass',()=>{held.pass=true;press('pass');},()=>{held.pass=false;});
 bindBtn('bJuke',()=>{press('juke');});
 bindBtn('bTurbo',()=>{held.sprint=true;},()=>{held.sprint=false;});
 bindBtn('bSwitch',()=>{press('sw');});
@@ -5988,8 +6045,7 @@ const DEV_HASH='11cal5ouw9s';
 /* Unreleased content lives here. Each entry is a toggle in the dev build (Settings, Help). */
 const DEV_FEATURES=[
   {id:'all',name:'All players unlocked',desc:'Every player, including hidden ones, is available to pick. Your real unlocks and coins are not changed.',on:true},
-  {id:'story',name:'Story mode: Velocity Break',desc:'A four-chapter campaign with the Ash Hounds, from the cracked courts of the Lower Sprawl to the Sovereigns on the threshold, plus a custom player creator. Find it in Play, Offline.',on:true},
-  {id:'blaze',name:'Blaze shooting fix',desc:'Inside his zone, a release that misses the green tops out at 55% so green (65%) is always best, and his shots close to the rim are no longer capped at 30%.',on:true}
+  {id:'story',name:'Story mode: Velocity Break',desc:'A four-chapter campaign with the Ash Hounds, from the cracked courts of the Lower Sprawl to the Sovereigns on the threshold, plus a custom player creator. Find it in Play, Offline.',on:true}
 ];
 var devTaps=0,devTapT=0,devMaster=false,devOn=false,devX={},devRealOwned=null,devTries=[];
 function devFeat(id){return devOn&&!!devX[id];}
