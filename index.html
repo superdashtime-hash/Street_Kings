@@ -1529,8 +1529,11 @@ function skillOf(p){return clamp(p.arch.shoot*(isCPU(p)?DIFF[diffIdx].cpuShoot*S
 function inZoneSG(p,dh){return p.arch.sureLo!==undefined&&dh>=sureLoOf(p)&&dh<=p.arch.sureHi;}
 function adZone(p){return !p.arch.adapt?1:(adMaxed(p)?1.3:(adFull(p)?1.2:adSoft(p)));}
 /* the meter: up to the top in Tf (speeding up), then back down in Tf (slowing down). Height 0 at the bottom, 1 at the top */
-function barH(t,Tf){const u=t/Tf;return u<=1?Math.max(0,u*u):Math.max(0,(2-u)*(2-u));}
-function greenWin(p,s){const Tf=0.5*s.k,zh=Math.min(zoneHalf(p),0.2*Tf),gz=2*zh/Tf,lo=Tf*Math.sqrt(1-gz);return {Tf:Tf,zh:zh,gz:gz,lo:lo,hi:2*Tf-lo,tp:Tf*Math.sqrt(1-gz/2)};}
+const BAR_ACC=0.5;   /* 1 = the full speed-up of 2.2.2; 0.5 = half the acceleration */
+function barF(u){return BAR_ACC*u*u+(1-BAR_ACC)*u;}
+function barU(h){return BAR_ACC>0?(-(1-BAR_ACC)+Math.sqrt((1-BAR_ACC)*(1-BAR_ACC)+4*BAR_ACC*h))/(2*BAR_ACC):h;}
+function barH(t,Tf){const u=t/Tf;return u<=1?Math.max(0,barF(u)):Math.max(0,barF(Math.max(0,2-u)));}
+function greenWin(p,s){const Tf=0.5*s.k,zh=Math.min(zoneHalf(p),0.2*Tf),gz=2*zh/Tf,lo=Tf*barU(1-gz);return {Tf:Tf,zh:zh,gz:gz,lo:lo,hi:2*Tf-lo,tp:Tf*barU(1-gz/2)};}
 function skillZ(p){if(!p.arch.adapt||!adFull(p))return skillOf(p);const L=p.lvl;p.lvl=7;const v=skillOf(p);p.lvl=L;return v;}
 function zoneHalf(p){
   const dh=dst(p.x,p.y,HX,HY),c=contest(p);
@@ -4613,7 +4616,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.2.4';
+const GAME_VER='2.2.6';
 const DEV_VER='2.2.2';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -6694,9 +6697,9 @@ function storyBenchTick(dt){
   if(B.length&&!storyAutoOn())players.forEach(p=>{if(p.team===0&&p.en<0.4&&!p._tired){p._tired=1;toast(p.name+' is getting tired. Pause the game to make a substitution.');}});
 }
 function storySwap(p,m){
-  const out={row:p._row,en:p.en,stats:p.stats,played:true};
+  const out={row:p._row,en:p.en,stats:p.stats,played:true,lvl:p.lvl||0};
   const r=m.row,a=Object.assign({},ARCH[r[0]],r[4]||{});
-  p.type=r[0];p.arch=a;p.name=r[1];p.num=r[2];p.skin=r[3];p.h=a.h;p._row=r;p.stats=m.stats;p.en=m.en;
+  p.type=r[0];p.arch=a;p.name=r[1];p.num=r[2];p.skin=r[3];p.h=a.h;p._row=r;p.stats=m.stats;p.en=m.en;p.lvl=m.lvl||0;
   p.stamina=1;p.exhausted=false;p.fx={};p.abCd=Math.max(p.abCd||0,2);p._tired=0;
   const B=benchOf(),i=B.indexOf(m);B[i]=out;sfx.whistle(0.7);
   return out;
@@ -6726,8 +6729,9 @@ function subsRender(){
     b.onclick=()=>subsPick(k,x.name);el.appendChild(b);});};
   let court,bench;
   if(SB.mode==='game'){
-    court=players.filter(p=>p.team===0).map(p=>({name:p.name,pos:p.type,en:p.en,info:p.stats.pts+' pts'}));
-    bench=(benchOf()||[]).map(m=>({name:m.row[1],pos:m.row[0],en:m.en,info:m.stats.pts+' pts'}));
+    const adI=(a,l)=>a?' · ADAPT '+Math.round(Math.min(1.35,(3+(l||0))/10)*100)+'%':'';
+    court=players.filter(p=>p.team===0).map(p=>({name:p.name,pos:p.type,en:p.en,info:p.stats.pts+' pts'+adI(p.arch.adapt,p.lvl)}));
+    bench=(benchOf()||[]).map(m=>({name:m.row[1],pos:m.row[0],en:m.en,info:m.stats.pts+' pts'+adI((m.row[4]||{}).adapt,m.lvl)}));
   }else{
     const L=storyLineupFor(SB.d.g),tag=r=>custom&&r[1]===custom.name?'Your MyPLAYER · '+ccOvr(custom)+' OVR':((findChar(r[1])||{o:{tag:''}}).o.tag||'');
     court=L.start.map(r=>({name:r[1],pos:r[0],info:tag(r)}));bench=L.bench.map(r=>({name:r[1],pos:r[0],info:tag(r)}));
