@@ -4616,7 +4616,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.2.6';
+const GAME_VER='2.2.7';
 const DEV_VER='2.2.2';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -4860,7 +4860,7 @@ function watchOnline(){
 }
 /* ===== events ===== */
 const EVENTS=[
-  {id:'adapt',title:'Win Adapt',desc:'Win 100 tournaments to earn Adapt, a special shooting guard who grows stronger with every good play.',need:100,reward:'ADAPT',unit:'tournaments won',end:new Date(2026,10,15,0,0,0).getTime(),endTxt:'November 15 at 12:00 AM'}
+  {id:'adapt',title:'Win Adapt',desc:'Win 40 tournaments to earn Adapt, a special shooting guard who grows stronger with every good play.',need:40,reward:'ADAPT',unit:'tournaments won',end:new Date(2026,10,15,0,0,0).getTime(),endTxt:'November 15 at 12:00 AM'}
 ];
 function fmtLeft(ms){
   const m=Math.max(0,Math.floor(ms/60000)),d=Math.floor(m/1440),hh=Math.floor((m%1440)/60),mm=m%60;
