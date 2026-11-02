@@ -412,6 +412,23 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 .attr.upg button{height:1.8em;padding:0 .6em}
 
 /* ===== player profiles ===== */
+/* ===== daily, streak, mastery (dev build) ===== */
+#daily h2{margin:.8cqw 0 .3cqw;font:900 clamp(13px,1.8cqw,24px) Impact,"Arial Black",sans-serif;letter-spacing:.04em;color:var(--gold);text-align:left}
+.stkrow{display:grid;grid-template-columns:repeat(7,1fr);gap:.5cqw;margin:.5cqw 0}
+.stk{border:1px solid var(--line);border-radius:.8cqw;padding:.5cqw .3cqw;text-align:center;background:rgba(255,255,255,.04)}
+.stk b{display:block;font-size:clamp(10px,1.2cqw,15px)}.stk span{display:block;font:900 clamp(12px,1.7cqw,22px) Impact,"Arial Black",sans-serif;color:var(--gold)}.stk span::after{content:' c';font-size:.6em}
+.stk small{display:block;font-size:clamp(8px,.9cqw,12px);color:#ff9a3d}
+.stk.done{background:rgba(61,255,168,.14);border-color:#3dffa8}.stk.today{border-color:var(--gold);box-shadow:0 0 0 2px rgba(255,209,102,.45)}
+.dch{border:1px solid var(--line);border-radius:.8cqw;padding:.6cqw .9cqw;margin:.4cqw 0;text-align:left;background:rgba(255,255,255,.04)}
+.dch div{display:flex;gap:.8em;align-items:baseline}.dch div b{flex:1}.dch div span{color:var(--muted)}.dch div em{font-style:normal;font-weight:900;color:var(--gold)}
+.dch i{display:block;height:8px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:.4cqw}.dch i u{display:block;height:100%;background:linear-gradient(90deg,#17d6ff,#3dffa8)}
+.dch.done{border-color:#3dffa8}.dch.done div span{color:#3dffa8}
+.mst{margin:.2cqw 0 .5cqw}.mst b{font:900 clamp(14px,1.9cqw,24px) Impact,"Arial Black",sans-serif;color:var(--gold);margin-right:.6em}.mst span{color:var(--muted)}
+.mst i{display:block;height:8px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden;margin-top:.3cqw}.mst i u{display:block;height:100%;background:linear-gradient(90deg,#ffd166,#ff9a3d)}
+.cosrow{display:flex;gap:.6em;align-items:flex-start;margin:.35cqw 0}.cosrow>b{min-width:7.5em;font-size:.9em;padding-top:.2em}
+.cosw{display:flex;flex-wrap:wrap;gap:.35em}.cosw button{font:700 clamp(10px,1.1cqw,14px) inherit;font-family:inherit;color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:999px;padding:.2em .7em;cursor:pointer;display:inline-flex;align-items:center;gap:.35em}
+.cosw button i{width:.9em;height:.9em;border-radius:50%;border:1px solid rgba(0,0,0,.5)}.cosw button.sel{border-color:var(--gold);background:rgba(255,209,102,.18)}.cosw button:disabled{opacity:.45;cursor:default}
+.mstb{font-weight:900;font-size:.8em;color:#1b1406;background:var(--gold);border-radius:999px;padding:0 .5em;margin-left:.3em}
 .pcpic{position:relative;display:block;width:100%;padding:0;margin:0 0 .3cqw;border:0;border-radius:.8cqw;overflow:hidden;cursor:pointer;background:#0b0e1c;aspect-ratio:16/8}
 .pcpic canvas{display:block;width:100%;height:100%}
 .pcpic span{position:absolute;right:.6cqw;bottom:.5cqw;font-weight:800;font-size:clamp(9px,1cqw,13px);font-family:inherit;color:#fff;background:rgba(8,10,22,.75);border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:.15cqw .8cqw;opacity:.85;transition:opacity .15s,transform .15s}
@@ -491,6 +508,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
         <button class="mbtn" id="mLb"><span>Leaderboards</span><small>See the top players</small></button>
         <button class="mbtn" id="mSettings"><span>Settings</span><small>Controls, audio and visuals</small></button>
         <button class="mbtn" id="evBtn"><span>Events</span><small>Limited-time rewards</small></button>
+        <button class="mbtn hide" id="dailyBtn"><span>Daily</span><small>Challenges and login streak</small></button>
         <button class="mbtn" id="codeBtn"><span>Codes</span><small>Redeem a code</small></button>
       </div>
       <button class="linkbtn" id="newsBtn">What's new</button>
@@ -579,7 +597,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
         <h1 class="ppname" id="ppName"></h1><div class="ppnick" id="ppNick"></div>
         <div class="ppinfo" id="ppInfo"></div>
         <p class="ppq" id="ppQuote"></p>
-        <div class="tabs" id="ppTabs" role="tablist"><button type="button" role="tab" data-t="story">Backstory</button><button type="button" role="tab" data-t="style">Play style</button><button type="button" role="tab" data-t="facts">Fun facts</button></div>
+        <div class="tabs" id="ppTabs" role="tablist"><button type="button" role="tab" data-t="story">Backstory</button><button type="button" role="tab" data-t="style">Play style</button><button type="button" role="tab" data-t="facts">Fun facts</button><button type="button" role="tab" data-t="mastery" id="ppMstTab" class="hide">Mastery</button></div>
         <div class="ppbody" id="ppBody" role="tabpanel"></div>
         <div class="ppab"><b id="ppAbN"></b><span id="ppAbD"></span></div>
         <div class="row ppbtns"><button type="button" class="sbtn" id="ppPrev" aria-label="Previous player">&lsaquo; Prev</button><button type="button" class="sbtn" id="ppNext" aria-label="Next player">Next &rsaquo;</button><button type="button" class="sbtn" id="ppAct"></button><button type="button" class="sbtn" id="ppBack">Back</button></div>
@@ -629,6 +647,11 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
       <div class="row"><button class="sbtn" id="lbRefresh">Refresh</button><button class="go" id="lbBack" style="background:var(--ink)">Back</button></div>
     </div></div>
 
+  <div id="daily" class="ov hide"><div class="card scr">
+      <h1>DAILY</h1>
+      <div id="dailyBody"></div>
+      <div class="row"><button class="go" id="dailyBack" style="background:var(--ink)">Back</button></div>
+    </div></div>
   <div id="events" class="ov hide"><div class="card">
       <h1>EVENTS</h1>
       <p>Complete events to earn special rewards.</p>
@@ -1242,8 +1265,9 @@ let coins=300,owned=['DIME','BLAZE','MOOSE'];
 let squad={PG:2,SG:1,C:0},teamCol=0,teamName='NEON';
 let user='';
 function defaults(){tourSave=null;if(typeof custom!=='undefined'){custom=null;customRaw=null;storyDone=0;storyProDone=false;storyLineup=null;storyIntroSeen=false;}wantFull=false;acctShots=[0,0,0];acctQmWins=0;lbShow=true;acctXp=0;coins=300;owned=['DIME','BLAZE','MOOSE'];squad={PG:2,SG:1,C:0};teamCol=0;teamName='NEON';oppIdx=0;gameLen=240;titles=0;gm=3;pk1='DIME';pk2='BLAZE';redeemed=[];}
+function grindReset(){dly=null;stk={last:'',n:0,best:0};mst={};cos={};cosU=[];}
 function applyCfg(cfg){
-  defaults();
+  defaults();grindReset();for(const k in LOOK_CACHE)delete LOOK_CACHE[k];
   if(!cfg||typeof cfg!=='object')return;
   try{
     SLOTS.forEach(s=>{const v=cfg.squad&&cfg.squad[s];if(v>=0&&v<POOL[s].length)squad[s]=v;});
@@ -1255,6 +1279,11 @@ function applyCfg(cfg){
     if(typeof cfg.coins==='number'&&cfg.coins>=0)coins=Math.floor(cfg.coins);
     if(typeof cfg.titles==='number'&&cfg.titles>=0)titles=Math.floor(cfg.titles);
     if(typeof cfg.xp==='number'&&cfg.xp>=0)acctXp=Math.floor(cfg.xp);
+    if(cfg.dly&&typeof cfg.dly.d==='string'&&Array.isArray(cfg.dly.ids)&&cfg.dly.ids.length===3)dly=cfg.dly;
+    if(cfg.stk&&typeof cfg.stk.last==='string')stk={last:cfg.stk.last,n:Math.max(0,Math.floor(+cfg.stk.n||0)),best:Math.max(0,Math.floor(+cfg.stk.best||0))};
+    if(cfg.mst&&typeof cfg.mst==='object')for(const k in cfg.mst)if(PROFILES[k]||LOOKS[k])mst[k]=Math.max(0,Math.floor(+cfg.mst[k]||0));
+    if(cfg.cos&&typeof cfg.cos==='object')cos=JSON.parse(JSON.stringify(cfg.cos));
+    if(Array.isArray(cfg.cosU))cosU=cfg.cosU.filter(x=>typeof x==='string');
     if(typeof cfg.qmw==='number'&&cfg.qmw>=0)acctQmWins=Math.floor(cfg.qmw);
     if(typeof cfg.full==='boolean')wantFull=cfg.full;
     if(Array.isArray(cfg.sh)&&cfg.sh.length===3)acctShots=cfg.sh.map(n=>Math.max(0,Math.floor(+n||0)));
@@ -1271,7 +1300,7 @@ function applyCfg(cfg){
     if(owned.indexOf(pk2)<0||pk2===pk1)pk2=owned.find(n=>n!==pk1);
   }catch(e){}
 }
-function curCfg(){return {squad:squad,teamCol:teamCol,teamName:teamName,oppIdx:oppIdx,gameLen:gameLen,coins:coins,titles:titles,redeemed:redeemed,gm:gm,pk1:pk1,pk2:pk2,owned:(typeof devRealOwned!=='undefined'&&devRealOwned)?devRealOwned:owned,xp:acctXp,qmw:acctQmWins,full:wantFull,sh:acctShots,lb:lbShow,tr:tourSave?JSON.stringify(tourSave):null,cc:(typeof custom!=='undefined'&&custom)?JSON.stringify(custom):((typeof customRaw!=='undefined'&&customRaw)||null),stp:(typeof storyDone!=='undefined')?storyDone:0,spr:(typeof storyProDone!=='undefined'&&storyProDone)?1:0,sis:(typeof storyIntroSeen!=='undefined'&&storyIntroSeen)?1:0,sln:(typeof storyLineup!=='undefined'&&storyLineup)?storyLineup:null,stv:2,ts:Date.now()};}
+function curCfg(){return {squad:squad,teamCol:teamCol,teamName:teamName,oppIdx:oppIdx,gameLen:gameLen,coins:coins,titles:titles,redeemed:redeemed,gm:gm,pk1:pk1,pk2:pk2,owned:(typeof devRealOwned!=='undefined'&&devRealOwned)?devRealOwned:owned,xp:acctXp,qmw:acctQmWins,dly:dly,stk:stk,mst:mst,cos:cos,cosU:cosU,full:wantFull,sh:acctShots,lb:lbShow,tr:tourSave?JSON.stringify(tourSave):null,cc:(typeof custom!=='undefined'&&custom)?JSON.stringify(custom):((typeof customRaw!=='undefined'&&customRaw)||null),stp:(typeof storyDone!=='undefined')?storyDone:0,spr:(typeof storyProDone!=='undefined'&&storyProDone)?1:0,sis:(typeof storyIntroSeen!=='undefined'&&storyIntroSeen)?1:0,sln:(typeof storyLineup!=='undefined'&&storyLineup)?storyLineup:null,stv:2,ts:Date.now()};}
 function readAccts(){try{return JSON.parse(localStorage.getItem('sk_accts')||'{}')||{};}catch(e){return {};}}
 function writeAccts(a){try{localStorage.setItem('sk_accts',JSON.stringify(a));}catch(e){}}
 try{
@@ -2550,12 +2579,14 @@ function lookGen(name){
   L.shoe=pick(['#f4f6ff','#1b1d26','#ff4d5e','#17d6ff','#ffd166','#5dff8a'],19);L.sole=pick(['#ffffff','#1b1d26','#ff9a2e'],22);
   return L;
 }
-const LOOK_CACHE={};
-function lookOf(name){if(LOOK_CACHE[name])return LOOK_CACHE[name];const L=Object.assign({build:1,shoe:'#f4f6ff',sole:'#c9ced9'},LOOKS[name]||lookGen(name));LOOK_CACHE[name]=L;return L;}
+const LOOK_CACHE={},LOOK_BASE={};
+function lookBase(name){if(LOOK_BASE[name])return LOOK_BASE[name];const L=Object.assign({build:1,shoe:'#f4f6ff',sole:'#c9ced9'},LOOKS[name]||lookGen(name));LOOK_BASE[name]=L;return L;}
+function lookOf(name){if(LOOK_CACHE[name])return LOOK_CACHE[name];const L=typeof cosApply==='function'&&cos?cosApply(name,lookBase(name)):lookBase(name);LOOK_CACHE[name]=L;return L;}
 /* Adapt's gear follows his live level: 0.3 at tip-off, 1 when fully adapted, up to 1.35 */
 function lkLvl(p){try{return p&&p.arch&&p.arch.adapt&&typeof adk==='function'?adk(p):1;}catch(e){return 1;}}
 function lookOn(){return true;}
-function lookForPlayer(p){if(!p||!p.name||!lookOn())return null;if(typeof custom!=='undefined'&&custom&&p.name===custom.name)return lookOf('YOU');return lookOf(p.name);}
+function myTeamIdx(){return (typeof pvp!=='undefined'&&pvp&&role==='guest')?1:0;}
+function lookForPlayer(p){if(!p||!p.name||!lookOn())return null;if(typeof custom!=='undefined'&&custom&&p.name===custom.name)return lookOf('YOU');return p.team===myTeamIdx()?lookOf(p.name):lookBase(p.name);}
 /* ---- in-game head: hair, headwear and face gear on the small court figures ---- */
 function lkHead(c,L,hx,hy,r,d,skin,acc,T,p){
   const hc=L.hc||'#17171c',st=L.hair,P2=Math.PI*2;
@@ -3637,7 +3668,7 @@ function drawPlayer(p){
   ctx.lineCap='round';ctx.lineJoin='round';
   {const LKX=lookForPlayer(p);
    if(LKX&&typeof ART!=='undefined'&&ART.game){
-    const J={skin:p.skin,num:p.num,jc:tm.color,jt:tm.accent,sc:tm.dark,name:p.name};
+    const J={skin:p.skin,num:p.num,jc:tm.color,jt:(p.team===myTeamIdx()&&typeof cosTrim==='function'&&cosTrim(p.name))||tm.accent,sc:tm.dark,name:p.name};
     const ftF=air?(p.dunk?34:40):(fF[1]<-HP*0.03?26:0),ftB=air?46:(fB[1]<-HP*0.03?26:0);
     ART.game(ctx,{HP:HP,d:d,L:LKX,J:J,hip:[hipX,hipY],S:[shX,shY],hF:hF,hB:hB,fF:fF,fB:fB,t:T,lvl:lkLvl(p),ft:[ftF,ftB],
       neck:(st||fol>0||p.blocking>0||swat>0)?-20:(def?-14:-8),mouth:cel>0?'grin':(p.stumble>0||p.stripped>0?'o':(p.dunk?'shout':null)),wrist:fol>0&&!st,alpha:ctx.globalAlpha,cvW:VW,cvH:VH,pr:DPR});
@@ -4021,7 +4052,9 @@ function draw(){
 }
 
 /* ================= UI ================= */
-function show(id){$(id).classList.remove('hide');if(id==='menu'){setTimeout(bumpCoins,280);if(typeof pollLoad==='function')pollLoad();}}
+var grindNudged='';
+function grindNudge(){try{if(!grindOn()||$('menu').classList.contains('hide')||phase!=='menu')return;const t=dayKey();if(grindNudged===t||stkState().claimed)return;grindNudged=t;dailyOpen();}catch(e){}}
+function show(id){$(id).classList.remove('hide');if(id==='menu'){setTimeout(grindNudge,700);setTimeout(bumpCoins,280);if(typeof pollLoad==='function')pollLoad();}}
 function hideEl(id){$(id).classList.add('hide');}
 function showResult(){
   resultShown=true;
@@ -4039,6 +4072,7 @@ function showResult(){
   if(w===me&&pvp&&qmGame)acctQmWins++;
   if(tl)$('rSub').textContent+=tourAfterGame(w);
   $('rSub').textContent+=addXp(xpg+pendingXp);pendingXp=0;
+  try{$('rSub').textContent+=grindAfterGame(w,me);}catch(e){}
   if(pvp){$('againBtn').textContent=role==='host'?'Rematch':'Waiting for host';$('againBtn').disabled=role!=='host';$('menuBtn').textContent='Leave';}else $('againBtn').disabled=false;
   let h='<table><thead><tr><th></th><th>PTS</th><th>REB</th><th>STL</th><th>BLK</th><th>DUNK</th></tr></thead><tbody>';
   players.concat(storyBenchBox()).forEach(p=>{h+='<tr style="--c:'+teams[p.team].color+'"><td><i></i>'+p.name+'</td><td>'+p.stats.pts+'</td><td>'+p.stats.reb+'</td><td>'+p.stats.stl+'</td><td>'+p.stats.blk+'</td><td>'+p.stats.dunk+'</td></tr>';});
@@ -4047,7 +4081,7 @@ function showResult(){
   show('result');
 }
 function startGame(){
-  hangShutdown();practice=false;hangOn=false;hideEl('coach');hideEl('hang');hideEl('hangChal');hideEl('qchat');
+  gGreen=0;hangShutdown();practice=false;hangOn=false;hideEl('coach');hideEl('hang');hideEl('hangChal');hideEl('qchat');
   sfx.init();
   diffIdx=(story&&story.live)?story.def.diff:((tour&&tour.live)?tDiffOk(tour.diff):selDiff);
   createGame();
@@ -4116,7 +4150,7 @@ function renderShop(){
     POOL[s].map((o,i)=>i).sort((x,y)=>rarIdx(POOL[s][x].name)-rarIdx(POOL[s][y].name)||x-y).forEach(i=>{
       const o=POOL[s][i];if(o.hidden&&!(lookOn()&&owned.indexOf(o.name)>=0&&PROFILES[o.name]))return;const ab=ABIL[o.name.toLowerCase()],own=owned.indexOf(o.name)>=0,eq=own&&squad[s]===i,cost=PRICE[o.name],ri=rarIdx(o.name);
       const locked=ri===4&&titles<10;
-      h+='<div class="pc r-'+RARS[ri].k+'"'+(lookOn()?' data-n="'+o.name+'"':'')+'>'+(lookOn()&&PROFILES[o.name]?ppCardArt(o):'')+'<div class="pn"><i style="background:'+o.skin+'"></i><b>'+o.name+'</b><span>#'+o.num+'</span><span class="rb" style="color:'+RARS[ri].c+'">'+RARS[ri].n+'</span></div>';
+      h+='<div class="pc r-'+RARS[ri].k+'"'+(lookOn()?' data-n="'+o.name+'"':'')+'>'+(lookOn()&&PROFILES[o.name]?ppCardArt(o):'')+'<div class="pn"><i style="background:'+o.skin+'"></i><b>'+o.name+'</b><span>#'+o.num+'</span>'+(grindOn()&&own&&PROFILES[o.name]?'<span class="mstb">M'+mstLvl(o.name)+'</span>':'')+'<span class="rb" style="color:'+RARS[ri].c+'">'+RARS[ri].n+'</span></div>';
       h+='<p>'+o.tag+'</p><p class="ab"><b>'+ab.name+':</b> '+ab.desc+'</p>';
       if(eq)h+='<button class="sbtn" disabled>Equipped</button>';
       else if(own)h+='<button class="sbtn" data-a="equip" data-s="'+s+'" data-i="'+i+'">Equip</button>';
@@ -4302,7 +4336,7 @@ function ppStats(o,s){const e=Object.assign({},ARCH[s],o.mod||{});const n=(v,a,b
   return [['Speed',R(n(e.spd,4.3,6.3))],['Shooting',R(shot)],['Handles',R(n(e.handle,0.6,2.0))],['Passing',R(n(e.pass,0.9,1.6))],['Defense',R((n(e.steal,0.4,1.5)+n(e.block,0.35,1.5))/2)],['Inside',R(n(e.dunk,2,4)*0.5+n(e.reb,0.4,1.5)*0.3+n(e.paint,0,0.3)*0.2)]];}
 function ppHeight(o,s){const m=(o.mod&&o.mod.h)||ARCH[s].h,inch=Math.round(m/0.0254);return Math.floor(inch/12)+"'"+(inch%12)+'" ('+m.toFixed(2)+' m)';}
 function ppKit(n){const p=PROFILES[n];return p?p.kit:HOUNDS_KIT;}
-function ppJ(o){const k=ppKit(o.name);return {skin:o.skin,num:o.num,jc:k.c,jt:k.t,sc:k.s,name:o.name};}
+function ppJ(o){const k=ppKit(o.name);return {skin:o.skin,num:o.num,jc:k.c,jt:(typeof cosTrim==='function'&&cosTrim(o.name))||k.t,sc:k.s,name:o.name};}
 function ppOrder(){const a=[];SLOTS.forEach(s=>{POOL[s].map((o,i)=>i).sort((x,y)=>rarIdx(POOL[s][x].name)-rarIdx(POOL[s][y].name)||x-y).forEach(i=>{const o=POOL[s][i];if((!o.hidden||owned.indexOf(o.name)>=0)&&PROFILES[o.name])a.push(o.name);});});return a;}
 function ppTitle(n){return n.charAt(0)+n.slice(1).toLowerCase();}
 /* shop cards: a portrait button on top */
@@ -4328,12 +4362,14 @@ function ppOpen(n){
   $('ppCap').textContent=p.cap;$('ppArt').setAttribute('aria-label',n+': '+p.cap);
   const base=ppStats(c.o,c.s),shown=p.grow?base.map(r=>[r[0],Math.round(40+(r[1]-40)*0.3)]):base;PP.base=base;PP.growV=shown.map(r=>r[1]);PP.growT=shown.map(()=>-9);
   $('ppRate').innerHTML=shown.map(r=>'<div class="ppr"><span>'+r[0]+'</span><i><b style="width:'+((r[1]-40)/59*100).toFixed(0)+'%;background:'+rc+'"></b></i><em>'+r[1]+'</em></div>').join('');
+  $('ppMstTab').classList.toggle('hide',!grindOn());if(PP.tab==='mastery'&&!grindOn())PP.tab='story';
   ppTab(PP.tab);ppActRender();show('pp');ppSize();PP.t0=performance.now();PP.fin=null;
   if(!PP.raf)PP.raf=requestAnimationFrame(ppFrame);
   setTimeout(()=>{try{$('ppBack').focus({preventScroll:true});}catch(e){}},30);
 }
 function ppTab(t){PP.tab=t;$('ppTabs').querySelectorAll('button').forEach(b=>{const on=b.dataset.t===t;b.classList.toggle('sel',on);b.setAttribute('aria-selected',on?'true':'false');});
   const p=PP.p,body=$('ppBody');body.innerHTML='';
+  if(t==='mastery'){ppMastery(body);return;}
   if(t==='story')p.story.forEach(x=>{const e=document.createElement('p');e.textContent=x;body.appendChild(e);});
   else if(t==='style'){const e=document.createElement('p');e.textContent=p.style;body.appendChild(e);const f=document.createElement('p');f.className='pptag';f.textContent='In the shop: '+PP.o.tag;body.appendChild(f);}
   else{const ul=document.createElement('ul');p.facts.forEach(x=>{const li=document.createElement('li');li.textContent=x;ul.appendChild(li);});body.appendChild(ul);}}
@@ -4598,7 +4634,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.2.9';
+const GAME_VER='2.2.10';
 const DEV_VER='2.2.8';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -4675,9 +4711,10 @@ function mergeCfg(R,L,B){
   const rs=Array.isArray(R.sh)?R.sh:[0,0,0],ls=Array.isArray(L.sh)?L.sh:[0,0,0],bs=B&&Array.isArray(B.sh)?B.sh:null;
   o.sh=[0,1,2].map(i=>bs?Math.max(0,num(rs[i])+num(ls[i])-num(bs[i])):Math.max(num(rs[i]),num(ls[i])));
   const uni=(a,b)=>{const s=(Array.isArray(a)?a:[]).slice();(Array.isArray(b)?b:[]).forEach(x=>{if(s.indexOf(x)<0)s.push(x);});return s;};
-  o.owned=uni(R.owned,L.owned);o.redeemed=uni(R.redeemed,L.redeemed);
+  o.owned=uni(R.owned,L.owned);o.redeemed=uni(R.redeemed,L.redeemed);o.cosU=uni(R.cosU,L.cosU);
+  o.mst=Object.assign({},R.mst||{});for(const k in (L.mst||{}))o.mst[k]=Math.max(num(o.mst[k]),num(L.mst[k]));
   const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
-  ['squad','teamCol','teamName','oppIdx','gameLen','gm','pk1','pk2','full','lb','tr','cc','stp','spr','sln','sis'].forEach(k=>{
+  ['squad','teamCol','teamName','oppIdx','gameLen','gm','pk1','pk2','full','lb','tr','cc','stp','spr','sln','sis','dly','stk','cos'].forEach(k=>{
     if(!B||!same(L[k],B[k]))o[k]=L[k]===undefined?R[k]:L[k];
   });
   o.ts=Math.max(num(R.ts),num(L.ts));
@@ -4873,6 +4910,8 @@ $('evList').addEventListener('click',e=>{
   if(!ev||titles<ev.need||owned.indexOf(ev.reward)>=0||(ev.end&&Date.now()>=ev.end))return;
   owned.push(ev.reward);saveCfg();renderSquad();sfx.cheer(0.8);evRender();
 });
+$('dailyBtn').onclick=()=>{uiSnd('uiSelect');dailyOpen();};
+$('dailyBack').onclick=()=>{hideEl('daily');renderSquad();show('menu');};
 $('evBtn').onclick=()=>{hideScreens();evRender();show('events');};
 $('evBack').onclick=()=>{hideEl('events');renderSquad();show('menu');};
 
@@ -4913,6 +4952,122 @@ async function lbWeekly(my,l){
   rows.forEach((x,n)=>{const me=!!(cloudUser&&x.id===cloudUser.uid);if(me)mineShown=true;const r=lbRow(n+1,String(x.name||'?').slice(0,12),x.level,Number(x.wt).toLocaleString()+(x.wt==1?' win':' wins')+(n<3?' · '+WK_PRIZE[n].toLocaleString()+'c':''),me,x.id,onl.has(x.id));l.appendChild(r);});
   if(cloudUser&&!mineShown){const p=document.createElement('p');p.textContent=lbShow?'Win an All-Star or Legend tournament to get on this week\'s board.':'You are hidden from the leaderboards, so you can\'t win weekly prizes.';l.appendChild(p);}
   else if(!cloudUser){const p=document.createElement('p');p.textContent='Log in to compete for weekly prizes.';l.appendChild(p);}
+}
+/* ===== daily challenges, login streak, player mastery and cosmetics (dev build) ===== */
+function grindOn(){return typeof devFeat==='function'&&devFeat('grind');}
+var dly,stk,mst,cos,cosU;   /* set by grindReset / applyCfg (which can run before this line) */
+if(stk===undefined)grindReset();
+function dayKey(ms){const p=etParts(ms==null?Date.now():ms);return p.y+'-'+String(p.m).padStart(2,'0')+'-'+String(p.d).padStart(2,'0');}
+function dayShift(k,n){return new Date(Date.parse(k+'T12:00:00Z')+n*864e5).toISOString().slice(0,10);}
+function dayEndsIn(){const now=Date.now(),p=etParts(now);return Math.max(0,Date.UTC(p.y,p.m-1,p.d+1)-Date.UTC(p.y,p.m-1,p.d,p.h,p.mi)-new Date(now).getUTCSeconds()*1000);}
+function fmtHM(ms){const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4);return h+'h '+m+'m';}
+/* ---- daily challenges: three a day, the same for everyone that day, reset at midnight New York time ---- */
+const DCH=[
+  {id:'win2',t:'Win 2 games',n:2,r:150,f:G=>G.win?1:0},
+  {id:'play3',t:'Play 3 games',n:3,r:100,f:G=>1},
+  {id:'pts30',t:'Score 30 points',n:30,r:150,f:G=>G.pts},
+  {id:'three5',t:'Make 5 threes',n:5,r:150,f:G=>G.three},
+  {id:'stl4',t:'Get 4 steals',n:4,r:150,f:G=>G.stl},
+  {id:'blk3',t:'Block 3 shots',n:3,r:150,f:G=>G.blk},
+  {id:'dunk4',t:'Throw down 4 dunks',n:4,r:150,f:G=>G.dunk},
+  {id:'reb10',t:'Grab 10 rebounds',n:10,r:120,f:G=>G.reb},
+  {id:'green6',t:'Hit 6 greens',n:6,r:150,f:G=>G.green},
+  {id:'allstar',t:'Win a game on All-Star or Legend',n:1,r:200,f:G=>G.win&&G.diff>=2?1:0},
+  {id:'blow',t:'Win a game by 10 or more',n:1,r:200,f:G=>G.win&&G.margin>=10?1:0},
+  {id:'with',t:'Win a game with {P} on your team',n:1,r:150,f:(G,P)=>G.win&&G.names.indexOf(P)>=0?1:0},
+  {id:'tround',t:'Win 2 tournament rounds',n:2,r:200,f:G=>G.win&&G.tour?1:0}
+];
+const DCH_BONUS=250;
+function dlyFor(k){
+  let h=parseInt(h53('daily|'+k).slice(0,7),36)||1;const rnd2=()=>{h=(h*1103515245+12345)%2147483648;return h/2147483648;};
+  const pool=DCH.map((c,i)=>i),pick=[];while(pick.length<3){const i=pool.splice(Math.floor(rnd2()*pool.length),1)[0];pick.push(i);}
+  const own=owned.filter(n=>PROFILES[n]&&n!=='ADAPT'),P=own.length?own[Math.floor(rnd2()*own.length)]:'DIME';
+  return {d:k,ids:pick.map(i=>DCH[i].id),p:[0,0,0],c:[0,0,0],b:0,P:P};
+}
+function dlyNow(){const k=dayKey();if(!dly||dly.d!==k)dly=dlyFor(k);return dly;}
+function dchOf(id){return DCH.find(c=>c.id===id);}
+function dchText(c,D){return c.t.replace('{P}',ppTitle(D.P));}
+var gGreen;if(gGreen===undefined)gGreen=0;
+/* after every finished game (not practice or the hangout) */
+function grindAfterGame(w,me){
+  if(!grindOn()||practice||hangOn)return '';
+  const mine=players.filter(p=>p.team===me),bench=(typeof storyBenchBox==='function'?storyBenchBox():[]).filter(b=>b.team===me);
+  const all=mine.concat(bench),sum=k=>all.reduce((a,p)=>a+(p.stats[k]||0),0);
+  const G={win:w===me,pts:sum('pts'),three:sum('three'),stl:sum('stl'),blk:sum('blk'),dunk:sum('dunk'),reb:sum('reb'),green:gGreen,diff:pvp?3:diffIdx,
+    margin:teams[me].score-teams[1-me].score,names:all.map(p=>p.name),tour:!!(tour&&tour.live)};
+  gGreen=0;
+  let msg='',got=0;const D=dlyNow();
+  D.ids.forEach((id,i)=>{if(D.c[i])return;const c=dchOf(id);D.p[i]=Math.min(c.n,D.p[i]+(c.f(G,D.P)||0));if(D.p[i]>=c.n){D.c[i]=1;got+=c.r;toast('Daily challenge done: '+dchText(c,D)+' (+'+c.r+' coins)');}});
+  if(!D.b&&D.c.every(x=>x)){D.b=1;got+=DCH_BONUS;setTimeout(()=>toast('All three daily challenges done! +'+DCH_BONUS+' bonus coins.'),1600);}
+  if(got){coins+=got;msg+=' Daily challenges: +'+got+' coins.';}
+  /* mastery for everyone who played for you */
+  const ups=[];
+  all.forEach(p=>{if(!PROFILES[p.name])return;const s=p.stats,xp=25+s.pts*2+s.reb+(s.stl+s.blk)*4+s.dunk*2+(G.win?25:0),l0=mstLvl(p.name);
+    mst[p.name]=(mst[p.name]||0)+xp;const l1=mstLvl(p.name);if(l1>l0)ups.push(ppTitle(p.name)+' reached mastery '+l1+(MST_UNLOCK[l1]?' (new: '+MST_UNLOCK[l1].map(cosName).join(', ')+')':''));});
+  if(ups.length){msg+=' '+ups.join('. ')+'.';uiSnd('uiGood');}
+  saveCfg();return msg;
+}
+/* ---- login streak ---- */
+const STREAK_R=[100,150,200,250,300,400,1000];
+function stkState(){const t=dayKey(),y=dayShift(t,-1),claimed=stk.last===t,alive=claimed||stk.last===y,next=claimed?stk.n:(alive?stk.n+1:1);return {t:t,claimed:claimed,alive:alive,n:alive?stk.n:0,next:next};}
+function stkClaim(){
+  const S=stkState();if(S.claimed)return;
+  stk.n=S.next;stk.last=S.t;stk.best=Math.max(stk.best||0,stk.n);
+  const i=(stk.n-1)%7,r=STREAK_R[i];coins+=r;let extra='';
+  if(i===6&&cosU.indexOf('shoe:streak')<0){cosU.push('shoe:streak');extra=' You unlocked Streak Flame shoes for every player!';}
+  saveCfg();try{bumpCoins();}catch(e){}uiSnd('uiGood');toast('Day '+stk.n+' streak: +'+r+' coins.'+extra);dailyRender();
+}
+/* ---- mastery: each player levels up 1 to 10 as you play with them ---- */
+const MST_XP=l=>75*l*(l-1);   /* total XP to reach level l: 150, 450, 900 ... 6750 at 10 */
+function mstLvl(n){const x=mst[n]||0;let l=1;while(l<10&&x>=MST_XP(l+1))l++;return l;}
+const MST_UNLOCK={2:['band:white'],3:['wrist:white'],4:['shoe:ice'],5:['band:cyan','wrist:cyan'],6:['shoe:neon'],7:['trim:chrome'],8:['shoe:shadow','band:red'],9:['wrist:gold','band:gold'],10:['shoe:gold','trim:gold']};
+/* ---- cosmetics ---- */
+const COS={
+  shoe:{n:'Shoes',o:{ice:['Ice','#d8f3ff','#5fb8e8'],neon:['Neon','#3dffa8','#0d6b45'],shadow:['Shadow','#16181f','#ff3b1f'],gold:['Gold','#ffd166','#8a6a1a'],streak:['Streak Flame','#ff7a1a','#ffd166']}},
+  band:{n:'Headband',o:{white:['White','#f4f6ff'],cyan:['Cyan','#17d6ff'],red:['Red','#ff4d5e'],gold:['Gold','#ffd166']}},
+  wrist:{n:'Wristbands',o:{white:['White','#f4f6ff'],cyan:['Cyan','#17d6ff'],gold:['Gold','#ffd166']}},
+  trim:{n:'Jersey trim',o:{chrome:['Chrome','#e8ecf4'],gold:['Gold','#ffd166']}}
+};
+function cosName(k){const [s,i]=k.split(':');return COS[s].o[i][0]+' '+COS[s].n.toLowerCase();}
+function cosHas(n,k){if(cosU.indexOf(k)>=0)return true;const l=mstLvl(n);for(let i=2;i<=l;i++)if((MST_UNLOCK[i]||[]).indexOf(k)>=0)return true;return false;}
+function cosLevel(k){for(let i=2;i<=10;i++)if((MST_UNLOCK[i]||[]).indexOf(k)>=0)return i;return 0;}
+function cosApply(n,L){
+  if(!grindOn())return L;const c=cos[n];if(!c)return L;const o=Object.assign({},L);
+  if(c.shoe&&COS.shoe.o[c.shoe]&&cosHas(n,'shoe:'+c.shoe)){o.shoe=COS.shoe.o[c.shoe][1];o.sole=COS.shoe.o[c.shoe][2];}
+  if(c.band&&COS.band.o[c.band]&&cosHas(n,'band:'+c.band)&&!o.hat&&!o.mask&&o.hair!=='hood'&&o.hair!=='beanie')o.band=COS.band.o[c.band][1];
+  if(c.wrist&&COS.wrist.o[c.wrist]&&cosHas(n,'wrist:'+c.wrist)){o.wrist=COS.wrist.o[c.wrist][1];o.wristBoth=1;}
+  return o;
+}
+function cosTrim(n){if(!grindOn())return null;const c=cos[n];return c&&c.trim&&COS.trim.o[c.trim]&&cosHas(n,'trim:'+c.trim)?COS.trim.o[c.trim][1]:null;}
+/* ---- the Daily screen ---- */
+function dailyRender(){
+  if(!$('daily'))return;const D=dlyNow(),S=stkState();let h='';
+  h+='<h2>Login streak</h2><p class="tag">'+(S.n?'Day '+S.n+' streak':'No streak yet')+' · best '+Math.max(stk.best||0,S.n)+' days. Come back every day: miss a day and it starts over.</p><div class="stkrow">';
+  const base=Math.floor(((S.claimed?S.n:S.next)-1)/7)*7;
+  for(let i=0;i<7;i++){const day=base+i+1,done=day<=S.n,today=!S.claimed&&day===S.next;
+    h+='<div class="stk'+(done?' done':'')+(today?' today':'')+'"><b>Day '+day+'</b><span>'+STREAK_R[i]+'</span>'+(i===6?'<small>+ Streak Flame shoes</small>':'')+'</div>';}
+  h+='</div>'+(S.claimed?'<p class="tag">Claimed today. Come back tomorrow for day '+(S.n+1)+'.</p>':'<button class="go" id="stkClaim">Claim day '+S.next+' (+'+STREAK_R[(S.next-1)%7]+' coins)</button>');
+  h+='<h2>Daily challenges</h2><p class="tag">New challenges in '+fmtHM(dayEndsIn())+' (midnight Eastern). Finish all three for '+DCH_BONUS+' bonus coins.</p>';
+  D.ids.forEach((id,i)=>{const c=dchOf(id),pct=Math.round(D.p[i]/c.n*100);
+    h+='<div class="dch'+(D.c[i]?' done':'')+'"><div><b>'+dchText(c,D)+'</b><span>'+(D.c[i]?'Done':D.p[i]+' / '+c.n)+'</span><em>+'+c.r+'</em></div><i><u style="width:'+pct+'%"></u></i></div>';});
+  h+='<p class="tag">'+(D.b?'Bonus claimed. Nice work.':(D.c.filter(x=>x).length+' of 3 done.'))+' Playing with a player also earns them mastery. Open a player\'s profile in the shop to see their level and cosmetics.</p>';
+  $('dailyBody').innerHTML=h;const b=$('stkClaim');if(b)b.onclick=stkClaim;
+}
+function dailyOpen(){hideScreens();dailyRender();show('daily');}
+/* ---- the Mastery tab on a profile ---- */
+function ppMastery(body){
+  const n=PP.n,l=mstLvl(n),x=mst[n]||0,nx=l<10?MST_XP(l+1):MST_XP(10),pv=MST_XP(l),pct=l<10?Math.round((x-pv)/(nx-pv)*100):100,own=owned.indexOf(n)>=0;
+  let h='<div class="mst"><b>Mastery '+l+(l>=10?' · MAX':'')+'</b><span>'+(l<10?(x-pv)+' / '+(nx-pv)+' XP to level '+(l+1):'Fully mastered')+'</span><i><u style="width:'+pct+'%"></u></i></div>';
+  h+='<p class="pptag">Play games with '+ppTitle(n)+' to earn mastery XP: points, rebounds, steals, blocks, dunks and wins all count.</p>';
+  for(const s in COS){h+='<div class="cosrow"><b>'+COS[s].n+'</b><div class="cosw">';
+    const cur=(cos[n]||{})[s]||'';h+='<button type="button" data-s="'+s+'" data-o=""'+(cur===''?' class="sel"':'')+' title="Default">Default</button>';
+    for(const id in COS[s].o){const k=s+':'+id,has=cosHas(n,k),o=COS[s].o[id],lv=cosLevel(k);
+      h+='<button type="button" data-s="'+s+'" data-o="'+id+'"'+(cur===id?' class="sel"':'')+(has&&own?'':' disabled')+' title="'+o[0]+(has?'':(lv?' (mastery '+lv+')':' (7-day streak)'))+'"><i style="background:'+o[1]+'"></i>'+o[0]+(has?'':' &#128274;'+(lv?lv:'7d'))+'</button>';}
+    h+='</div></div>';}
+  if(!own)h+='<p class="pptag">Buy '+ppTitle(n)+' to use cosmetics.</p>';
+  body.innerHTML=h;
+  body.querySelectorAll('.cosw button').forEach(b=>b.onclick=()=>{const s=b.dataset.s,o=b.dataset.o;cos[n]=Object.assign({},cos[n]||{});if(o)cos[n][s]=o;else delete cos[n][s];
+    for(const k in LOOK_CACHE)delete LOOK_CACHE[k];saveCfg();uiSnd('uiSelect');PP.C=null;ppMastery(body);});
 }
 /* ===== leaderboards (needs cloud accounts) ===== */
 const LB_CATS=[
@@ -5409,7 +5564,7 @@ const HUB_ID=ROOM_PREFIX+'hangout-hub',HANG_MAX=12;
 let hStat={a:0,m:0,g:0,st:0,best:0},hangName='';
 function shotStat(k){
   if(k==='att'){hStat.a++;acctShots[0]++;}
-  else if(k==='green'){hStat.g++;acctShots[2]++;}
+  else if(k==='green'){hStat.g++;acctShots[2]++;if(!hang)gGreen++;}
   else if(k==='make'){hStat.m++;hStat.st++;if(hStat.st>hStat.best)hStat.best=hStat.st;acctShots[1]++;}
   else if(k==='miss')hStat.st=0;
   if(hang)hangPanel();
@@ -5924,7 +6079,7 @@ function updateTouchLabels(){
 }
 
 /* ===== menu sounds ===== */
-const BACK_IDS=['dtBack','sbBack','upBack','stBack','ccBack','daBack','devBack','qcClose','profBack','frBack','dmBack','repCancel','invNo','playBack','offBack','qpBack','tpBack','netBack','setBack','shopClose','codeBack','evBack','acBack','lvBack','lbBack','brBack','chCancel','tutBack','hangNo','coachExit','hangLeave','specStop'];
+const BACK_IDS=['dailyBack','dtBack','sbBack','upBack','stBack','ccBack','daBack','devBack','qcClose','profBack','frBack','dmBack','repCancel','invNo','playBack','offBack','qpBack','tpBack','netBack','setBack','shopClose','codeBack','evBack','acBack','lvBack','lbBack','brBack','chCancel','tutBack','hangNo','coachExit','hangLeave','specStop'];
 var uiHovT=0,lastCoins=null;
 function uiOk(){return SET.vol.ui!==false;}
 function uiSnd(k){if(uiOk()&&sfx[k])sfx[k]();}
@@ -5950,7 +6105,7 @@ function bumpCoins(){
   lastCoins=coins;
 }
 /* ================= new UI navigation ================= */
-const SCREENS=['menu','play','offline','qp','tp','friends','dm','story','cc','upg'];
+const SCREENS=['daily','menu','play','offline','qp','tp','friends','dm','story','cc','upg'];
 function hideScreens(){SCREENS.forEach(id=>hideEl(id));}
 function showDevlog(){show('devlog');$('devOk').focus();}
 function startupPopups(){let v='';try{v=localStorage.getItem('sk_dev')||'';}catch(e){}if(v!==DEV_VER)showDevlog();}
@@ -6078,6 +6233,7 @@ const DEV_HASH='11cal5ouw9s';
 /* Unreleased content lives here. Each entry is a toggle in the dev build (Settings, Help). */
 const DEV_FEATURES=[
   {id:'all',name:'All players unlocked',desc:'Every player, including hidden ones, is available to pick. Your real unlocks and coins are not changed.',on:true},
+  {id:'grind',name:'Daily challenges, streaks, mastery and cosmetics',desc:'A Daily screen on the main menu with a login streak (rewards build to day 7) and three daily challenges that reset at midnight Eastern. Every player levels up 1 to 10 as you play with them, unlocking shoes, headbands, wristbands and jersey trim in their profile.',on:true},
   {id:'story',name:'Story mode: Velocity Break',desc:'A four-chapter campaign with the Ash Hounds, from the cracked courts of the Lower Sprawl to the Sovereigns on the threshold, plus a custom player creator. Find it in Play, Offline.',on:true}
 ];
 var devTaps=0,devTapT=0,devMaster=false,devOn=false,devX={},devRealOwned=null,devTries=[];
@@ -6091,7 +6247,7 @@ function devApply(){
   const allNames=SLOTS.reduce((a,sl)=>a.concat(POOL[sl].map(o=>o.name)),[]);
   if(devOn&&devX.all){if(!devRealOwned)devRealOwned=owned.slice();owned=allNames.slice();}
   else if(devRealOwned){const real=devRealOwned;devRealOwned=null;owned=real;SLOTS.forEach(sl=>{if(owned.indexOf(POOL[sl][squad[sl]].name)<0)squad[sl]=POOL[sl].findIndex(o=>owned.indexOf(o.name)>=0);});if(owned.indexOf(pk1)<0)pk1='DIME';if(owned.indexOf(pk2)<0||pk2===pk1)pk2=owned.find(n=>n!==pk1);}
-  $('devBadge').classList.toggle('hide',!devOn);
+  $('devBadge').classList.toggle('hide',!devOn);$('dailyBtn').classList.toggle('hide',!grindOn());for(const k in LOOK_CACHE)delete LOOK_CACHE[k];
   $('offStory').classList.toggle('hide',!devFeat('story'));
   try{renderOpp();renderTBench();}catch(e){}
   try{renderSquad();}catch(e){}
