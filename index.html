@@ -521,7 +521,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     <div id="qpMount">
       <div id="setPanel">
         <div class="row" id="rowDiff"><b>Difficulty</b><div class="seg" id="segDiff"><button data-v="0">Rookie</button><button data-v="1" class="sel">Pro</button><button data-v="2">All-Star</button><button data-v="3">Legend</button></div></div>
-        <div class="row" id="rowLen"><b>Game length</b><div class="seg" id="segLen"><button data-v="120">2:00</button><button data-v="240" class="sel">4:00</button><button data-v="360">6:00</button><button data-v="480" class="lenx">8:00</button><button data-v="600" class="lenx">10:00</button></div></div>
+        <div class="row" id="rowLen"><b>Game length</b><div class="seg" id="segLen"><button data-v="60" id="len60">1:00</button><button data-v="120">2:00</button><button data-v="240" class="sel">4:00</button><button data-v="360">6:00</button><button data-v="480" class="lenx">8:00</button><button data-v="600" class="lenx">10:00</button></div></div>
         <div class="row" id="rowCourt"><b>Court</b><div class="seg" id="segCourt"><button data-v="0" class="sel">Half</button><button data-v="1">Full</button></div></div>
         <div class="row" id="rowMode"><b>Mode</b><div class="seg" id="segMode"><button data-v="3" class="sel">3v3</button><button data-v="2">2v2</button><button data-v="1">1v1</button></div></div>
         <div class="row" id="rowOpp"><b>Opponent</b><div class="seg" id="segOpp"></div></div><p class="tag" id="oppDesc"></p>
@@ -697,7 +697,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
       <div id="lobbySet" class="hide">
         <p><b>Match settings</b></p>
         <div class="row"><b>Mode</b><div class="seg" id="lobMode"><button data-v="3">3v3</button><button data-v="2">2v2</button><button data-v="1">1v1</button></div></div>
-        <div class="row"><b>Game length</b><div class="seg" id="lobLen"><button data-v="120">2:00</button><button data-v="240">4:00</button><button data-v="360">6:00</button></div></div>
+        <div class="row"><b>Game length</b><div class="seg" id="lobLen"><button data-v="60">1:00</button><button data-v="120">2:00</button><button data-v="240">4:00</button><button data-v="360">6:00</button></div></div>
         <div class="row" id="lobP1row"><b>Your player</b><select id="lobP1" aria-label="Your player"></select></div>
         <div class="row" id="lobP2row"><b>Partner</b><select id="lobP2" aria-label="Partner"></select></div>
         <p class="tag" id="lobNote"></p>
@@ -755,7 +755,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 
   <div id="chalDlg" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(22px,4.5cqw,60px)">CHALLENGE</h1><p id="chalWho" style="font-weight:800;color:var(--ink)"></p>
     <div class="row"><b>Mode</b><div class="seg" id="chMode"><button data-v="1">1v1</button><button data-v="2">2v2</button><button data-v="3">3v3</button></div></div>
-    <div class="row"><b>Game length</b><div class="seg" id="chLen"><button data-v="120">2:00</button><button data-v="240">4:00</button><button data-v="360">6:00</button></div></div>
+    <div class="row"><b>Game length</b><div class="seg" id="chLen"><button data-v="60">1:00</button><button data-v="120">2:00</button><button data-v="240">4:00</button><button data-v="360">6:00</button></div></div>
     <div class="row"><button class="go" id="chGo">Challenge</button><button class="go back" id="chCancel">Cancel</button></div></div></div>
 
   <div id="devlog" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(24px,5cqw,66px)">WHAT'S NEW</h1><p class="tag">Update 2.2</p>
@@ -1250,7 +1250,7 @@ function applyCfg(cfg){
     if(cfg.teamCol>=0&&cfg.teamCol<COLORS.length)teamCol=cfg.teamCol;
     if(typeof cfg.teamName==='string'&&cfg.teamName)teamName=cfg.teamName.slice(0,10);
     if(cfg.oppIdx>=0&&cfg.oppIdx<OPP.length)oppIdx=cfg.oppIdx;
-    if([120,240,360,480,600].indexOf(cfg.gameLen)>=0)gameLen=cfg.gameLen;
+    if([60,120,240,360,480,600].indexOf(cfg.gameLen)>=0)gameLen=cfg.gameLen;
     if(Array.isArray(cfg.owned))owned=['DIME','BLAZE','MOOSE'].concat(cfg.owned.filter(n=>PRICE[n]>0));
     if(typeof cfg.coins==='number'&&cfg.coins>=0)coins=Math.floor(cfg.coins);
     if(typeof cfg.titles==='number'&&cfg.titles>=0)titles=Math.floor(cfg.titles);
@@ -1422,7 +1422,7 @@ function createGame(){
   if(pvp)[0,1].forEach(i=>{const col=COLORS[netCfg.cols[i]];Object.assign(teams[i],{name:netCfg.names[i],color:col.c,dark:col.d,accent:col.a});});
   players.forEach(p=>{p.guard=players.find(q=>q.team!==p.team&&q.idx===p.idx);});
   ball={x:0,y:0,z:1,vx:0,vy:0,vz:0,state:'loose',holder:null,spin:0,age:0,shooter:null,shooterTeam:0,made:false,three:false,fromShot:false,scored:false,passer:null,target:null,passAge:0};
-  poss=0;setHoop(0);gameTime=0;timeLeft=pvp?netCfg.len:(stl?story.def.len:gameLen);overtime=0;shotClock=SC;resultShown=false;floaters=[];vfx=[];freezeT=0;slowT=0;banner=null;shake=0;netT=0;ctrl=null;ctrl2=null;ctxTeam=0;
+  poss=0;setHoop(0);gameTime=0;timeLeft=pvp?netCfg.len:(stl?story.def.len:((tour&&tour.live&&gameLen<120)?120:gameLen));overtime=0;shotClock=SC;resultShown=false;floaters=[];vfx=[];freezeT=0;slowT=0;banner=null;shake=0;netT=0;ctrl=null;ctrl2=null;ctxTeam=0;
 }
 
 function addVfx(type,x,y,z,dir,life){if(pvp&&role==='host')evq.push(['v',type,x,y,z,dir,life]);vfx.push({type:type,x:x,y:y,z:z,dir:dir,t:0,life:life});}
@@ -4598,7 +4598,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.2.8';
+const GAME_VER='2.2.9';
 const DEV_VER='2.2.8';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -5975,10 +5975,11 @@ function renderDuo(){renderDuo0();applyTeamMode();try{if(!$('tp').classList.cont
 function mountTeam(where,mode){teamMode=mode;if(where)$(where).appendChild(TP);TP.classList.toggle('hide',!where);renderDuo();}
 $('offQp').onclick=()=>{
   const sp=$('setPanel');sp.insertBefore($('rowDiff'),$('rowCourt'));sp.insertBefore($('rowLen'),$('rowCourt'));sp.insertBefore($('rowMode'),$('rowOpp'));
-  mountTeam('qpMount','normal');go('qp');
+  $('len60').classList.remove('hide');mountTeam('qpMount','normal');go('qp');
 };
 $('offTour').onclick=()=>{
   const m=$('tpMount');m.appendChild($('rowLen'));m.appendChild($('rowMode'));
+  $('len60').classList.add('hide');if(gameLen<120){gameLen=120;saveCfg();$('segLen').querySelectorAll('button').forEach(b=>b.classList.toggle('sel',+b.dataset.v===gameLen));}
   mountTeam('tpMount','tour');go('tp');tpRender();
 };
 $('qpBack').onclick=()=>go('offline');
