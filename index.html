@@ -1137,6 +1137,12 @@ function renderSettings(){
       if(devMaster){const da=add('button','Make dev passes','sbtn');da.onclick=openDevAdmin;}
       const rs=add('button','Reset dev save','sbtn');rs.title='Start the dev build over: story, MyPLAYER, coins and unlocks go back to a fresh copy of your real save.';
       rs.onclick=()=>{if(rs.dataset.arm!=='1'){rs.dataset.arm='1';rs.textContent='Press again to reset';setTimeout(()=>{if(rs.isConnected){rs.dataset.arm='';rs.textContent='Reset dev save';}},3500);return;}devReset();renderSettings();};
+      if(grindOn()){add('h2','Mastery hacks');
+        const rost=()=>Object.keys(PROFILES),redo=m=>{for(const k in LOOK_CACHE)delete LOOK_CACHE[k];saveCfg();toast(m);};
+        const m1=add('button','Max mastery for every player','sbtn');m1.onclick=()=>{rost().forEach(n=>{mst[n]=MST_XP(10);});redo('Every player is mastery 10. All their cosmetics are unlocked.');};
+        const m2=add('button','+1 mastery level for every player','sbtn');m2.onclick=()=>{rost().forEach(n=>{const l=mstLvl(n);if(l<10)mst[n]=MST_XP(l+1);});redo('Every player went up a mastery level.');};
+        const m3=add('button','Unlock Streak Flame shoes','sbtn');m3.onclick=()=>{if(cosU.indexOf('shoe:streak')<0)cosU.push('shoe:streak');redo('Streak Flame shoes unlocked for every player.');};
+        const m4=add('button','Reset mastery and cosmetics','sbtn');m4.onclick=()=>{mst={};cos={};cosU=[];redo('Mastery and cosmetics reset.');};}
       const lv=add('button','Leave dev build','sbtn');lv.onclick=()=>{devLeave();renderSettings();};
     }
     const h3=add('button',"What's new",'sbtn');h3.onclick=()=>showDevlog();
@@ -4634,7 +4640,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.2.10';
+const GAME_VER='2.2.11';
 const DEV_VER='2.2.8';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
