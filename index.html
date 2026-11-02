@@ -265,18 +265,6 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 #qchat.closed .coachcard{display:none}
 #qchat:not(.closed) #qcOpen{display:none}
 
-/* ===== main menu poll ===== */
-#poll{position:absolute;left:2%;top:34%;width:21%;z-index:3;background:rgba(8,11,26,.82);border:1px solid var(--line);border-radius:1.2cqw;padding:1cqw;text-align:left}
-#poll h3{margin:0 0 .2cqw;font:900 clamp(11px,1.5cqw,20px) Impact,"Arial Black",sans-serif;letter-spacing:.04em;color:var(--gold)}
-#poll p{margin:.2cqw 0;font-size:clamp(9px,1.1cqw,14px);color:var(--muted)}
-.pv{position:relative;display:block;width:100%;margin:.5cqw 0 0;padding:.6cqw .8cqw;border:1px solid var(--line);border-radius:.8cqw;background:rgba(255,255,255,.05);color:var(--ink);font:800 clamp(10px,1.35cqw,18px) Arial,sans-serif;text-align:left;cursor:pointer;overflow:hidden}
-.pv:hover,.pv:focus-visible{border-color:var(--cyan)}
-.pv .bar{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(23,214,255,.22);transition:width .5s ease}
-.pv.mine{border-color:#3dffa8}.pv.mine .bar{background:rgba(61,255,168,.25)}
-.pv span{position:relative;display:flex;justify-content:space-between;gap:.5em}
-.pv em{font-style:normal;color:var(--muted);font-weight:700}
-.pv.mine em{color:#3dffa8}
-#menu:not(.hide) #poll{animation:liIn .5s .35s cubic-bezier(.2,.8,.2,1) backwards}
 
 #devBadge{position:absolute;left:1cqw;top:.6cqw;z-index:60;pointer-events:none;font:900 clamp(9px,1.1cqw,14px) Arial,sans-serif;letter-spacing:.12em;color:#1a0f00;background:repeating-linear-gradient(45deg,#ffd166 0 10px,#ffb703 10px 20px);padding:.15cqw .9cqw;border-radius:.5cqw;box-shadow:0 0 0 2px rgba(0,0,0,.4)}
 
@@ -506,13 +494,6 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
         <button class="mbtn" id="codeBtn"><span>Codes</span><small>Redeem a code</small></button>
       </div>
       <button class="linkbtn" id="newsBtn">What's new</button>
-    </div>
-    <div id="poll" role="group" aria-labelledby="pollQ">
-      <h3 id="pollQ">VOTE: WHAT'S NEXT?</h3>
-      <p>Pick the mode you want added next.</p>
-      <button class="pv" data-c="story"><div class="bar"></div><span><b>Story mode</b><em></em></span></button>
-      <button class="pv" data-c="ranked"><div class="bar"></div><span><b>Ranked</b><em></em></span></button>
-      <p id="pollMsg" aria-live="polite"></p>
     </div>
   </div>
 
@@ -788,6 +769,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
       <li><b>Steals</b><span>Press K (or the steal button) to reach when the dribbler is exposed. Reach during a crossover and you go down. Mashing drains your stamina.</span></li>
       <li><b>Pressure defense</b><span>Hold K (or the steal button) to shadow the ball instead of your man: you jump passing lanes and scoop up loose balls.</span></li>
       <li><b>Block guide</b><span>When someone shoots near you, a ring shows where you need to be, and in the air you see whether your hands are high enough.</span></li>
+      <li><b>Weekly tournament leaderboard</b><span>Leaderboards now have this week's tournament wins next to all time. Every Monday at 12:00 AM Eastern, last week's top three get 5,000, 1,000 and 500 coins.</span></li>
       <li><b>Rookie and Pro tournaments</b><span>Practice tournaments for fewer coins. Only All-Star and Legend wins count as titles.</span></li>
     </ul>
     <div class="row"><button class="go" id="devOk">Got it</button></div></div></div>
@@ -4446,7 +4428,7 @@ function tourAfterGame(w){
   if(w===0){
     const lk=[0.5,0.75,1,1.5][tDiffOk(t.diff)],bonus=Math.round((t.r===2?200:30*(t.r+1))*lk);coins+=bonus;pendingXp=Math.round((t.r===2?300:50)*lk);
     msg=t.r===2?' You won the tournament! Bonus: '+bonus+' coins.'+(t.diff<2?' Rookie and Pro wins don\'t count as titles.':''):' Round bonus: '+bonus+' coins.';
-    if(t.r===2&&tDiffOk(t.diff)>=2)titles++;
+    if(t.r===2&&tDiffOk(t.diff)>=2){titles++;wkAddTitle();}
     t.r++;
   }else{
     t.out=true;
@@ -4616,8 +4598,8 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.2.7';
-const DEV_VER='2.2.2';let tutI=0,tutChecked=false;
+const GAME_VER='2.2.8';
+const DEV_VER='2.2.8';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
   $('tutTitle').textContent=s.t;$('tutBody').innerHTML=tok(s.b);$('tutStep').textContent='Step '+(tutI+1)+' of '+TUT.length;
@@ -4773,7 +4755,7 @@ async function cloudInit(){
   try{
     await fbLoad();startPresence();
     fb.au.onAuthStateChanged(fb.a,async u=>{
-      if(u){cloudUser=u;user=nameOf(u.email);await cloudPull();socStart();pollLoad(true);devCheckAdmin();}
+      if(u){cloudUser=u;user=nameOf(u.email);await cloudPull();socStart();pollLoad(true);devCheckAdmin();setTimeout(wkClaim,1500);}
       else if(cloudUser){poll.mine='';poll.t=0;setTimeout(()=>pollLoad(true),0);socStop();if(saveUnsub){try{saveUnsub();}catch(e){}saveUnsub=null;}cloudUser=null;user='';applyCfg(guestCfg());}
       refreshAll();maybeTutorial();tryInvite();
     });
@@ -4893,11 +4875,51 @@ $('evList').addEventListener('click',e=>{
 });
 $('evBtn').onclick=()=>{hideScreens();evRender();show('events');};
 $('evBack').onclick=()=>{hideEl('events');renderSquad();show('menu');};
+
+/* ===== weekly tournament leaderboard: weeks run Monday 12:00 AM to Sunday 11:59 PM, New York time ===== */
+const WK_PRIZE=[5000,1000,500];
+function etParts(ms){const f=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23',weekday:'short'}).formatToParts(new Date(ms)),o={};f.forEach(p=>{o[p.type]=p.value;});
+  return {y:+o.year,m:+o.month,d:+o.day,h:+o.hour%24,mi:+o.minute,wd:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].indexOf(o.weekday)};}
+function weekKey(ms){const p=etParts(ms==null?Date.now():ms);return new Date(Date.UTC(p.y,p.m-1,p.d-p.wd)).toISOString().slice(0,10);}
+function prevWeekKey(){const k=weekKey(),t=Date.parse(k+'T12:00:00Z')-7*864e5;return new Date(t).toISOString().slice(0,10);}
+function weekEndsIn(){const now=Date.now(),p=etParts(now),etNow=Date.UTC(p.y,p.m-1,p.d,p.h,p.mi),end=Date.UTC(p.y,p.m-1,p.d-p.wd+7,0,0);return Math.max(0,end-etNow-(new Date(now).getUTCSeconds()*1000));}
+function wkRef(k,uid){return fb.fs.doc(fb.db,'weekly',k,'p',uid);}
+async function wkAddTitle(){
+  if(!cloudUser||!fb||!lbShow||(typeof devOn!=='undefined'&&devOn))return;
+  try{const k=weekKey(),r=wkRef(k,cloudUser.uid),d=await fb.fs.getDoc(r),wt=(d.exists()?(+d.data().wt||0):0)+1;
+    await fb.fs.setDoc(r,{name:user,wt:wt,at:Date.now(),level:lvInfo(acctXp).L});}catch(e){}
+}
+let wkChecked='';
+async function wkClaim(){
+  if(!cloudUser||!fb||(typeof devOn!=='undefined'&&devOn))return;
+  const k=prevWeekKey();if(wkChecked===k+cloudUser.uid)return;wkChecked=k+cloudUser.uid;
+  try{const F=fb.fs,mine=await F.getDoc(wkRef(k,cloudUser.uid));if(!mine.exists()||mine.data().paid||!(mine.data().wt>0))return;
+    const snap=await F.getDocs(F.query(F.collection(fb.db,'weekly',k,'p'),F.orderBy('wt','desc'),F.limit(10)));
+    const rows=snap.docs.map(x=>({id:x.id,wt:+x.data().wt||0,at:+x.data().at||0})).filter(x=>x.wt>0).sort((a,b)=>b.wt-a.wt||a.at-b.at);
+    const rank=rows.findIndex(x=>x.id===cloudUser.uid);if(rank<0||rank>2)return;
+    await F.updateDoc(wkRef(k,cloudUser.uid),{paid:true});
+    coins+=WK_PRIZE[rank];saveCfg();try{bumpCoins();}catch(e){}uiSnd('uiGood');
+    toast('You finished #'+(rank+1)+' on last week\'s tournament leaderboard! +'+WK_PRIZE[rank].toLocaleString()+' coins.');
+  }catch(e){wkChecked='';}
+}
+async function lbWeekly(my,l){
+  const F=fb.fs,k=weekKey(),snap=await F.getDocs(F.query(F.collection(fb.db,'weekly',k,'p'),F.orderBy('wt','desc'),F.limit(40))),onl=await onlineSet();
+  if(my!==lbBusy)return;
+  l.innerHTML='';const left=weekEndsIn(),dd=Math.floor(left/864e5),hh=Math.floor(left%864e5/36e5),mm=Math.floor(left%36e5/6e4);
+  const info=document.createElement('p');info.className='tag';info.textContent='Prizes: 1st 5,000 coins · 2nd 1,000 · 3rd 500. Resets Monday 12:00 AM Eastern ('+(dd?dd+'d ':'')+hh+'h '+mm+'m left). All-Star and Legend wins count.';l.appendChild(info);
+  const rows=snap.docs.map(x=>Object.assign({id:x.id},x.data())).filter(x=>(+x.wt||0)>0).sort((a,b)=>b.wt-a.wt||(a.at||0)-(b.at||0)).slice(0,25);
+  if(!rows.length){lbMsg('No tournament wins yet this week. Be the first!');l.prepend(info);return;}
+  let mineShown=false;
+  rows.forEach((x,n)=>{const me=!!(cloudUser&&x.id===cloudUser.uid);if(me)mineShown=true;const r=lbRow(n+1,String(x.name||'?').slice(0,12),x.level,Number(x.wt).toLocaleString()+(x.wt==1?' win':' wins')+(n<3?' · '+WK_PRIZE[n].toLocaleString()+'c':''),me,x.id,onl.has(x.id));l.appendChild(r);});
+  if(cloudUser&&!mineShown){const p=document.createElement('p');p.textContent=lbShow?'Win an All-Star or Legend tournament to get on this week\'s board.':'You are hidden from the leaderboards, so you can\'t win weekly prizes.';l.appendChild(p);}
+  else if(!cloudUser){const p=document.createElement('p');p.textContent='Log in to compete for weekly prizes.';l.appendChild(p);}
+}
 /* ===== leaderboards (needs cloud accounts) ===== */
 const LB_CATS=[
   {n:'Most XP',f:'xp',fmt:v=>Number(v).toLocaleString()+' XP'},
   {n:'Most money',f:'coins',fmt:v=>Number(v).toLocaleString()+' coins'},
-  {n:'Tournament wins',f:'titles',fmt:v=>Number(v).toLocaleString()+(Number(v)===1?' win':' wins')},
+  {n:'Tournament wins: this week',f:'weekly',fmt:v=>v},
+  {n:'Tournament wins: all time',f:'titles',fmt:v=>Number(v).toLocaleString()+(Number(v)===1?' win':' wins')},
   {n:'Quick match wins',f:'qmwins',fmt:v=>Number(v).toLocaleString()+(Number(v)===1?' win':' wins')}
 ];
 let lbCat=0,lbBusy=0;
@@ -4924,6 +4946,7 @@ async function lbOpen(i){
   lbMsg('Loading...');const my=++lbBusy,cat=LB_CATS[i];
   try{
     const f=await fbLoad();
+    if(cat.f==='weekly'){await lbWeekly(my,$('lbList'));return;}
     const q=f.fs.query(f.fs.collection(f.db,'leaderboard'),f.fs.orderBy(cat.f,'desc'),f.fs.limit(25));
     const snap=await f.fs.getDocs(q),onl=await onlineSet();
     if(my!==lbBusy)return;
@@ -4935,7 +4958,7 @@ async function lbOpen(i){
     else if(!cloudUser){const p=document.createElement('p');p.textContent='Log in to appear on the leaderboards.';l.appendChild(p);}
   }catch(e){if(my===lbBusy)lbMsg('Could not load the leaderboard. Check your connection and try again.');}
 }
-$('lbBtn').onclick=()=>{hideScreens();show('lb');lbOpen(lbCat);if(cloudUser)pushLb();};
+$('lbBtn').onclick=()=>{hideScreens();show('lb');lbOpen(lbCat);if(cloudUser){pushLb();wkClaim();}};
 $('lbBack').onclick=()=>{hideEl('lb');show('menu');};
 $('lbRefresh').onclick=()=>{soc.onlT=0;lbOpen(lbCat);};
 $('lbShowChk').onchange=()=>{
@@ -5859,9 +5882,13 @@ $('resumeBtn').onclick=togglePause;
 
 /* ================= input ================= */
 /* touch */
-function enableTouch(){$('touch').classList.remove('hide');}
+function setTouchUi(on){const el=$('touch');if(el.classList.contains('hide')!==on)return;el.classList.toggle('hide',!on);try{updateTouchLabels();}catch(e){}try{if(!$('coach').classList.contains('hide'))coachRender();}catch(e){}}
+function enableTouch(){setTouchUi(true);}
 if(window.matchMedia&&matchMedia('(pointer:coarse)').matches)enableTouch();
-addEventListener('touchstart',()=>enableTouch(),{once:true,passive:true});
+addEventListener('touchstart',()=>setTouchUi(true),{passive:true,capture:true});
+/* a real key press means keyboard controls: put the on-screen controls away */
+addEventListener('keydown',e=>{const tg=e.target;if(tg&&(tg.tagName==='INPUT'||tg.tagName==='TEXTAREA'||tg.tagName==='SELECT'))return;if(CODE2A[e.code])setTouchUi(false);},{capture:true});
+addEventListener('pointerdown',e=>{if(e.pointerType==='mouse')setTouchUi(false);},{capture:true});
 const joy=$('joy'),knob=$('knob');
 let joyId=null;
 function joyMove(e){
@@ -8969,49 +8996,8 @@ async function checkUpdate(){
   }catch(e){}
 }
 setTimeout(checkUpdate,4000);setInterval(checkUpdate,600000);
-/* ===== main menu poll ===== */
-const POLL_ID='next1',POLL_OPTS=['story','ranked'];
-let poll={mine:'',n:{story:0,ranked:0},t:0,busy:false};
-try{poll.mine=localStorage.getItem('sk_poll_'+POLL_ID)||'';}catch(e){}
-function pollRender(){
-  const tot=POLL_OPTS.reduce((a,k)=>a+(poll.n[k]||0),0);
-  document.querySelectorAll('#poll .pv').forEach(b=>{
-    const k=b.dataset.c,n=poll.n[k]||0,pc=tot?Math.round(n/tot*100):0,show=!!poll.mine||!cloudOn;
-    b.classList.toggle('mine',poll.mine===k);b.setAttribute('aria-pressed',poll.mine===k?'true':'false');
-    b.querySelector('.bar').style.width=(show&&tot?pc:0)+'%';
-    b.querySelector('em').textContent=!cloudOn?(poll.mine===k?'Your pick':''):(show?pc+'% ('+n+')':'');
-  });
-  $('pollMsg').textContent=!cloudOn?'Voting goes live once cloud accounts are on.':(!cloudUser?'Log in to vote. One vote per account.':(poll.mine?tot+(tot===1?' vote':' votes')+'. You can change your vote.':'Tap one to vote. Results show after you vote.'));
-}
-async function pollLoad(force){
-  pollRender();
-  if(!cloudOn||poll.busy)return;
-  if(!force&&Date.now()-poll.t<30000)return;
-  poll.busy=true;
-  try{
-    const f=await fbLoad(),F=f.fs,col=F.collection(f.db,'votes',POLL_ID,'v');
-    const res=await Promise.all(POLL_OPTS.map(k=>F.getCountFromServer(F.query(col,F.where('c','==',k)))));
-    POLL_OPTS.forEach((k,i)=>{poll.n[k]=res[i].data().count||0;});
-    if(cloudUser){const s=await F.getDoc(F.doc(f.db,'votes',POLL_ID,'v',cloudUser.uid));poll.mine=s.exists()?s.data().c:'';try{localStorage.setItem('sk_poll_'+POLL_ID,poll.mine);}catch(e){}}
-    poll.t=Date.now();
-  }catch(e){}
-  poll.busy=false;pollRender();
-}
-async function pollVote(k){
-  if(POLL_OPTS.indexOf(k)<0)return;
-  if(!cloudOn){poll.mine=k;try{localStorage.setItem('sk_poll_'+POLL_ID,k);}catch(e){}pollRender();return;}
-  if(!cloudUser){toast('Log in to vote. One vote per account.');return;}
-  if(poll.mine===k)return;
-  const prev=poll.mine;
-  if(prev)poll.n[prev]=Math.max(0,(poll.n[prev]||0)-1);poll.n[k]=(poll.n[k]||0)+1;poll.mine=k;pollRender();
-  try{
-    const F=fb.fs;await F.setDoc(F.doc(fb.db,'votes',POLL_ID,'v',cloudUser.uid),{c:k,t:F.serverTimestamp()});
-    try{localStorage.setItem('sk_poll_'+POLL_ID,k);}catch(e){}
-    uiSnd('uiGood');setTimeout(()=>pollLoad(true),600);
-  }catch(e){poll.mine=prev;poll.n[k]=Math.max(0,poll.n[k]-1);if(prev)poll.n[prev]++;pollRender();toast('Could not save your vote. Try again.');}
-}
-document.querySelectorAll('#poll .pv').forEach(b=>b.onclick=()=>pollVote(b.dataset.c));
-pollRender();
+/* the main menu poll was removed in 2.2.8 */
+let poll={mine:'',t:0};function pollLoad(){}
 /* ===== player profiles ===== */
 function pushProfile(){
   if(!cloudUser||!fb||(typeof devOn!=='undefined'&&devOn))return Promise.resolve();
