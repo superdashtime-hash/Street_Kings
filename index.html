@@ -4640,7 +4640,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.2.11';
+const GAME_VER='2.2.12';
 const DEV_VER='2.2.8';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -4791,7 +4791,10 @@ function watchSave(uid){
   },()=>{});
 }
 function flushCloud(){if(cloudUser&&fb&&pushT){clearTimeout(pushT);pushT=0;pushCloud(true);}}
-document.addEventListener('visibilitychange',()=>{if(document.hidden)flushCloud();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden)flushCloud();
+  /* tell the other player we switched apps, so they wait instead of dropping us; on return, check the link at once */
+  try{if(pvp&&dc&&dc.readyState==='open')dc.send(JSON.stringify({t:'away',on:document.hidden}));}catch(e){}
+  if(!document.hidden&&pvp){netLastRx=Math.max(netLastRx,performance.now()-5000);try{if(peer&&peer.disconnected&&!peer.destroyed)peer.reconnect();}catch(e){}}});
 addEventListener('pagehide',flushCloud);
 async function cloudInit(){
   if(!cloudOn)return;
@@ -5165,7 +5168,8 @@ let pc=null,dc=null,snapT=0,sendT=0,gHello=null;
 const sfxRaw=Object.assign({},sfx);
 ['bounce','swish','rim','pass','steal','buzzer','slam','cheer','squeak','release','block','whistle','power','tick'].forEach(k=>{sfx[k]=function(){sfxRaw[k].apply(null,arguments);if(pvp&&role==='host')evq.push(['s',k,[].slice.call(arguments)]);};});
 const ICE_SERVERS=[
-  {urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun.cloudflare.com:3478']},
+  {urls:['stun:stun.l.google.com:19302','stun:stun1.l.google.com:19302','stun:stun2.l.google.com:19302','stun:stun3.l.google.com:19302','stun:stun4.l.google.com:19302']},
+  {urls:['stun:stun.cloudflare.com:3478','stun:global.stun.twilio.com:3478']},
   {urls:['turn:eu-0.turn.peerjs.com:3478','turn:us-0.turn.peerjs.com:3478'],username:'peerjs',credential:'peerjsp'},
   {urls:['turn:openrelay.metered.ca:80','turn:openrelay.metered.ca:443','turn:openrelay.metered.ca:443?transport=tcp'],username:'openrelayproject',credential:'openrelayproject'}
 ];
@@ -5173,8 +5177,10 @@ const ICE_SERVERS=[
    Free accounts: Metered (metered.ca) or Cloudflare Calls. Paste them here, for example:
    const TURN_EXTRA=[{urls:['turn:YOUR.relay.metered.ca:80','turn:YOUR.relay.metered.ca:443?transport=tcp'],username:'...',credential:'...'}]; */
 const TURN_EXTRA=[];
-const ICE={iceServers:ICE_SERVERS.concat(TURN_EXTRA)};
-function mkPeer(id){const p=new Peer(id,{debug:0,config:{iceServers:ICE_SERVERS.concat(TURN_EXTRA)}});let tries=0;p.on('disconnected',()=>{if(p.destroyed||tries>=6)return;tries++;setTimeout(()=>{try{if(!p.destroyed&&p.disconnected)p.reconnect();}catch(e){}},700*tries);});p.on('open',()=>{tries=0;});return p;}
+const ICE={iceServers:ICE_SERVERS.concat(TURN_EXTRA),iceCandidatePoolSize:4,bundlePolicy:'max-bundle'};
+function mkPeer(id){const p=new Peer(id,{debug:0,pingInterval:4000,config:ICE});let tries=0;const again=()=>{if(p.destroyed||!p.disconnected)return;tries++;setTimeout(()=>{try{if(!p.destroyed&&p.disconnected)p.reconnect();}catch(e){}if(p.disconnected&&!p.destroyed&&tries<40)again();},Math.min(8000,600*tries));};p.on('disconnected',again);p.on('open',()=>{tries=0;});return p;}
+addEventListener('online',()=>{try{if(peer&&peer.disconnected&&!peer.destroyed)peer.reconnect();}catch(e){}});
+let netAway=false;
 let netRtt=0,netJit=0,netLastRx=0,netLost=false,netLostT=0,hostPid='',statsT=0,pingT=0;
 function startPing(){
   clearInterval(pingT);if(role==='spec')return;
@@ -5195,7 +5201,7 @@ function drawPing(){
   if(netPath){ctx.fillStyle=netPath==='Direct'?'#3dffa8':'#ff9a3d';ctx.fillText(netPath,104,28);}
 }
 function netConnLost(){
-  if(netLost)return;
+  if(netLost)return;netAway=false;
   netLost=true;netLostT=0;
   $('netLostTxt').textContent=role==='host'?'Your opponent lost connection. Waiting for them to come back...':'Connection lost. Trying to reconnect...';
   show('netLostBar');
@@ -5205,12 +5211,13 @@ function netConnLost(){
 }
 function netReconnect(n){
   if(!netLost||role!=='guest')return;
-  if(n>=8){netLost=false;hideEl('netLostBar');netLeave('Could not reconnect to the match.');return;}
+  if(n>=14){netLost=false;hideEl('netLostBar');netLeave('Could not reconnect to the match.');return;}
+  $('netLostTxt').textContent='Connection lost. Reconnecting (try '+(n+1)+')...';
   const rp=mkPeer(undefined);let done=false;
-  const fail=()=>{if(done)return;done=true;try{rp.destroy();}catch(e){}setTimeout(()=>netReconnect(n+1),700);};
+  const fail=()=>{if(done)return;done=true;try{rp.destroy();}catch(e){}setTimeout(()=>netReconnect(n+1),Math.min(4000,600+n*400));};
   rp.on('error',fail);
   rp.on('open',()=>{
-    const c=rp.connect(hostPid,{reliable:true}),w=wrapConn(c),to=setTimeout(fail,5000);
+    const c=rp.connect(hostPid,{reliable:true}),w=wrapConn(c),to=setTimeout(fail,n<3?5000:8000);
     c.on('open',()=>{
       if(done||!netLost)return;done=true;clearTimeout(to);
       try{if(peer&&peer!==rp)peer.destroy();}catch(e){}
@@ -5219,9 +5226,9 @@ function netReconnect(n){
   });
 }
 function netWatch(dt){
-  if(!pvp||(role!=='host'&&role!=='guest')||!peer||pc||resultShown||phase==='over')return;
-  if(netLost){netLostT+=dt;if(role==='host'&&netLostT>25){netLost=false;hideEl('netLostBar');netLeave('Your opponent did not come back.');}return;}
-  if(netLastRx&&performance.now()-netLastRx>7000)netConnLost();
+  if(!pvp||(role!=='host'&&role!=='guest')||!peer||pc||resultShown||phase==='over'||document.hidden)return;
+  if(netLost){netLostT+=dt;if(role==='host'&&netLostT>(netAway?75:45)){netLost=false;hideEl('netLostBar');netLeave('Your opponent did not come back.');}return;}
+  if(netLastRx&&performance.now()-netLastRx>(netAway?20000:7000))netConnLost();
 }
 const enc=o=>btoa(unescape(encodeURIComponent(JSON.stringify(o))));
 const dec=t=>JSON.parse(decodeURIComponent(escape(atob(t.trim()))));
@@ -5293,6 +5300,7 @@ function netMsg(m){
   if(m.t==='pz'&&role==='guest'){pauseReq=false;$('toast').classList.add('hide');if(m.on){guestPaused=true;showPauseMenu();}else{guestPaused=false;hideEl('pause');hideEl('settings');}return;}
   if(m.t==='ff'){const me=pvp&&role==='guest'?1:0;forceW=me;hideEl('pause');hideEl('settings');guestPaused=false;pauseReq=false;phase='over';resultShown=false;showResult();return;}
   if(m.t==='pi'){try{dc.send(JSON.stringify({t:'po',ts:m.ts}));}catch(e){}return;}
+  if(m.t==='away'){netAway=!!m.on;if(netAway)toast('Your opponent switched away from the game. Waiting for them...');return;}
   if(m.t==='po'){pingIn(m.ts);return;}
   if(m.t==='resume'&&role==='host'){netLost=false;hideEl('netLostBar');netLostT=0;return;}
   if(m.t==='hello'){gHello=m;verCheck(m.v);sendLobby();if(qmAuto&&role==='host'){netStat('Opponent found: '+m.name+'. Starting...');$('netStart').classList.add('hide');setTimeout(hostStart,500);}else{netStat('Friend connected: '+m.name+'. Press Start match.');$('netStart').classList.remove('hide');}}
@@ -5531,11 +5539,11 @@ async function joinRoom(code,opt){
     if(opt.qm){qmGame=true;}
     setTimeout(()=>{
       if(peer!==pr||!dc||dc.readyState==='open')return;
-      if(!opt.retry){netStat('Still connecting... trying again.');joinRoom(code,Object.assign({},opt,{retry:true}));}
+      const r=(opt.retry||0);if(r<2){netStat('Still connecting... trying again ('+(r+2)+' of 3).');joinRoom(code,Object.assign({},opt,{retry:r+1}));}
       else netStat(opt.qm?'Could not connect to that opponent. Press Find match to try again.':'Could not reach that room. Check the code and try again.');
-    },opt.retry?10000:7000);
+    },[7000,10000,14000][opt.retry||0]);
   });
-  pr.on('error',e=>netStat(e&&e.type==='peer-unavailable'?'No room with that code. Check it and try again.':'Could not connect'+(e&&e.type?' ('+e.type+')':'')+'. Try manual codes below.'));
+  pr.on('error',e=>{if(e&&(e.type==='network'||e.type==='server-error'||e.type==='socket-error')&&(opt.retry||0)<2&&peer===pr){setTimeout(()=>{if(peer===pr)joinRoom(code,Object.assign({},opt,{retry:(opt.retry||0)+1}));},1200);return;}netStat(e&&e.type==='peer-unavailable'?'No room with that code. Check it and try again.':'Could not connect'+(e&&e.type?' ('+e.type+')':'')+'. Try manual codes below.');});
 }
 function copyText(t){
   try{navigator.clipboard.writeText(t).then(()=>netStat('Copied.'),()=>netStat('Could not copy. Select it and copy by hand.'));}
