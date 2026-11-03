@@ -4087,8 +4087,8 @@ function draw(){
 }
 
 /* ================= UI ================= */
-var grindNudged='';
-function grindNudge(){try{if(!grindOn()||$('menu').classList.contains('hide')||phase!=='menu')return;if(!$('devlog').classList.contains('hide')||($('tut')&&!$('tut').classList.contains('hide')))return;const t=dayKey();if(grindNudged===t||stkState().claimed)return;grindNudged=t;dailyOpen();}catch(e){}}
+var grindNudged='',grindReady=false;
+function grindNudge(){try{if(!grindOn()||$('menu').classList.contains('hide')||phase!=='menu')return;if(!$('devlog').classList.contains('hide')||($('tut')&&!$('tut').classList.contains('hide')))return;if(!grindReady)return;const t=dayKey();let seen='';try{seen=localStorage.getItem('sk_dpop')||'';}catch(e){}if(grindNudged===t||seen===t||stkState().claimed)return;grindNudged=t;try{localStorage.setItem('sk_dpop',t);}catch(e){}dailyOpen();}catch(e){}}
 function show(id){$(id).classList.remove('hide');if(id==='menu'){setTimeout(grindNudge,700);setTimeout(bumpCoins,280);if(typeof pollLoad==='function')pollLoad();}}
 function hideEl(id){$(id).classList.add('hide');}
 function showResult(){
@@ -4670,7 +4670,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.3.1';
+const GAME_VER='2.3.2';
 const DEV_VER='2.3.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -4679,10 +4679,10 @@ function tutRender(){
   $('tutNext').textContent=last?"Let's play":'Next';
 }
 function tutOpen(){tutI=0;tutRender();show('tut');$('tutNext').focus();}
-function tutClose(){try{localStorage.setItem('sk_tut','1');}catch(e){}hideEl('tut');setTimeout(grindNudge,500);}
+function tutClose(){try{localStorage.setItem('sk_tut','1');}catch(e){}hideEl('tut');grindReady=true;setTimeout(grindNudge,500);}
 function maybeTutorial(){
   if(tutChecked)return;tutChecked=true;
-  if(/#room=/.test(location.hash))return;
+  if(/#room=/.test(location.hash)){grindReady=true;return;}
   let seen=false;try{seen=!!localStorage.getItem('sk_tut');}catch(e){}
   if(!user&&!seen){try{localStorage.setItem('sk_dev',DEV_VER);}catch(e){}tutOpen();}else startupPopups();
 }
@@ -6214,7 +6214,7 @@ function bumpCoins(){
 const SCREENS=['inv','daily','menu','play','offline','qp','tp','friends','dm','story','cc','upg'];
 function hideScreens(){SCREENS.forEach(id=>hideEl(id));}
 function showDevlog(){show('devlog');$('devOk').focus();}
-function startupPopups(){let v='';try{v=localStorage.getItem('sk_dev')||'';}catch(e){}if(v!==DEV_VER)showDevlog();}
+function startupPopups(){grindReady=true;let v='';try{v=localStorage.getItem('sk_dev')||'';}catch(e){}if(v!==DEV_VER)showDevlog();else setTimeout(grindNudge,600);}
 $('devOk').onclick=()=>{try{localStorage.setItem('sk_dev',DEV_VER);}catch(e){}hideEl('devlog');setTimeout(grindNudge,500);};
 $('newsBtn').onclick=showDevlog;
 function go(id){hideScreens();hideEl('net');show(id);}
