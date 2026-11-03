@@ -801,14 +801,15 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     <div class="row"><b>Game length</b><div class="seg" id="chLen"><button data-v="60">1:00</button><button data-v="120">2:00</button><button data-v="240">4:00</button><button data-v="360">6:00</button></div></div>
     <div class="row"><button class="go" id="chGo">Challenge</button><button class="go back" id="chCancel">Cancel</button></div></div></div>
 
-  <div id="devlog" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(24px,5cqw,66px)">WHAT'S NEW</h1><p class="tag">Update 2.3</p>
+  <div id="devlog" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(24px,5cqw,66px)">WHAT'S NEW</h1><p class="tag">Update 2.3.1</p>
     <ul class="dl">
+      <li><b>New code: STORYMODEBEFOREGTA6TRUST</b><span>Redeem it for 2,000 coins and the Sunset Coast Cap, which every player can wear. Codes is now a link next to What's new, under the menu.</span></li>
       <li><b>Daily challenges</b><span>Three new challenges every day at midnight Eastern. Each one pays coins, and finishing all three pays a bonus. Open Daily on the main menu.</span></li>
       <li><b>Login streak</b><span>Claim coins every day you play. The rewards grow each day, and day 7 unlocks the Streak Flame shoes for every player. Miss a day and the streak starts over.</span></li>
       <li><b>Player mastery</b><span>Every player levels up from 1 to 10 as you play with them. Points, rebounds, steals, blocks, dunks and wins all earn mastery XP. See it on the Mastery tab of any profile.</span></li>
       <li><b>Signature gear</b><span>Mastery unlocks a five-piece set for each player, made from their own story: headwear, arm gear, leg gear, jersey trim and signature shoes, plus Ice, Neon, Shadow and Gold shoes for everyone. Equip it from My players (Looks) or the Mastery tab. Your gear shows up in your games.</span></li>
       <li><b>Pause option</b><span>Settings, Controls: choose whether the game pauses when you click away or switch tabs.</span></li>
-      <li><b>Codes moved</b><span>Codes is now a link next to What's new, under the menu. A new code is out there worth 2,000 coins and a cap every player can wear.</span></li>
+      <li><b>Hats fit your hair</b><span>Caps now sit on top of any hairstyle: afros, locks, ponytails and curls show under the brim, and tall styles tuck in.</span></li>
     </ul>
     <div class="row"><button class="go" id="devOk">Got it</button></div></div></div>
 
@@ -2615,10 +2616,11 @@ function myTeamIdx(){return (typeof pvp!=='undefined'&&pvp&&role==='guest')?1:0;
 function lookForPlayer(p){if(!p||!p.name||!lookOn())return null;if(typeof custom!=='undefined'&&custom&&p.name===custom.name)return lookOf('YOU');return p.team===myTeamIdx()?lookOf(p.name):lookBase(p.name);}
 /* ---- in-game head: hair, headwear and face gear on the small court figures ---- */
 function lkHead(c,L,hx,hy,r,d,skin,acc,T,p){
-  const hc=L.hc||'#17171c',st=L.hair,P2=Math.PI*2;
+  const hk=!!L.hat,hc=L.hc||'#17171c',st=(hk&&(L.hair==='hood'||L.hair==='beanie'))?'short':L.hair,hv=hk&&['afro','puff','curly','twists','bun'].indexOf(st)>=0,P2=Math.PI*2;
   const cap=(k,a)=>{c.globalAlpha=a==null?1:a;c.fillStyle=hc;c.beginPath();c.arc(hx-d*r*0.1,hy-r*0.1,r*(k||1.02),Math.PI,P2);c.fill();c.globalAlpha=1;};
   const circ=(x,y,rr,col)=>{c.fillStyle=col;c.beginPath();c.arc(x,y,rr,0,P2);c.fill();};
   /* behind the head */
+  if(hk){c.save();c.beginPath();if(hv)c.ellipse(hx,hy-r*0.05,r*1.9,r*1.25,0,0,Math.PI*2);else c.rect(hx-r*5,hy-r*0.3,r*10,r*7);c.clip();}
   c.lineCap='round';
   if(st==='puff')circ(hx-d*r*0.28,hy-r*0.42,r*1.2,hc);
   else if(st==='afro'){for(let i=0;i<9;i++){const a=Math.PI*(0.9+i*0.15);circ(hx-d*r*0.2+Math.cos(a)*r*1.15*d,hy-r*0.5+Math.sin(a)*r*1.0,r*0.55,hc);}circ(hx-d*r*0.22,hy-r*0.5,r*1.3,hc);}
@@ -2629,9 +2631,11 @@ function lkHead(c,L,hx,hy,r,d,skin,acc,T,p){
   else if(st==='bun')circ(hx-d*r*0.72,hy-r*0.88,r*0.4,hc);
   else if(st==='buns'){circ(hx-d*r*0.6,hy-r*0.98,r*0.46,hc);circ(hx+d*r*0.3,hy-r*1.08,r*0.46,hc);}
   else if(st==='locksUp'){c.strokeStyle=hc;c.lineWidth=r*0.24;for(let i=0;i<4;i++){const sw=Math.sin(T*3+i)*r*0.06;c.beginPath();c.moveTo(hx-d*r*0.15,hy-r*0.9);c.quadraticCurveTo(hx-d*r*(0.5+0.15*i),hy-r*(1.9-0.15*i),hx-d*r*(1.25+0.2*i)+sw,hy-r*(0.2-0.25*i));c.stroke();if(L.tip)circ(hx-d*r*(1.25+0.2*i)+sw,hy-r*(0.2-0.25*i),r*0.16,L.tip);}}
+  if(hk)c.restore();
   /* the head */
   circ(hx,hy,r,skin);
   /* on top */
+  if(hk){c.save();c.beginPath();if(hv)c.ellipse(hx,hy-r*0.05,r*1.9,r*1.25,0,0,Math.PI*2);else c.rect(hx-r*5,hy-r*0.3,r*10,r*7);c.clip();}
   if(st==='short'||st==='pony'||st==='bun'||st==='buns'||st==='locks'||st==='locksUp'||st==='puff')cap();
   else if(st==='afro'){cap(1.08);for(let i=0;i<6;i++){const a=Math.PI*(1.12+i*0.15);circ(hx-d*r*0.12+Math.cos(a)*r*1.02*d,hy-r*0.12+Math.sin(a)*r*0.98,r*0.32,hc);}}
   else if(st==='part'){cap();circ(hx+d*r*0.42,hy-r*0.82,r*0.38,hc);c.strokeStyle=skin;c.lineWidth=r*0.09;c.beginPath();c.moveTo(hx-d*r*0.05,hy-r*1.08);c.lineTo(hx-d*r*0.55,hy-r*0.72);c.stroke();}
@@ -2652,6 +2656,7 @@ function lkHead(c,L,hx,hy,r,d,skin,acc,T,p){
   else if(st==='beanie'){c.fillStyle=hc;c.beginPath();c.ellipse(hx-d*r*0.06,hy-r*0.32,r*1.1,r*1.12,0,Math.PI,P2);c.fill();c.fillStyle=shade(hc,-18);c.fillRect(hx-r*1.1-d*r*0.06,hy-r*0.5,r*2.2,r*0.36);if(L.stripe){c.fillStyle=L.stripe;c.fillRect(hx-r*1.06-d*r*0.06,hy-r*0.95,r*2.12,r*0.14);}}
   else if(st==='hood'){const A=a=>d>0?a:Math.PI-a,D=Math.PI/180;c.strokeStyle=L.hood||'#2b2d3a';c.lineWidth=r*0.46;c.beginPath();c.arc(hx-d*r*0.12,hy-r*0.02,r*1.12,A(100*D),A(330*D),d<0);c.stroke();
     if(L.trim){c.strokeStyle=L.trim;c.lineWidth=r*0.1;c.beginPath();c.arc(hx-d*r*0.12,hy-r*0.02,r*0.92,A(200*D),A(325*D),d<0);c.stroke();}}
+  if(hk)c.restore();
   if(L.hat){c.fillStyle=L.hat;c.beginPath();c.arc(hx,hy-r*0.25,r*1.1,Math.PI,P2);c.fill();if(L.hatBand){c.fillStyle=L.hatBand;c.fillRect(hx-r*1.03,hy-r*0.62,r*2.06,r*0.17);if(L.hatBand2){c.fillStyle=L.hatBand2;c.fillRect(hx-r*0.93,hy-r*0.8,r*1.86,r*0.1);}}c.fillStyle=L.hatBrim||L.hat;c.fillRect(hx-r*1.4+d*r*0.1,hy-r*0.32,r*2.8,r*0.24);c.fillStyle='rgba(255,255,255,.35)';c.fillRect(hx-r*0.08,hy-r*1.3,r*0.16,r*1.0);}
   if(L.band&&st!=='beanie'&&st!=='hood'&&!L.hat){c.fillStyle=L.band==='acc'?acc:L.band;c.fillRect(hx-r,hy-r*0.62,r*2,r*0.3);}
   if(L.gray){c.fillStyle=L.gray;c.beginPath();c.ellipse(hx-d*r*0.3,hy-r*0.35,r*0.28,r*0.2,0,0,P2);c.fill();}
@@ -2770,14 +2775,15 @@ function circ(g,x,y,r,col){g.fillStyle=col;g.beginPath();g.arc(x,y,r,0,P2);g.fil
 function ell(g,x,y,rx,ry,rot,col){g.fillStyle=col;g.beginPath();g.ellipse(x,y,Math.max(0.1,rx),Math.max(0.1,ry),rot||0,0,P2);g.fill();}
 /* ---------- the head ---------- */
 function head(g,L,J,r,fd,T,pose,eyes,lvl){
-  const hc=L.hc||'#17171c',st=L.hair,skin=J.skin,dk=sh(skin,-28),X=v=>fd*v,LV=lvl==null?1:lvl;
+  const hk=!!L.hat,hc=L.hc||'#17171c',st=(hk&&(L.hair==='hood'||L.hair==='beanie'))?'short':L.hair,hv=hk&&['afro','puff','curly','twists','bun'].indexOf(st)>=0,skin=J.skin,dk=sh(skin,-28),X=v=>fd*v,LV=lvl==null?1:lvl;
   const hexA=(c,a)=>{const n=parseInt(c.slice(1),16);return 'rgba('+(n>>16)+','+((n>>8)&255)+','+(n&255)+','+a+')';};
   const capP=(k)=>{k=k||1.04;const A=a=>fd>0?a:Math.PI-a;g.beginPath();g.moveTo(X(r*0.8),-r*0.55);g.arc(X(-r*0.06),-r*0.06,r*k,A(-0.62),A(-3.5),fd>0);
     g.quadraticCurveTo(X(-r*0.82),r*0.42,X(-r*0.42),r*0.18);g.quadraticCurveTo(X(-r*0.22),-r*0.22,X(r*0.28),-r*0.42);g.closePath();};
   const cap=(k,a)=>{g.globalAlpha=a==null?1:a;g.fillStyle=hc;capP(k);g.fill();g.globalAlpha=1;if(a==null){g.fillStyle='rgba(255,255,255,.1)';g.beginPath();g.ellipse(X(-r*0.15),-r*0.78,r*0.5,r*0.14,X(0.2),0,P2);g.fill();}};
   const pol=(a,k)=>{const b=fd>0?a:Math.PI-a;return [Math.cos(b)*r*k,Math.sin(b)*r*k];};
   g.lineCap='round';g.lineJoin='round';
-  /* behind */
+  /* behind (under a hat, only the hair below the cap shows) */
+  if(hk){g.save();g.beginPath();if(hv)g.ellipse(0,-r*0.05,r*1.9,r*1.25,0,0,Math.PI*2);else g.rect(-r*5,-r*0.3,r*10,r*7);g.clip();}
   if(st==='puff'){circ(g,X(-r*0.3),-r*0.42,r*1.24,hc);circ(g,X(-r*0.45),-r*0.75,r*0.4,'rgba(255,255,255,.06)');}
   else if(st==='afro'){for(let i=0;i<11;i++){const a=Math.PI*(0.82+i*0.135);circ(g,X(-r*0.22+Math.cos(a)*r*1.2),-r*0.5+Math.sin(a)*r*1.05,r*0.52,hc);}circ(g,X(-r*0.22),-r*0.5,r*1.38,hc);}
   else if(st==='locks'){g.strokeStyle=hc;for(let i=0;i<7;i++){const sw=Math.sin(T*2.5+i)*r*0.06;g.lineWidth=r*0.24;g.beginPath();g.moveTo(X(-r*(0.05+0.15*i)),-r*0.5);g.quadraticCurveTo(X(-r*(0.5+0.15*i)),r*0.2,X(-r*(0.45+0.18*i))+sw,r*(1.35+0.1*(i%3)));g.stroke();}}
@@ -2787,12 +2793,14 @@ function head(g,L,J,r,fd,T,pose,eyes,lvl){
   else if(st==='bun'){circ(g,X(-r*0.74),-r*0.9,r*0.42,hc);g.strokeStyle=L.band||'#ff4d1f';g.lineWidth=r*0.1;g.beginPath();g.arc(X(-r*0.6),-r*0.78,r*0.22,0,P2);g.stroke();}
   else if(st==='buns'){circ(g,X(-r*0.62),-r*1.0,r*0.48,hc);circ(g,X(r*0.28),-r*1.1,r*0.48,hc);}
   else if(st==='locksUp'){g.strokeStyle=hc;g.lineWidth=r*0.24;for(let i=0;i<5;i++){const sw=Math.sin(T*2.6+i)*r*0.05,ex=X(-r*(1.3+0.22*i))+sw,ey=-r*(0.3-0.28*i);g.beginPath();g.moveTo(X(-r*0.15),-r*0.92);g.quadraticCurveTo(X(-r*(0.5+0.15*i)),-r*(2.0-0.12*i),ex,ey);g.stroke();if(L.tip)circ(g,ex,ey,r*0.15,L.tip);}g.fillStyle=L.tip||hc;g.fillRect(X(-r*0.32)-r*0.14,-r*1.22,r*0.28,r*0.18);}
+  if(hk)g.restore();
   /* neck shadow, skull, jaw, nose, ear */
   circ(g,0,0,r,skin);ell(g,X(r*0.26),r*0.42,r*0.68,r*0.56,0,skin);
   g.fillStyle=skin;g.beginPath();g.moveTo(X(r*0.9),-r*0.08);g.lineTo(X(r*1.14),r*0.24);g.lineTo(X(r*0.9),r*0.34);g.fill();
   g.fillStyle='rgba(0,0,0,.12)';g.beginPath();g.ellipse(X(-r*0.35),r*0.15,r*0.55,r*0.75,0,fd>0?Math.PI*0.5:Math.PI*-0.5,fd>0?Math.PI*1.5:Math.PI*0.5);g.fill();
   ell(g,X(-r*0.12),r*0.12,r*0.18,r*0.25,0,dk);ell(g,X(-r*0.1),r*0.12,r*0.08,r*0.13,0,sh(skin,-45));
   /* hair on top */
+  if(hk){g.save();g.beginPath();if(hv)g.ellipse(0,-r*0.05,r*1.9,r*1.25,0,0,Math.PI*2);else g.rect(-r*5,-r*0.3,r*10,r*7);g.clip();}
   if(['short','pony','bun','buns','locks','locksUp','puff'].indexOf(st)>=0)cap();
   else if(st==='afro'){cap(1.08,1);for(let i=0;i<8;i++){const a=Math.PI*(1.1+i*0.11);circ(g,X(-r*0.12+Math.cos(a)*r*1.04),-r*0.12+Math.sin(a)*r*1.0,r*0.3,hc);}}
   else if(st==='part'){cap();circ(g,X(r*0.45),-r*0.82,r*0.4,hc);g.strokeStyle=skin;g.lineWidth=r*0.07;g.beginPath();g.moveTo(X(-r*0.02),-r*1.08);g.lineTo(X(-r*0.6),-r*0.74);g.stroke();}
@@ -2817,6 +2825,7 @@ function head(g,L,J,r,fd,T,pose,eyes,lvl){
     g.fillStyle=sh(hc,-20);g.beginPath();g.roundRect(X(-r*0.06)-r*1.14,-r*0.52,r*2.28,r*0.4,r*0.12);g.fill();if(L.stripe){g.fillStyle=L.stripe;g.fillRect(X(-r*0.06)-r*1.0,-r*1.0,r*2.0,r*0.14);}}
   else if(st==='hood'){const A=a=>fd>0?a:Math.PI-a;g.strokeStyle=L.hood||'#2b2d3a';g.lineWidth=r*0.5;g.beginPath();g.arc(X(-r*0.12),-r*0.02,r*1.14,A(100*D),A(332*D),fd<0);g.stroke();
     g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=r*0.12;g.beginPath();g.arc(X(-r*0.12),-r*0.02,r*0.9,A(110*D),A(325*D),fd<0);g.stroke();if(L.trim){g.strokeStyle=L.trim;g.lineWidth=r*0.07;g.beginPath();g.arc(X(-r*0.12),-r*0.02,r*1.36,A(150*D),A(320*D),fd<0);g.stroke();}}
+  if(hk)g.restore();
   if(L.hat){g.fillStyle=L.hat;g.beginPath();g.arc(0,-r*0.25,r*1.12,Math.PI,P2);g.fill();if(L.hatBand){g.fillStyle=L.hatBand;g.fillRect(-r*1.05,-r*0.62,r*2.1,r*0.17);if(L.hatBand2){g.fillStyle=L.hatBand2;g.fillRect(-r*0.95,-r*0.8,r*1.9,r*0.1);}}g.fillStyle=L.hatBrim||L.hat;g.beginPath();g.roundRect(X(r*0.1)-r*1.45,-r*0.34,r*2.9,r*0.26,r*0.1);g.fill();g.fillStyle='rgba(255,255,255,.35)';g.fillRect(-r*0.09,-r*1.33,r*0.18,r*1.0);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(X(r*0.1)-r*1.45,-r*0.14,r*2.9,r*0.06);}
   if(L.band&&st!=='beanie'&&st!=='hood'&&!L.hat){g.fillStyle=L.band==='acc'?J.jt:L.band;g.beginPath();g.roundRect(-r*1.02,-r*0.64,r*2.04,r*0.3,r*0.08);g.fill();g.fillStyle='rgba(255,255,255,.25)';g.fillRect(-r*1.0,-r*0.62,r*2.0,r*0.06);}
   if(L.gray){g.fillStyle=L.gray;g.beginPath();g.ellipse(X(-r*0.3),-r*0.36,r*0.3,r*0.2,0,0,P2);g.fill();g.beginPath();g.ellipse(X(r*0.25),-r*0.78,r*0.18,r*0.1,0,0,P2);g.fill();}
@@ -4661,8 +4670,8 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.3.0';
-const DEV_VER='2.3';let tutI=0,tutChecked=false;
+const GAME_VER='2.3.1';
+const DEV_VER='2.3.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
   $('tutTitle').textContent=s.t;$('tutBody').innerHTML=tok(s.b);$('tutStep').textContent='Step '+(tutI+1)+' of '+TUT.length;
@@ -5091,7 +5100,7 @@ function cosHas(n,it){if(!it)return false;if(it.uni)return cosU.indexOf(it.uni)>
 function cosUnlocksAt(n,l){return cosItems(n).filter(it=>it.lv===l).map(it=>it.name);}
 function cosApply(n,L){
   if(!grindOn())return L;const c=cos[n];if(!c)return L;let o=null;
-  for(const s of ['shoes','legs','arms','head']){if(!c[s])continue;const it=cosItem(n,c[s]);if(it&&it.set&&cosHas(n,it)){o=o||Object.assign({},L);Object.assign(o,it.set);if(it.uni&&it.set.hat&&['hood','beanie','durag'].indexOf(o.hair)>=0)o.hair='buzz';}}
+  for(const s of ['shoes','legs','arms','head']){if(!c[s])continue;const it=cosItem(n,c[s]);if(it&&it.set&&cosHas(n,it)){o=o||Object.assign({},L);Object.assign(o,it.set);}}
   return o||L;
 }
 function cosTrim(n){if(!grindOn())return null;const c=cos[n];if(!c||!c.kit)return null;const it=cosItem(n,c.kit);return it&&it.trim&&cosHas(n,it)?it.trim:null;}
