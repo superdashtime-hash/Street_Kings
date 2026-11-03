@@ -143,6 +143,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 .mbtn small{color:var(--muted);font-size:clamp(9px,1.15cqw,15px);text-align:right;max-width:55%}
 .mbtn:hover,.mbtn:focus-visible{transform:translateX(.4cqw);border-color:var(--cyan);background:linear-gradient(95deg,rgba(23,214,255,.3),rgba(255,255,255,.08));outline:none}
 .mbtn.danger{border-color:rgba(255,90,90,.5)}.mbtn.danger span{color:#ff8a8a}
+.linkrow{display:flex;gap:1.6em;justify-content:center}.linkrow .linkbtn{margin-top:.4cqw}
 .linkbtn{background:none;border:0;color:var(--muted);font-family:inherit;font-weight:700;font-size:clamp(10px,1.3cqw,17px);cursor:pointer;text-decoration:underline;margin-top:.4cqw}
 .scr{width:min(86%,50cqw)}.scr.wide{width:min(90%,62cqw)}
 .go.back{background:var(--ink)}
@@ -412,6 +413,18 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 .attr.upg button{height:1.8em;padding:0 .6em}
 
 /* ===== player profiles ===== */
+
+/* ===== My players ===== */
+.invgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(15cqw,1fr));gap:.8cqw;margin:.6cqw 0;text-align:left}
+@media (max-width:700px){.invgrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}}
+.invc.start{border-color:var(--gold);box-shadow:0 0 0 1px rgba(255,209,102,.4)}
+.invc.mine{border-color:#3dffa8}
+.invc .row{justify-content:flex-start;gap:.4em;flex-wrap:wrap;margin:0}
+.invc .sbtn{font-size:clamp(10px,1.05cqw,14px);padding:.3em .7em}
+.invtags{display:flex;flex-wrap:wrap;gap:.3em;margin:0;min-height:1.4em}
+.invtags em{font-style:normal;font-size:.8em;font-weight:800;padding:0 .5em;border-radius:999px;background:rgba(255,255,255,.08);color:var(--muted)}
+.invtags em.t1{background:rgba(255,209,102,.2);color:var(--gold)}.invtags em.t2{background:rgba(23,214,255,.18);color:#17d6ff}.invtags em.t3{background:rgba(61,255,168,.15);color:#3dffa8}
+.cosw button.sig{border-color:rgba(255,209,102,.6)}
 /* ===== daily, streak, mastery (dev build) ===== */
 #daily h2{margin:.8cqw 0 .3cqw;font:900 clamp(13px,1.8cqw,24px) Impact,"Arial Black",sans-serif;letter-spacing:.04em;color:var(--gold);text-align:left}
 .stkrow{display:grid;grid-template-columns:repeat(7,1fr);gap:.5cqw;margin:.5cqw 0}
@@ -505,13 +518,13 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
       <div class="mbtns">
         <button class="mbtn" id="mPlay"><span>Play</span><small>Offline or online</small></button>
         <button class="mbtn" id="shopBtn"><span>Shop</span><small>Unlock new players</small></button>
+        <button class="mbtn" id="invBtn"><span>My players</span><small>Your roster, lineup and looks</small></button>
         <button class="mbtn" id="mLb"><span>Leaderboards</span><small>See the top players</small></button>
         <button class="mbtn" id="mSettings"><span>Settings</span><small>Controls, audio and visuals</small></button>
         <button class="mbtn" id="evBtn"><span>Events</span><small>Limited-time rewards</small></button>
-        <button class="mbtn hide" id="dailyBtn"><span>Daily</span><small>Challenges and login streak</small></button>
-        <button class="mbtn" id="codeBtn"><span>Codes</span><small>Redeem a code</small></button>
+        <button class="mbtn" id="dailyBtn"><span>Daily</span><small>Challenges and login streak</small></button>
       </div>
-      <button class="linkbtn" id="newsBtn">What's new</button>
+      <div class="linkrow"><button class="linkbtn" id="newsBtn">What's new</button><button class="linkbtn" id="codeBtn">Codes</button></div>
     </div>
   </div>
 
@@ -647,6 +660,13 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
       <div class="row"><button class="sbtn" id="lbRefresh">Refresh</button><button class="go" id="lbBack" style="background:var(--ink)">Back</button></div>
     </div></div>
 
+  <div id="inv" class="ov hide"><div class="card wide scr">
+      <h1>MY PLAYERS</h1>
+      <p class="tag" id="invSum"></p>
+      <div class="seg" id="invTabs"><button data-v="all" class="sel">All</button><button data-v="PG">Point guards</button><button data-v="SG">Shooting guards</button><button data-v="C">Centers</button></div>
+      <div id="invList" class="invgrid"></div>
+      <div class="row"><button class="go" id="invBack" style="background:var(--ink)">Back</button></div>
+    </div></div>
   <div id="daily" class="ov hide"><div class="card scr">
       <h1>DAILY</h1>
       <div id="dailyBody"></div>
@@ -662,7 +682,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
   <div id="codes" class="ov hide"><div class="card">
       <h1>CODES</h1>
       <p>Enter a code to claim a reward. Each code works once on this device.</p>
-      <div class="row"><input id="codeIn" maxlength="24" autocomplete="off" spellcheck="false" aria-label="Code" style="width:20cqw"><button class="go" id="codeGo">Redeem</button></div>
+      <div class="row"><input id="codeIn" maxlength="40" autocomplete="off" spellcheck="false" aria-label="Code" style="width:20cqw"><button class="go" id="codeGo">Redeem</button></div>
       <p class="tag" id="codeMsg" role="status"></p>
       <button class="go" id="codeBack" style="background:var(--ink)">Back</button>
     </div></div>
@@ -781,19 +801,14 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     <div class="row"><b>Game length</b><div class="seg" id="chLen"><button data-v="60">1:00</button><button data-v="120">2:00</button><button data-v="240">4:00</button><button data-v="360">6:00</button></div></div>
     <div class="row"><button class="go" id="chGo">Challenge</button><button class="go back" id="chCancel">Cancel</button></div></div></div>
 
-  <div id="devlog" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(24px,5cqw,66px)">WHAT'S NEW</h1><p class="tag">Update 2.2</p>
+  <div id="devlog" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(24px,5cqw,66px)">WHAT'S NEW</h1><p class="tag">Update 2.3</p>
     <ul class="dl">
-      <li><b>New player models</b><span>Every player has their own look: hair, headbands, hats, masks, sleeves, shoes and build, in every game and in the shop.</span></li>
-      <li><b>New shop</b><span>Every card shows the player's portrait. Tap a player to open their profile, with an animated scene of them in action, real ratings, a backstory, their play style and fun facts. Buy or equip right from the profile.</span></li>
-      <li><b>Substitutions</b><span>Bring up to five bench players into a tournament. Players tire as they play. Pause and choose Substitutes, or let auto subs bring in fresh legs.</span></li>
-      <li><b>Legend tournaments</b><span>Take on the hardest opponents for 50% bigger coin and XP bonuses.</span></li>
-      <li><b>Longer games</b><span>Quick play and tournaments can now be 8 or 10 minutes long.</span></li>
-      <li><b>New shooting</b><span>The meter shoots up to the very top, speeding up, then falls back down, slowing down. The small green at the very top always goes in, on the way up or down. Blaze and Snipe get a 25% bigger green in their zones, and Adapt gets 20% bigger at 100% and 30% at 135%.</span></li>
-      <li><b>Steals</b><span>Press K (or the steal button) to reach when the dribbler is exposed. Reach during a crossover and you go down. Mashing drains your stamina.</span></li>
-      <li><b>Pressure defense</b><span>Hold K (or the steal button) to shadow the ball instead of your man: you jump passing lanes and scoop up loose balls.</span></li>
-      <li><b>Block guide</b><span>When someone shoots near you, a ring shows where you need to be, and in the air you see whether your hands are high enough.</span></li>
-      <li><b>Weekly tournament leaderboard</b><span>Leaderboards now have this week's tournament wins next to all time. Every Monday at 12:00 AM Eastern, last week's top three get 5,000, 1,000 and 500 coins.</span></li>
-      <li><b>Rookie and Pro tournaments</b><span>Practice tournaments for fewer coins. Only All-Star and Legend wins count as titles.</span></li>
+      <li><b>Daily challenges</b><span>Three new challenges every day at midnight Eastern. Each one pays coins, and finishing all three pays a bonus. Open Daily on the main menu.</span></li>
+      <li><b>Login streak</b><span>Claim coins every day you play. The rewards grow each day, and day 7 unlocks the Streak Flame shoes for every player. Miss a day and the streak starts over.</span></li>
+      <li><b>Player mastery</b><span>Every player levels up from 1 to 10 as you play with them. Points, rebounds, steals, blocks, dunks and wins all earn mastery XP. See it on the Mastery tab of any profile.</span></li>
+      <li><b>Signature gear</b><span>Mastery unlocks a five-piece set for each player, made from their own story: headwear, arm gear, leg gear, jersey trim and signature shoes, plus Ice, Neon, Shadow and Gold shoes for everyone. Equip it from My players (Looks) or the Mastery tab. Your gear shows up in your games.</span></li>
+      <li><b>Pause option</b><span>Settings, Controls: choose whether the game pauses when you click away or switch tabs.</span></li>
+      <li><b>Codes moved</b><span>Codes is now a link next to What's new, under the menu. A new code is out there worth 2,000 coins and a cap every player can wear.</span></li>
     </ul>
     <div class="row"><button class="go" id="devOk">Got it</button></div></div></div>
 
@@ -952,7 +967,7 @@ const BIND_DEF={up:['KeyW','ArrowUp'],down:['KeyS','ArrowDown'],left:['KeyA','Ar
 const ACT_NAME={up:'Move up',down:'Move down',left:'Move left',right:'Move right',shoot:'Shoot / block',pass:'Pass / steal',juke:'Crossover',sprint:'Turbo',sw:'Switch defender',ab:'Special ability',pause:'Pause (online: after the next point)',mute:'Mute sound'};
 const ACT_ORDER=Object.keys(ACT_NAME);
 const SET_KEY='sk_settings';
-function setDefaults(){const o={binds:{},vol:{m:1,s:1,c:1,mute:false,ui:true},vis:{res:'auto',shake:true,hints:true,ping:true,anim:true},ctl:{manual:false}};ACT_ORDER.forEach(a=>{o.binds[a]=BIND_DEF[a].slice();});return o;}
+function setDefaults(){const o={binds:{},vol:{m:1,s:1,c:1,mute:false,ui:true},vis:{res:'auto',shake:true,hints:true,ping:true,anim:true},ctl:{manual:false,keep:false}};ACT_ORDER.forEach(a=>{o.binds[a]=BIND_DEF[a].slice();});return o;}
 let SET=setDefaults();
 function loadSettings(){
   try{
@@ -962,6 +977,7 @@ function loadSettings(){
     if(o.vis){if(['auto','low','med','high'].indexOf(o.vis.res)>=0)SET.vis.res=o.vis.res;['shake','hints','ping','anim'].forEach(k=>{if(typeof o.vis[k]==='boolean')SET.vis[k]=o.vis[k];});}
     if(o.vol&&typeof o.vol.ui==='boolean')SET.vol.ui=o.vol.ui;
     if(o.ctl&&typeof o.ctl.manual==='boolean')SET.ctl.manual=o.ctl.manual;
+    if(o.ctl&&typeof o.ctl.keep==='boolean')SET.ctl.keep=o.ctl.keep;
   }catch(e){}
 }
 function saveSettings(){try{localStorage.setItem(SET_KEY,JSON.stringify(SET));}catch(e){}}
@@ -1009,8 +1025,8 @@ addEventListener('keydown',e=>{
   }
 });
 addEventListener('keyup',e=>{downKeys.delete(e.code);held.shoot=isDown('shoot');held.sprint=isDown('sprint');held.pass=isDown('pass');});
-addEventListener('blur',()=>{downKeys.clear();held.shoot=false;held.sprint=false;held.pass=false;if(phase==='play'&&!pvp&&!hang)togglePause();});
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&phase==='play'&&!pvp&&!hang)togglePause();});
+addEventListener('blur',()=>{downKeys.clear();held.shoot=false;held.sprint=false;held.pass=false;if(phase==='play'&&!pvp&&!hang&&!(SET.ctl&&SET.ctl.keep))togglePause();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&phase==='play'&&!pvp&&!hang&&!(SET.ctl&&SET.ctl.keep))togglePause();});
 function sendDc(m){try{if(dc&&dc.readyState==='open')dc.send(JSON.stringify(m));}catch(e){}}
 function showPauseMenu(){
   $('pauseWhy').textContent=pvp?'The game paused after the last point.':'Take a breather.';
@@ -1074,6 +1090,10 @@ function renderSettings(){
     {const r=document.createElement('div');r.className='srow';const l=document.createElement('span');l.textContent='Manual defender switching (only switch when you press '+kn('sw')+')';
      const c=document.createElement('input');c.type='checkbox';c.checked=!!SET.ctl.manual;c.setAttribute('aria-label','Manual defender switching');
      c.onchange=()=>{SET.ctl.manual=c.checked;saveSettings();toast(c.checked?'Manual mode: on defense you keep your player until you press '+kn('sw')+'.':'Auto switching: on defense you control whoever is closest to the ball.');};
+     r.append(l,c);body.appendChild(r);}
+    {const r=document.createElement('div');r.className='srow';const l=document.createElement('span');l.textContent='Pause the game when you click away or switch tabs';
+     const c=document.createElement('input');c.type='checkbox';c.checked=!(SET.ctl&&SET.ctl.keep);c.setAttribute('aria-label','Pause the game when you click away or switch tabs');
+     c.onchange=()=>{SET.ctl.keep=!c.checked;saveSettings();toast(c.checked?'The game pauses when you click away or switch tabs.':'The game keeps going when you click away. (Browsers still freeze a tab you can\'t see.)');};
      r.append(l,c);body.appendChild(r);}
     const rb=add('button','Reset controls to default','sbtn');rb.onclick=()=>{ACT_ORDER.forEach(a=>{SET.binds[a]=BIND_DEF[a].slice();});saveSettings();rebuildMap();renderSettings();};
   }else if(setTab==='audio'){
@@ -1273,7 +1293,7 @@ let user='';
 function defaults(){tourSave=null;if(typeof custom!=='undefined'){custom=null;customRaw=null;storyDone=0;storyProDone=false;storyLineup=null;storyIntroSeen=false;}wantFull=false;acctShots=[0,0,0];acctQmWins=0;lbShow=true;acctXp=0;coins=300;owned=['DIME','BLAZE','MOOSE'];squad={PG:2,SG:1,C:0};teamCol=0;teamName='NEON';oppIdx=0;gameLen=240;titles=0;gm=3;pk1='DIME';pk2='BLAZE';redeemed=[];}
 function grindReset(){dly=null;stk={last:'',n:0,best:0};mst={};cos={};cosU=[];}
 function applyCfg(cfg){
-  defaults();grindReset();for(const k in LOOK_CACHE)delete LOOK_CACHE[k];
+  defaults();grindReset();try{for(const k in LOOK_CACHE)delete LOOK_CACHE[k];}catch(e){}
   if(!cfg||typeof cfg!=='object')return;
   try{
     SLOTS.forEach(s=>{const v=cfg.squad&&cfg.squad[s];if(v>=0&&v<POOL[s].length)squad[s]=v;});
@@ -2632,7 +2652,7 @@ function lkHead(c,L,hx,hy,r,d,skin,acc,T,p){
   else if(st==='beanie'){c.fillStyle=hc;c.beginPath();c.ellipse(hx-d*r*0.06,hy-r*0.32,r*1.1,r*1.12,0,Math.PI,P2);c.fill();c.fillStyle=shade(hc,-18);c.fillRect(hx-r*1.1-d*r*0.06,hy-r*0.5,r*2.2,r*0.36);if(L.stripe){c.fillStyle=L.stripe;c.fillRect(hx-r*1.06-d*r*0.06,hy-r*0.95,r*2.12,r*0.14);}}
   else if(st==='hood'){const A=a=>d>0?a:Math.PI-a,D=Math.PI/180;c.strokeStyle=L.hood||'#2b2d3a';c.lineWidth=r*0.46;c.beginPath();c.arc(hx-d*r*0.12,hy-r*0.02,r*1.12,A(100*D),A(330*D),d<0);c.stroke();
     if(L.trim){c.strokeStyle=L.trim;c.lineWidth=r*0.1;c.beginPath();c.arc(hx-d*r*0.12,hy-r*0.02,r*0.92,A(200*D),A(325*D),d<0);c.stroke();}}
-  if(L.hat){c.fillStyle=L.hat;c.beginPath();c.arc(hx,hy-r*0.25,r*1.1,Math.PI,P2);c.fill();c.fillRect(hx-r*1.4+d*r*0.1,hy-r*0.32,r*2.8,r*0.24);c.fillStyle='rgba(255,255,255,.35)';c.fillRect(hx-r*0.08,hy-r*1.3,r*0.16,r*1.0);}
+  if(L.hat){c.fillStyle=L.hat;c.beginPath();c.arc(hx,hy-r*0.25,r*1.1,Math.PI,P2);c.fill();if(L.hatBand){c.fillStyle=L.hatBand;c.fillRect(hx-r*1.03,hy-r*0.62,r*2.06,r*0.17);if(L.hatBand2){c.fillStyle=L.hatBand2;c.fillRect(hx-r*0.93,hy-r*0.8,r*1.86,r*0.1);}}c.fillStyle=L.hatBrim||L.hat;c.fillRect(hx-r*1.4+d*r*0.1,hy-r*0.32,r*2.8,r*0.24);c.fillStyle='rgba(255,255,255,.35)';c.fillRect(hx-r*0.08,hy-r*1.3,r*0.16,r*1.0);}
   if(L.band&&st!=='beanie'&&st!=='hood'&&!L.hat){c.fillStyle=L.band==='acc'?acc:L.band;c.fillRect(hx-r,hy-r*0.62,r*2,r*0.3);}
   if(L.gray){c.fillStyle=L.gray;c.beginPath();c.ellipse(hx-d*r*0.3,hy-r*0.35,r*0.28,r*0.2,0,0,P2);c.fill();}
   if(L.line){const lv=lkLvl(p),gl=Math.min(1,0.3+0.7*Math.max(0,(lv-0.3)/0.7)),pt=(a,b)=>[hx+d*r*a,hy+r*b],Q=[pt(-0.82,-0.14),pt(-0.54,-0.38),pt(-0.38,-0.24),pt(-0.06,-0.6)];
@@ -2646,7 +2666,7 @@ function lkHead(c,L,hx,hy,r,d,skin,acc,T,p){
     else{c.globalAlpha=t==='stubble'?0.38:1;c.beginPath();c.arc(hx+d*r*0.1,hy+r*0.25,r*0.82,0.15,Math.PI-0.15);c.fill();c.globalAlpha=1;}}
   /* eyes and face gear */
   const ex=hx+d*r*0.45,ey=hy+r*0.12;
-  if(L.mask){c.fillStyle='#16080a';c.fillRect(hx-r,hy-r*0.18,r*2,r*0.5);circ(ex,ey,r*0.17,'#ff3b1f');}
+  if(L.mask){c.fillStyle=L.maskC||'#16080a';c.fillRect(hx-r,hy-r*0.18,r*2,r*0.5);circ(ex,ey,r*0.17,'#ff3b1f');}
   else{circ(ex,ey,r*0.17,'#fff');
     if(L.iris){const lv=lkLvl(p);if(lv>=0.999){c.save();c.shadowColor=L.iris;c.shadowBlur=r*(lv>1.001?1.6:0.7);circ(ex+d*r*0.05,ey,r*0.1,L.iris);c.restore();}
       if(lv>1.001){const A=a=>d>0?a:Math.PI-a;c.save();c.globalAlpha=0.5+0.3*Math.sin(T*6);c.shadowColor=L.iris;c.shadowBlur=r;c.strokeStyle=L.iris;c.lineWidth=Math.max(1,r*0.1);c.beginPath();c.arc(hx+d*r*0.1,hy+r*0.08,r*1.25,Math.min(A(-0.55),A(0.6)),Math.max(A(-0.55),A(0.6)));c.stroke();
@@ -2797,7 +2817,7 @@ function head(g,L,J,r,fd,T,pose,eyes,lvl){
     g.fillStyle=sh(hc,-20);g.beginPath();g.roundRect(X(-r*0.06)-r*1.14,-r*0.52,r*2.28,r*0.4,r*0.12);g.fill();if(L.stripe){g.fillStyle=L.stripe;g.fillRect(X(-r*0.06)-r*1.0,-r*1.0,r*2.0,r*0.14);}}
   else if(st==='hood'){const A=a=>fd>0?a:Math.PI-a;g.strokeStyle=L.hood||'#2b2d3a';g.lineWidth=r*0.5;g.beginPath();g.arc(X(-r*0.12),-r*0.02,r*1.14,A(100*D),A(332*D),fd<0);g.stroke();
     g.strokeStyle='rgba(0,0,0,.35)';g.lineWidth=r*0.12;g.beginPath();g.arc(X(-r*0.12),-r*0.02,r*0.9,A(110*D),A(325*D),fd<0);g.stroke();if(L.trim){g.strokeStyle=L.trim;g.lineWidth=r*0.07;g.beginPath();g.arc(X(-r*0.12),-r*0.02,r*1.36,A(150*D),A(320*D),fd<0);g.stroke();}}
-  if(L.hat){g.fillStyle=L.hat;g.beginPath();g.arc(0,-r*0.25,r*1.12,Math.PI,P2);g.fill();g.beginPath();g.roundRect(X(r*0.1)-r*1.45,-r*0.34,r*2.9,r*0.26,r*0.1);g.fill();g.fillStyle='rgba(255,255,255,.35)';g.fillRect(-r*0.09,-r*1.33,r*0.18,r*1.0);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(X(r*0.1)-r*1.45,-r*0.14,r*2.9,r*0.06);}
+  if(L.hat){g.fillStyle=L.hat;g.beginPath();g.arc(0,-r*0.25,r*1.12,Math.PI,P2);g.fill();if(L.hatBand){g.fillStyle=L.hatBand;g.fillRect(-r*1.05,-r*0.62,r*2.1,r*0.17);if(L.hatBand2){g.fillStyle=L.hatBand2;g.fillRect(-r*0.95,-r*0.8,r*1.9,r*0.1);}}g.fillStyle=L.hatBrim||L.hat;g.beginPath();g.roundRect(X(r*0.1)-r*1.45,-r*0.34,r*2.9,r*0.26,r*0.1);g.fill();g.fillStyle='rgba(255,255,255,.35)';g.fillRect(-r*0.09,-r*1.33,r*0.18,r*1.0);g.fillStyle='rgba(0,0,0,.18)';g.fillRect(X(r*0.1)-r*1.45,-r*0.14,r*2.9,r*0.06);}
   if(L.band&&st!=='beanie'&&st!=='hood'&&!L.hat){g.fillStyle=L.band==='acc'?J.jt:L.band;g.beginPath();g.roundRect(-r*1.02,-r*0.64,r*2.04,r*0.3,r*0.08);g.fill();g.fillStyle='rgba(255,255,255,.25)';g.fillRect(-r*1.0,-r*0.62,r*2.0,r*0.06);}
   if(L.gray){g.fillStyle=L.gray;g.beginPath();g.ellipse(X(-r*0.3),-r*0.36,r*0.3,r*0.2,0,0,P2);g.fill();g.beginPath();g.ellipse(X(r*0.25),-r*0.78,r*0.18,r*0.1,0,0,P2);g.fill();}
   if(L.line){const gl=Math.min(1,0.3+0.7*Math.max(0,(LV-0.3)/0.7)),Q=[[-0.84,-0.1],[-0.56,-0.36],[-0.4,-0.2],[-0.06,-0.6]].map(v=>[X(r*v[0]),r*v[1]]);
@@ -2814,7 +2834,7 @@ function head(g,L,J,r,fd,T,pose,eyes,lvl){
     else{g.globalAlpha=t==='stubble'?0.35:1;g.beginPath();g.moveTo(X(-r*0.15),r*0.05);g.quadraticCurveTo(X(-r*0.1),r*0.95,X(r*0.4),r*0.98);g.quadraticCurveTo(X(r*0.95),r*0.95,X(r*0.92),r*0.42);g.lineTo(X(r*0.55),r*0.5);g.quadraticCurveTo(X(r*0.3),r*0.4,X(r*0.05),r*0.25);g.closePath();g.fill();g.globalAlpha=1;}}
   /* eyes, brow, mouth */
   const ex=X(r*0.6),ey=-r*0.04;
-  if(L.mask){g.fillStyle='#16080a';g.beginPath();g.roundRect(-r*1.04,-r*0.3,r*2.1,r*0.5,r*0.1);g.fill();g.save();g.shadowColor='#ff3b1f';g.shadowBlur=r*0.6;ell(g,ex,ey,r*0.16,r*0.09,0,'#ff3b1f');g.restore();}
+  if(L.mask){g.fillStyle=L.maskC||'#16080a';g.beginPath();g.roundRect(-r*1.04,-r*0.3,r*2.1,r*0.5,r*0.1);g.fill();g.save();g.shadowColor='#ff3b1f';g.shadowBlur=r*0.6;ell(g,ex,ey,r*0.16,r*0.09,0,'#ff3b1f');g.restore();}
   else{
     if(eyes==='closed'){g.strokeStyle='#1a120c';g.lineWidth=r*0.06;g.beginPath();g.arc(ex,ey-r*0.02,r*0.12,0.2,Math.PI-0.2);g.stroke();}
     else if(L.iris&&LV>=0.999){ell(g,ex,ey,r*0.15,r*0.11,0,'#fff');g.save();g.shadowColor=L.iris;g.shadowBlur=r*(LV>1.001?0.8:0.35);circ(g,ex+X(r*0.06),ey,r*0.08,L.iris);g.restore();circ(g,ex+X(r*0.065),ey,r*0.04,'#0c1a14');circ(g,ex+X(r*0.085),ey-r*0.03,r*0.02,'#fff');}
@@ -4059,7 +4079,7 @@ function draw(){
 
 /* ================= UI ================= */
 var grindNudged='';
-function grindNudge(){try{if(!grindOn()||$('menu').classList.contains('hide')||phase!=='menu')return;const t=dayKey();if(grindNudged===t||stkState().claimed)return;grindNudged=t;dailyOpen();}catch(e){}}
+function grindNudge(){try{if(!grindOn()||$('menu').classList.contains('hide')||phase!=='menu')return;if(!$('devlog').classList.contains('hide')||($('tut')&&!$('tut').classList.contains('hide')))return;const t=dayKey();if(grindNudged===t||stkState().claimed)return;grindNudged=t;dailyOpen();}catch(e){}}
 function show(id){$(id).classList.remove('hide');if(id==='menu'){setTimeout(grindNudge,700);setTimeout(bumpCoins,280);if(typeof pollLoad==='function')pollLoad();}}
 function hideEl(id){$(id).classList.add('hide');}
 function showResult(){
@@ -4388,6 +4408,7 @@ function ppDoAct(){const st=ppActState();if(st.dis)return;const n=PP.n,s=PP.s,i=
   ppActRender();try{renderShop();renderSquad();}catch(e){}}
 function ppStep(k){const a=ppOrder(),i=a.indexOf(PP.n);if(i<0)return;uiSnd('uiTick');ppOpen(a[(i+k+a.length)%a.length]);}
 function ppClose(){hideEl('pp');if(PP&&PP.raf){cancelAnimationFrame(PP.raf);PP.raf=0;}
+  if(!$('inv').classList.contains('hide'))try{invRender();}catch(e){}
   const n=PP&&PP.n,btn=n&&document.querySelector('#shopList .pcpic[data-n="'+n+'"]');try{(btn||$('shopClose')).focus({preventScroll:true});}catch(e){}}
 function ppSize(){const cv=$('ppArt'),dpr=Math.min(1.5,window.devicePixelRatio||1),w=cv.clientWidth||640,h=cv.clientHeight||400;if(cv.width!==Math.round(w*dpr)||cv.height!==Math.round(h*dpr)){cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);PP.C=null;}PP.w=w;PP.h=h;PP.dpr=dpr;}
 /* Adapt's ratings climb with his scene: from his 30% tip-off numbers to 99 across the board at 135% */
@@ -4640,8 +4661,8 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.2.12';
-const DEV_VER='2.2.8';let tutI=0,tutChecked=false;
+const GAME_VER='2.3.0';
+const DEV_VER='2.3';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
   $('tutTitle').textContent=s.t;$('tutBody').innerHTML=tok(s.b);$('tutStep').textContent='Step '+(tutI+1)+' of '+TUT.length;
@@ -4649,7 +4670,7 @@ function tutRender(){
   $('tutNext').textContent=last?"Let's play":'Next';
 }
 function tutOpen(){tutI=0;tutRender();show('tut');$('tutNext').focus();}
-function tutClose(){try{localStorage.setItem('sk_tut','1');}catch(e){}hideEl('tut');}
+function tutClose(){try{localStorage.setItem('sk_tut','1');}catch(e){}hideEl('tut');setTimeout(grindNudge,500);}
 function maybeTutorial(){
   if(tutChecked)return;tutChecked=true;
   if(/#room=/.test(location.hash))return;
@@ -4963,7 +4984,7 @@ async function lbWeekly(my,l){
   else if(!cloudUser){const p=document.createElement('p');p.textContent='Log in to compete for weekly prizes.';l.appendChild(p);}
 }
 /* ===== daily challenges, login streak, player mastery and cosmetics (dev build) ===== */
-function grindOn(){return typeof devFeat==='function'&&devFeat('grind');}
+function grindOn(){return true;}
 var dly,stk,mst,cos,cosU;   /* set by grindReset / applyCfg (which can run before this line) */
 if(stk===undefined)grindReset();
 function dayKey(ms){const p=etParts(ms==null?Date.now():ms);return p.y+'-'+String(p.m).padStart(2,'0')+'-'+String(p.d).padStart(2,'0');}
@@ -5012,7 +5033,7 @@ function grindAfterGame(w,me){
   /* mastery for everyone who played for you */
   const ups=[];
   all.forEach(p=>{if(!PROFILES[p.name])return;const s=p.stats,xp=25+s.pts*2+s.reb+(s.stl+s.blk)*4+s.dunk*2+(G.win?25:0),l0=mstLvl(p.name);
-    mst[p.name]=(mst[p.name]||0)+xp;const l1=mstLvl(p.name);if(l1>l0)ups.push(ppTitle(p.name)+' reached mastery '+l1+(MST_UNLOCK[l1]?' (new: '+MST_UNLOCK[l1].map(cosName).join(', ')+')':''));});
+    mst[p.name]=(mst[p.name]||0)+xp;const l1=mstLvl(p.name);if(l1>l0){const nu=[];for(let q=l0+1;q<=l1;q++)nu.push(...cosUnlocksAt(p.name,q));ups.push(ppTitle(p.name)+' reached mastery '+l1+(nu.length?' (new: '+nu.join(', ')+')':''));}});
   if(ups.length){msg+=' '+ups.join('. ')+'.';uiSnd('uiGood');}
   saveCfg();return msg;
 }
@@ -5029,25 +5050,52 @@ function stkClaim(){
 /* ---- mastery: each player levels up 1 to 10 as you play with them ---- */
 const MST_XP=l=>75*l*(l-1);   /* total XP to reach level l: 150, 450, 900 ... 6750 at 10 */
 function mstLvl(n){const x=mst[n]||0;let l=1;while(l<10&&x>=MST_XP(l+1))l++;return l;}
-const MST_UNLOCK={2:['band:white'],3:['wrist:white'],4:['shoe:ice'],5:['band:cyan','wrist:cyan'],6:['shoe:neon'],7:['trim:chrome'],8:['shoe:shadow','band:red'],9:['wrist:gold','band:gold'],10:['shoe:gold','trim:gold']};
-/* ---- cosmetics ---- */
-const COS={
-  shoe:{n:'Shoes',o:{ice:['Ice','#d8f3ff','#5fb8e8'],neon:['Neon','#3dffa8','#0d6b45'],shadow:['Shadow','#16181f','#ff3b1f'],gold:['Gold','#ffd166','#8a6a1a'],streak:['Streak Flame','#ff7a1a','#ffd166']}},
-  band:{n:'Headband',o:{white:['White','#f4f6ff'],cyan:['Cyan','#17d6ff'],red:['Red','#ff4d5e'],gold:['Gold','#ffd166']}},
-  wrist:{n:'Wristbands',o:{white:['White','#f4f6ff'],cyan:['Cyan','#17d6ff'],gold:['Gold','#ffd166']}},
-  trim:{n:'Jersey trim',o:{chrome:['Chrome','#e8ecf4'],gold:['Gold','#ffd166']}}
+/* ---- cosmetics: every player has their own signature set, unlocked by mastery; a few shared shoes fill the levels between ---- */
+/* each set: [slot, name, look changes (or a trim colour for 'kit')], unlocked at mastery 2, 4, 6, 8 and 10 */
+const CHAR_COS={
+  DIME:[['head','Noodles 24 Headband',{band:'#ff6fc0'}],['arms',"Captain's Wristbands",{wrist:'#ffd166',wristBoth:1}],['shoes','Note Paper',{shoe:'#f3ead2',sole:'#1f2a55'}],['kit','Captain Trim','#ffd166'],['shoes','Lower Sprawl Legacy',{shoe:'#17d6ff',sole:'#ffd166',band:'#ffd166'}]],
+  BLAZE:[['head','Ember Tips',{tip:'#ffd166'}],['arms','Flash Burst Sleeve',{sleeve:'#ffd166',sleeveArm:'F'}],['shoes','Wildfire',{shoe:'#ff3b1f',sole:'#ffd166'}],['kit','Scorched Trim','#ff3b1f'],['shoes','Blue Flame',{shoe:'#3d8bff',sole:'#ffffff',tip:'#7fd1ff'}]],
+  MOOSE:[['head','Hounds Headband',{band:'#c9a0ff'}],['legs','Anchor Knee Pads',{knee:'#c9a0ff',kneeLeg:'both'}],['shoes','Bedrock',{shoe:'#6b6f7a',sole:'#3a3d45'}],['kit','Antler Brown','#8a5a2b'],['shoes','Immovable',{shoe:'#c9a0ff',sole:'#1b1d26',knee:'#1b1d26',kneeLeg:'both'}]],
+  KAI:[['head','Rail Yard Cap',{hat:'#ffb000'}],['legs','Reflective Socks',{socks:'#e8ff3d'}],['shoes','Express Line',{shoe:'#ff4d5e',sole:'#ffffff'}],['kit','Platform Yellow','#ffd23f'],['shoes','Right On Time',{shoe:'#ffb000',sole:'#ffffff',watch:'#3dffa8'}]],
+  FLASH:[['head','Bleached Spikes',{tip:'#f4f6ff'}],['legs','Lightning Leg Sleeve',{legSleeve:'#ffffff',legLeg:'B'}],['shoes','Redline',{shoe:'#ff3b1f',sole:'#ffe45c'}],['kit','Checkered Flag','#f4f6ff'],['shoes','Zero to Sixty',{shoe:'#ffe45c',sole:'#c6ff3d',tip:'#c6ff3d'}]],
+  ORBIT:[['head','Stream Headphones',{phones:'#17d6ff'}],['arms','Chat Wristbands',{wrist:'#9b6bff',wristBoth:1}],['shoes','Subscriber',{shoe:'#9b6bff',sole:'#ff5ee0'}],['kit','Live Red','#ff3b3b'],['shoes','Gone Viral',{shoe:'#ffffff',sole:'#ff5ee0',phones:'#ffd166'}]],
+  GLOVE:[['head','Yard Headband',{band:'#d81e3a'}],['arms','Lockdown Sleeves',{sleeve:'#d81e3a',sleeveArm:'both'}],['shoes','Sticky Fingers',{shoe:'#1b1d26',sole:'#d81e3a'}],['kit','Pickpocket Gold','#ffd166'],['shoes','Stripped',{shoe:'#ffffff',sole:'#d81e3a',sleeve:'#ffffff',sleeveArm:'both'}]],
+  SAGE:[['head','Chalk Dust Headband',{band:'#e8e8e8'}],['arms',"Professor's Watch",{watch:'#d4af37'}],['shoes','Tenure Loafers',{shoe:'#5a4030',sole:'#f4f6ff'}],['kit','Prism Violet','#9b6bff'],['shoes','Court Vision',{shoe:'#5bbf7a',sole:'#f4f6ff',watch:'#5bbf7a'}]],
+  PHANTOM:[['head','Time Warp Mask',{maskC:'#3a0d4a'}],['arms','Smoke Sleeves',{sleeve:'#5a5a6a',sleeveArm:'both'}],['shoes','Untouchable',{shoe:'#f4f6ff',sole:'#15151c'}],['kit','Hellfire Trim','#ff3b1f'],['shoes','Phantom Pair',{shoe:'#3a0d4a',sole:'#bba0ff',hc:'#3a0d4a',maskC:'#3a0d4a'}]],
+  WARDEN:[['head','Jumpsuit Beanie',{hc:'#ff7a1a',stripe:'#1b1d26'}],['legs','Shackle Knee Pads',{knee:'#c9ced9',kneeLeg:'both'}],['shoes','Full Court Press',{shoe:'#ff4d5e',sole:'#1b1d26'}],['kit','Cell Block Gray','#c9ced9'],['shoes',"Warden's Keys",{shoe:'#d4af37',sole:'#1b1d26',stripe:'#d4af37'}]],
+  REX:[['head',"Gauntlet Finalist Band",{band:'#2a3a6a'}],['legs','Retro Leg Sleeves',{legSleeve:'#d4af37',legLeg:'both'}],['shoes','Throwback',{shoe:'#f4f6ff',sole:'#2a3a6a'}],['kit','Finalist Gold','#d4af37'],['shoes','Pure Stroke',{shoe:'#2a3a6a',sole:'#d4af37',gray:'#e8e8e8'}]],
+  SNIPE:[['head','Green Dot Lens',{scope:'#3dff6a'}],['legs','Ghillie Socks',{socks:'#4a5a2a'}],['shoes','Rooftop Camo',{shoe:'#4a5a2a',sole:'#2b2f3a'}],['kit','Crosshair Red','#ff3b3b'],['shoes','Long Range',{shoe:'#8aff8a',sole:'#2b2f3a',scope:'#ffd166'}]],
+  HAZE:[['head','Ghost Hood',{hood:'#e8e8f0',trim:'#9fb3c8'}],['legs','Third Rail Socks',{socks:'#ff9a9a'}],['shoes','Last Train',{shoe:'#1b1d26',sole:'#ff3b3b'}],['kit','Red Line','#ff3b3b'],['shoes','Phase Step',{shoe:'#e8e8f0',sole:'#9fb3c8',hood:'#7a2020',trim:'#ffd166'}]],
+  VOLT:[['head','Welding Goggles',{goggles:'#3dd6ff'}],['arms','Insulated Wristbands',{wrist:'#1b1d26',wristBoth:1}],['shoes','High Voltage',{shoe:'#3dd6ff',sole:'#ffee3a'}],['kit','Hazard Stripe','#ffee3a'],['shoes','Short Circuit',{shoe:'#ffffff',sole:'#3dd6ff',tip:'#3dd6ff'}]],
+  HEATER:[['head','Foundry Headband',{band:'#ffd166'}],['arms','Molten Sleeve',{sleeve:'#ffd166',sleeveArm:'F'}],['shoes','Cast Iron',{shoe:'#3a3a40',sole:'#ff4d1f'}],['kit','Furnace Orange','#ff4d1f'],['shoes','White Hot',{shoe:'#fff3d0',sole:'#ff4d1f',band:'#fff3d0'}]],
+  ZEN:[['head','Zenith Headband',{band:'#3d6aff'}],['arms','Silk Sleeve',{sleeve:'#3d6aff',sleeveArm:'F'}],['shoes','Still Water',{shoe:'#bfe0ff',sole:'#3d6aff'}],['kit','Zenith Gold','#d4af37'],['shoes','Heat Check',{shoe:'#3d6aff',sole:'#ffffff'}]],
+  APEX:[['head','Afterimage Mohawk',{hc:'#3dd6ff'}],['arms','Hellfire Sleeve',{sleeve:'#ff3b1f',sleeveArm:'F'}],['shoes','Blink',{shoe:'#f4f6ff',sole:'#ff3b1f'}],['kit','Neo League Red','#ff3b1f'],['shoes','Apex Predator',{shoe:'#d4af37',sole:'#15151c',hc:'#d4af37'}]],
+  ADAPT:[['head','Data Fade',{line:'#3dd6ff'}],['arms','Overclock Wristbands',{wrist:'#3dd6ff',wristBoth:1}],['shoes','Beta Build',{shoe:'#1f2430',sole:'#3dffa8'}],['kit','Source Code','#3dffa8'],['shoes','Version 1.35',{shoe:'#3dffa8',sole:'#f4f6ff'}]],
+  ROCK:[['head','Megaphone Headband',{band:'#ffd166'}],['arms','Loudmouth Wristbands',{wrist:'#ff4d5e',wristBoth:1}],['shoes','Cousin Moose',{shoe:'#c9a0ff',sole:'#6b4a2b'}],['kit','Bedrock Brown','#6b4a2b'],['shoes','Big Mouth',{shoe:'#ffd166',sole:'#ff4d5e'}]],
+  BOOM:[['head','Poster Headband',{band:'#ffffff'}],['arms','Slam Wristbands',{wrist:'#ff6a3d',wristBoth:1}],['shoes','Southside',{shoe:'#1b1d26',sole:'#ff6a3d'}],['kit','Highlight Gold','#ffd166'],['shoes','Posterized',{shoe:'#ffd166',sole:'#ff6a3d',band:'#ffd166'}]],
+  ATLAS:[['head','Squeegee Headband',{band:'#3d7bff'}],['arms','Harbor Elbow Pads',{elbow:'#3d7bff'}],['shoes','Glass Cleaner',{shoe:'#bfe9ff',sole:'#ffffff'}],['kit','Harbor Blue','#3d7bff'],['shoes','High Tide',{shoe:'#1f3f8a',sole:'#bfe9ff',elbow:'#bfe9ff'}]],
+  DOZER:[['head','Hi-Vis Hard Hat',{hat:'#ff7a1a'}],['legs','Steel Toe Socks',{socks:'#ffd23f'}],['shoes','Dock Boots',{shoe:'#3a2a1a',sole:'#ffd23f'}],['kit','Hazard Tape','#ffd23f'],['head','Lucky Gold Hat',{hat:'#d4af37'}]],
+  GOLIATH:[['head','Mountain Headband',{band:'#e9edf5'}],['legs','Summit Knee Pads',{knee:'#c9a227',kneeLeg:'both'}],['shoes','Avalanche',{shoe:'#ffffff',sole:'#9fb3c8'}],['kit','Sovereign Gold','#c9a227'],['shoes','The Peak',{shoe:'#c9a227',sole:'#1b1d26',knee:'#1b1d26',kneeLeg:'both'}]],
+  KRAKEN:[['head','Deep Sea Tips',{tip:'#3dd6ff'}],['arms','Tentacle Sleeve',{sleeve:'#1a5a6a',sleeveArm:'both'}],['shoes','The Abyss',{shoe:'#0b2a3a',sole:'#3dd6ff'}],['kit','Hellfire Trim','#ff3b1f'],['shoes','World Breaker',{shoe:'#ff3b1f',sole:'#ffd166',tip:'#ffd166'}]],
+  RALLY:[['head','Comeback Headband',{band:'#ff9a2e'}],['arms','Never Over Wristbands',{wrist:'#ff9a2e',wristBoth:1}],['shoes','Fourth Quarter',{shoe:'#1b1d26',sole:'#ff9a2e'}],['kit','Eastport Blue','#3d7bff'],['shoes','Comeback Kid',{shoe:'#ff9a2e',sole:'#ffffff'}]]
 };
-function cosName(k){const [s,i]=k.split(':');return COS[s].o[i][0]+' '+COS[s].n.toLowerCase();}
-function cosHas(n,k){if(cosU.indexOf(k)>=0)return true;const l=mstLvl(n);for(let i=2;i<=l;i++)if((MST_UNLOCK[i]||[]).indexOf(k)>=0)return true;return false;}
-function cosLevel(k){for(let i=2;i<=10;i++)if((MST_UNLOCK[i]||[]).indexOf(k)>=0)return i;return 0;}
+const COS_SLOTS={head:'Head',arms:'Arms',legs:'Legs',shoes:'Shoes',kit:'Jersey trim'};
+const COS_GEN=[['ice','Ice',{shoe:'#d8f3ff',sole:'#5fb8e8'},3],['neon','Neon',{shoe:'#3dffa8',sole:'#0d6b45'},5],['shadow','Shadow',{shoe:'#16181f',sole:'#ff3b1f'},7],['gold','Gold',{shoe:'#ffd166',sole:'#8a6a1a'},9],['streak','Streak Flame',{shoe:'#ff7a1a',sole:'#ffd166'},0]];
+const COS_LV=[2,4,6,8,10];
+const COS_UNI=[['sunset','head','Sunset Coast Cap',{hat:'#ff5e8a',hatBrim:'#1fc8bd',hatBand:'#ff9f2e',hatBand2:'#ffe066'}]];
+function cosItems(n){const out=[];(CHAR_COS[n]||[]).forEach((c,i)=>out.push({id:'c'+i,slot:c[0],name:c[1],set:typeof c[2]==='object'?c[2]:null,trim:typeof c[2]==='string'?c[2]:null,lv:COS_LV[i],sig:i===4}));
+  COS_GEN.forEach(g=>out.push({id:'g_'+g[0],slot:'shoes',name:g[1],set:g[2],lv:g[3],streak:g[0]==='streak'}));
+  COS_UNI.forEach(u=>{const k=u[1]+':'+u[0];if(cosU.indexOf(k)>=0)out.push({id:'u_'+u[0],slot:u[1],name:u[2],set:u[3],lv:0,uni:k});});return out;}
+function cosItem(n,id){return cosItems(n).find(x=>x.id===id);}
+function cosHas(n,it){if(!it)return false;if(it.uni)return cosU.indexOf(it.uni)>=0;if(it.streak)return cosU.indexOf('shoe:streak')>=0;return mstLvl(n)>=it.lv;}
+function cosUnlocksAt(n,l){return cosItems(n).filter(it=>it.lv===l).map(it=>it.name);}
 function cosApply(n,L){
-  if(!grindOn())return L;const c=cos[n];if(!c)return L;const o=Object.assign({},L);
-  if(c.shoe&&COS.shoe.o[c.shoe]&&cosHas(n,'shoe:'+c.shoe)){o.shoe=COS.shoe.o[c.shoe][1];o.sole=COS.shoe.o[c.shoe][2];}
-  if(c.band&&COS.band.o[c.band]&&cosHas(n,'band:'+c.band)&&!o.hat&&!o.mask&&o.hair!=='hood'&&o.hair!=='beanie')o.band=COS.band.o[c.band][1];
-  if(c.wrist&&COS.wrist.o[c.wrist]&&cosHas(n,'wrist:'+c.wrist)){o.wrist=COS.wrist.o[c.wrist][1];o.wristBoth=1;}
-  return o;
+  if(!grindOn())return L;const c=cos[n];if(!c)return L;let o=null;
+  for(const s of ['shoes','legs','arms','head']){if(!c[s])continue;const it=cosItem(n,c[s]);if(it&&it.set&&cosHas(n,it)){o=o||Object.assign({},L);Object.assign(o,it.set);if(it.uni&&it.set.hat&&['hood','beanie','durag'].indexOf(o.hair)>=0)o.hair='buzz';}}
+  return o||L;
 }
-function cosTrim(n){if(!grindOn())return null;const c=cos[n];return c&&c.trim&&COS.trim.o[c.trim]&&cosHas(n,'trim:'+c.trim)?COS.trim.o[c.trim][1]:null;}
+function cosTrim(n){if(!grindOn())return null;const c=cos[n];if(!c||!c.kit)return null;const it=cosItem(n,c.kit);return it&&it.trim&&cosHas(n,it)?it.trim:null;}
+function cosSwatch(it){if(it.trim)return it.trim;const v=it.set;return v.shoe&&it.slot==='shoes'?v.shoe:(v.band||v.hat||v.hc||v.tip||v.phones||v.goggles||v.scope||v.hood||v.maskC||v.line||v.wrist||v.sleeve||v.watch||v.elbow||v.knee||v.legSleeve||v.socks||v.shoe||'#888');}
 /* ---- the Daily screen ---- */
 function dailyRender(){
   if(!$('daily'))return;const D=dlyNow(),S=stkState();let h='';
@@ -5068,16 +5116,47 @@ function ppMastery(body){
   const n=PP.n,l=mstLvl(n),x=mst[n]||0,nx=l<10?MST_XP(l+1):MST_XP(10),pv=MST_XP(l),pct=l<10?Math.round((x-pv)/(nx-pv)*100):100,own=owned.indexOf(n)>=0;
   let h='<div class="mst"><b>Mastery '+l+(l>=10?' · MAX':'')+'</b><span>'+(l<10?(x-pv)+' / '+(nx-pv)+' XP to level '+(l+1):'Fully mastered')+'</span><i><u style="width:'+pct+'%"></u></i></div>';
   h+='<p class="pptag">Play games with '+ppTitle(n)+' to earn mastery XP: points, rebounds, steals, blocks, dunks and wins all count.</p>';
-  for(const s in COS){h+='<div class="cosrow"><b>'+COS[s].n+'</b><div class="cosw">';
-    const cur=(cos[n]||{})[s]||'';h+='<button type="button" data-s="'+s+'" data-o=""'+(cur===''?' class="sel"':'')+' title="Default">Default</button>';
-    for(const id in COS[s].o){const k=s+':'+id,has=cosHas(n,k),o=COS[s].o[id],lv=cosLevel(k);
-      h+='<button type="button" data-s="'+s+'" data-o="'+id+'"'+(cur===id?' class="sel"':'')+(has&&own?'':' disabled')+' title="'+o[0]+(has?'':(lv?' (mastery '+lv+')':' (7-day streak)'))+'"><i style="background:'+o[1]+'"></i>'+o[0]+(has?'':' &#128274;'+(lv?lv:'7d'))+'</button>';}
+  const its=cosItems(n);
+  for(const sl in COS_SLOTS){const list=its.filter(it=>it.slot===sl);if(!list.length)continue;h+='<div class="cosrow"><b>'+COS_SLOTS[sl]+'</b><div class="cosw">';
+    const cur=(cos[n]||{})[sl]||'';h+='<button type="button" data-s="'+sl+'" data-o=""'+(cur===''?' class="sel"':'')+'>Default</button>';
+    list.forEach(it=>{const has=cosHas(n,it);h+='<button type="button" data-s="'+sl+'" data-o="'+it.id+'" class="'+(cur===it.id?'sel':'')+(it.sig?' sig':'')+'"'+(has&&own?'':' disabled')+' title="'+it.name+(has?'':(it.streak?' (7-day streak)':' (mastery '+it.lv+')'))+(it.uni?' (every player)':'')+'"><i style="background:'+cosSwatch(it)+'"></i>'+it.name+(has?'':' &#128274;'+(it.streak?'7d':it.lv))+'</button>';});
     h+='</div></div>';}
   if(!own)h+='<p class="pptag">Buy '+ppTitle(n)+' to use cosmetics.</p>';
   body.innerHTML=h;
   body.querySelectorAll('.cosw button').forEach(b=>b.onclick=()=>{const s=b.dataset.s,o=b.dataset.o;cos[n]=Object.assign({},cos[n]||{});if(o)cos[n][s]=o;else delete cos[n][s];
     for(const k in LOOK_CACHE)delete LOOK_CACHE[k];saveCfg();uiSnd('uiSelect');PP.C=null;ppMastery(body);});
 }
+
+/* ===== My players: everyone you own, your lineup, your 1v1 / 2v2 pick, profiles and looks ===== */
+var invTab='all',invCC=false;
+function invRender(){
+  const L=$('invList');if(!L)return;let h='',n=0,tot=0;
+  if(typeof custom!=='undefined'&&custom&&devFeat('story')&&invTab==='all'){h+='<div class="pc invc mine"><div class="pn"><b>'+custom.name+'</b><span>Your MyPLAYER</span><span class="rb" style="color:#3dffa8">'+ccOvr(custom)+' OVR</span></div><p>'+custom.pos+' · story mode player</p><div class="row"><button class="sbtn" data-a="cc">Edit player</button></div></div>';}
+  SLOTS.forEach(s=>{POOL[s].forEach((o,i)=>{if(o.hidden&&owned.indexOf(o.name)<0)return;tot++;if(owned.indexOf(o.name)<0)return;n++;if(invTab!=='all'&&invTab!==s)return;
+    const ri=rarIdx(o.name),st=squad[s]===i,p1=pk1===o.name,p2=pk2===o.name,ab=ABIL[o.name.toLowerCase()],gr=grindOn()&&PROFILES[o.name];
+    h+='<div class="pc invc r-'+RARS[ri].k+(st?' start':'')+'" data-n="'+o.name+'">';
+    if(PROFILES[o.name])h+='<button type="button" class="pcpic" data-a="prof" data-n="'+o.name+'" aria-label="Open '+ppTitle(o.name)+'\'s profile"><canvas class="pcart invart" data-n="'+o.name+'"></canvas><span>Profile</span></button>';
+    h+='<div class="pn"><b>'+o.name+'</b><span>#'+o.num+' · '+s+'</span>'+(gr?'<span class="mstb">M'+mstLvl(o.name)+'</span>':'')+'<span class="rb" style="color:'+RARS[ri].c+'">'+RARS[ri].n+'</span></div>';
+    h+='<p class="invtags">'+(st?'<em class="t1">Starting '+s+'</em>':'')+(p1?'<em class="t2">1v1 / 2v2 pick</em>':'')+(p2?'<em class="t3">2v2 partner</em>':'')+(ab?'<em>'+ab.name+'</em>':'')+'</p>';
+    h+='<div class="row">'+(st?'':'<button class="sbtn" data-a="start" data-n="'+o.name+'">Start at '+s+'</button>')+(p1?'':'<button class="sbtn" data-a="p1" data-n="'+o.name+'">Make 1v1 pick</button>')+(gr?'<button class="sbtn" data-a="style" data-n="'+o.name+'">Looks</button>':'')+'</div></div>';});});
+  L.innerHTML=h||'<p>No players here yet. Visit the shop to unlock more.</p>';
+  $('invSum').textContent='You own '+n+' of '+tot+' players. Your lineup: '+SLOTS.map(s=>POOL[s][squad[s]].name).join(', ')+'. 1v1 / 2v2: '+pk1+(pk2?' and '+pk2:'')+'.';
+  $('invTabs').querySelectorAll('button').forEach(b=>b.classList.toggle('sel',b.dataset.v===invTab));
+  requestAnimationFrame(()=>{const dpr=Math.min(2,window.devicePixelRatio||1);document.querySelectorAll('#invList canvas.invart').forEach(cv=>{const nm=cv.dataset.n,c=findChar(nm);if(!c)return;const w=cv.clientWidth||240,hh=cv.clientHeight||Math.round(w*0.5);cv.width=Math.round(w*dpr);cv.height=Math.round(hh*dpr);const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);try{ART.portrait(g,w,hh,nm,ppJ(c.o),rarCol(nm),0);}catch(e){}});});
+}
+function invOpen(){hideScreens();invRender();show('inv');}
+$('invBtn').onclick=()=>{uiSnd('uiSelect');invOpen();};
+$('invBack').onclick=()=>{hideEl('inv');renderSquad();show('menu');};
+$('invTabs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;invTab=b.dataset.v;uiSnd('uiTick');invRender();});
+$('invList').addEventListener('click',e=>{
+  const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a,nm=b.dataset.n,c=nm&&findChar(nm);
+  if(a==='cc'){invCC=true;hideEl('inv');openCC();return;}
+  if(!c)return;
+  if(a==='prof'||a==='style'){uiSnd('uiSelect');if(a==='style'&&PP)PP.tab='mastery';else if(a==='style')PP={raf:0,t0:0,tab:'mastery'};ppOpen(nm);return;}
+  if(a==='start'){squad[c.s]=POOL[c.s].indexOf(c.o);saveCfg();uiSnd('uiGood');toast(nm+' starts at '+c.s+'.');}
+  if(a==='p1'){if(pk2===nm)pk2=pk1;pk1=nm;saveCfg();uiSnd('uiGood');toast(nm+' is your 1v1 / 2v2 pick.');}
+  try{renderSquad();renderDuo();}catch(x){}invRender();
+});
 /* ===== leaderboards (needs cloud accounts) ===== */
 const LB_CATS=[
   {n:'Most XP',f:'xp',fmt:v=>Number(v).toLocaleString()+' XP'},
@@ -5142,7 +5221,8 @@ const CODES=[
   {h:'246pcb94665',unlock:"APEX"},
   {h:'61c6wrsi1i',unlock:"PHANTOM"},
   {h:'kzetu2gd3a',unlock:"ADAPT"},
-  {h:'1jo0ar4xsz9',coins:1000}
+  {h:'1jo0ar4xsz9',coins:1000},
+  {h:'1awnthwv16j',coins:2000,cos:'head:sunset'}
 ];
 function redeem(){
   const raw=$('codeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''),msg=$('codeMsg');
@@ -5155,6 +5235,9 @@ function redeem(){
     if(owned.indexOf(c.unlock)<0){owned.push(c.unlock);parts.push('unlocked '+c.unlock+' ('+rarName(c.unlock)+')');}
     else{add+=300;parts.push(c.unlock+' was already yours');}
   }
+  if(c.cos){const u=COS_UNI.find(x=>x[1]+':'+x[0]===c.cos),nm=u?u[2]:'a cosmetic';
+    if(cosU.indexOf(c.cos)<0){cosU.push(c.cos);for(const k in LOOK_CACHE)delete LOOK_CACHE[k];parts.push('unlocked the '+nm+' for every player (equip it in My players, Looks)');}
+    else parts.push('the '+nm+' was already yours');}
   if(add){coins+=add;parts.push('+'+add+' coins');}
   redeemed.push(h);saveCfg();renderSquad();sfx.cheer(0.6);
   uiSnd('uiGood');msg.textContent='Code redeemed: '+parts.join(', ')+'.';$('codeIn').value='';
@@ -6093,7 +6176,7 @@ function updateTouchLabels(){
 }
 
 /* ===== menu sounds ===== */
-const BACK_IDS=['dailyBack','dtBack','sbBack','upBack','stBack','ccBack','daBack','devBack','qcClose','profBack','frBack','dmBack','repCancel','invNo','playBack','offBack','qpBack','tpBack','netBack','setBack','shopClose','codeBack','evBack','acBack','lvBack','lbBack','brBack','chCancel','tutBack','hangNo','coachExit','hangLeave','specStop'];
+const BACK_IDS=['invBack','dailyBack','dtBack','sbBack','upBack','stBack','ccBack','daBack','devBack','qcClose','profBack','frBack','dmBack','repCancel','invNo','playBack','offBack','qpBack','tpBack','netBack','setBack','shopClose','codeBack','evBack','acBack','lvBack','lbBack','brBack','chCancel','tutBack','hangNo','coachExit','hangLeave','specStop'];
 var uiHovT=0,lastCoins=null;
 function uiOk(){return SET.vol.ui!==false;}
 function uiSnd(k){if(uiOk()&&sfx[k])sfx[k]();}
@@ -6119,11 +6202,11 @@ function bumpCoins(){
   lastCoins=coins;
 }
 /* ================= new UI navigation ================= */
-const SCREENS=['daily','menu','play','offline','qp','tp','friends','dm','story','cc','upg'];
+const SCREENS=['inv','daily','menu','play','offline','qp','tp','friends','dm','story','cc','upg'];
 function hideScreens(){SCREENS.forEach(id=>hideEl(id));}
 function showDevlog(){show('devlog');$('devOk').focus();}
 function startupPopups(){let v='';try{v=localStorage.getItem('sk_dev')||'';}catch(e){}if(v!==DEV_VER)showDevlog();}
-$('devOk').onclick=()=>{try{localStorage.setItem('sk_dev',DEV_VER);}catch(e){}hideEl('devlog');};
+$('devOk').onclick=()=>{try{localStorage.setItem('sk_dev',DEV_VER);}catch(e){}hideEl('devlog');setTimeout(grindNudge,500);};
 $('newsBtn').onclick=showDevlog;
 function go(id){hideScreens();hideEl('net');show(id);}
 $('mPlay').onclick=()=>go('play');
@@ -6247,7 +6330,6 @@ const DEV_HASH='11cal5ouw9s';
 /* Unreleased content lives here. Each entry is a toggle in the dev build (Settings, Help). */
 const DEV_FEATURES=[
   {id:'all',name:'All players unlocked',desc:'Every player, including hidden ones, is available to pick. Your real unlocks and coins are not changed.',on:true},
-  {id:'grind',name:'Daily challenges, streaks, mastery and cosmetics',desc:'A Daily screen on the main menu with a login streak (rewards build to day 7) and three daily challenges that reset at midnight Eastern. Every player levels up 1 to 10 as you play with them, unlocking shoes, headbands, wristbands and jersey trim in their profile.',on:true},
   {id:'story',name:'Story mode: Velocity Break',desc:'A four-chapter campaign with the Ash Hounds, from the cracked courts of the Lower Sprawl to the Sovereigns on the threshold, plus a custom player creator. Find it in Play, Offline.',on:true}
 ];
 var devTaps=0,devTapT=0,devMaster=false,devOn=false,devX={},devRealOwned=null,devTries=[];
@@ -9067,7 +9149,7 @@ function upgRender(){
     if(storyAfterCC){storyAfterCC=false;toast(nm+' ('+ccOvr(custom)+' OVR) heads to the Hounds\' court for the tryout.');storyStart(-1);return;}
     storyRender();show('story');toast(nm+' ('+ccOvr(custom)+' OVR) is part of the Ash Hounds.');
   };
-  $('ccBack').onclick=()=>{storyAfterCC=false;storyIntroNow=false;hideEl('cc');storyRender();show('story');};
+  $('ccBack').onclick=()=>{if(invCC){invCC=false;storyAfterCC=false;storyIntroNow=false;hideEl('cc');invOpen();return;}storyAfterCC=false;storyIntroNow=false;hideEl('cc');storyRender();show('story');};
   $('upBack').onclick=()=>{hideEl('upg');storyRender();show('story');};
   $('stBack').onclick=()=>{hideEl('story');go('offline');};
   $('stIntro').onclick=()=>{hideEl('story');filmPlay(()=>{storyRender();show('story');});};
