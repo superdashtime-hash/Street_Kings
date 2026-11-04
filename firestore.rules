@@ -47,6 +47,27 @@ service cloud.firestore {
           && request.resource.data.wt >= resource.data.wt && request.resource.data.wt <= resource.data.wt + 3)
         || (request.time >= weekEnd(wk) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['paid']) && request.resource.data.paid == true));
     }
+    // Story events (Sprawl Showdown): events/{event}/p/{uid}. A player can only add to their own wins and losses, a game or two
+    // at a time, while the event is running (the _dev board is for the dev build and is always open, with no prize).
+    // After the real event ends only the prize flag can change.
+    function sdStart() { return timestamp.date(2026, 11, 15) + duration.value(5, 'h'); }
+    function sdEnd() { return timestamp.date(2026, 12, 1) + duration.value(5, 'h'); }
+    function sdOpen(ev) { return ev == 'showdown2026_dev' || (ev == 'showdown2026' && request.time >= sdStart() && request.time < sdEnd()); }
+    function sdShape(d) {
+      return d.keys().hasOnly(['n', 'w', 'l', 'at', 'c']) && d.n is string && d.n.size() <= 12
+        && d.w is int && d.w >= 0 && d.l is int && d.l >= 0 && d.at is int && d.c is map;
+    }
+    match /events/{ev}/p/{uid} {
+      allow read: if true;
+      allow create: if signedIn() && me() == uid && sdOpen(ev) && sdShape(request.resource.data)
+        && request.resource.data.w <= 2 && request.resource.data.l <= 2;
+      allow update: if signedIn() && me() == uid && (
+        (sdOpen(ev) && sdShape(request.resource.data)
+          && request.resource.data.w >= resource.data.w && request.resource.data.w <= resource.data.w + 2
+          && request.resource.data.l >= resource.data.l && request.resource.data.l <= resource.data.l + 2)
+        || (ev == 'showdown2026' && request.time >= sdEnd()
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['paid']) && request.resource.data.paid == true));
+    }
     match /presence/{id} {
       allow read: if true;
       allow create, update: if request.resource.data.keys().hasOnly(['seen', 'exp']) && request.resource.data.seen is timestamp && request.resource.data.exp is timestamp;
