@@ -164,6 +164,18 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 .dl li span{color:var(--muted)}
 #toast{position:absolute;bottom:7%;left:50%;transform:translateX(-50%);background:rgba(8,11,26,.94);border:1px solid var(--line);padding:.8cqw 1.6cqw;border-radius:1cqw;z-index:90;font-weight:700;font-size:clamp(10px,1.4cqw,18px)}
 #menu,#play,#offline{background:radial-gradient(ellipse at 50% 40%,rgba(6,10,26,.72),rgba(3,5,14,.9))}
+
+.ccopt{display:flex;flex-wrap:wrap;gap:.3em}
+.ccopt button{font:inherit;font-size:clamp(10px,1.05cqw,14px);font-weight:700;padding:.25em .65em;border-radius:999px;border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:var(--ink);cursor:pointer}
+.ccopt button.sel{background:var(--accent,#17d6ff);border-color:transparent;color:#071018}
+.sw button.none{background:rgba(255,255,255,.08);color:var(--muted);font-weight:900;line-height:1}
+.sdcard{border-color:#ff5ee0 !important}
+.sdcard .sdvs{display:flex;align-items:center;gap:.8em;margin:.5em 0}
+.sdcard .sdvs canvas{border-radius:10px;background:rgba(255,255,255,.05);flex:none}
+.sdcard .sdvs b{font-size:1.1em}
+.sdcard .row{justify-content:flex-start;flex-wrap:wrap;gap:.4em;margin:.4em 0}
+.sdlb{display:grid;grid-template-columns:2em 1fr auto;gap:.15em .6em;margin:.4em 0;font-size:.95em}
+.sdlb .me{color:#3dffa8;font-weight:800}
 #chalDlg{z-index:60}#devlog{z-index:70}#settings{z-index:50}
 #hangMode{display:none!important}
 #teamPanel.hide{display:none}
@@ -672,7 +684,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
       <div id="dailyBody"></div>
       <div class="row"><button class="go" id="dailyBack" style="background:var(--ink)">Back</button></div>
     </div></div>
-  <div id="events" class="ov hide"><div class="card">
+  <div id="events" class="ov hide"><div class="card scr">
       <h1>EVENTS</h1>
       <p>Complete events to earn special rewards.</p>
       <div id="evList"></div>
@@ -1313,6 +1325,7 @@ function applyCfg(cfg){
     if(cfg.mst&&typeof cfg.mst==='object')for(const k in cfg.mst)if(PROFILES[k]||LOOKS[k])mst[k]=Math.max(0,Math.floor(+cfg.mst[k]||0));
     if(cfg.cos&&typeof cfg.cos==='object')cos=JSON.parse(JSON.stringify(cfg.cos));
     if(Array.isArray(cfg.cosU))cosU=cfg.cosU.filter(x=>typeof x==='string');
+    sdRecS=(cfg.sd&&typeof cfg.sd.k==='string')?{k:cfg.sd.k,w:Math.max(0,Math.floor(+cfg.sd.w||0)),l:Math.max(0,Math.floor(+cfg.sd.l||0))}:undefined;
     if(typeof cfg.qmw==='number'&&cfg.qmw>=0)acctQmWins=Math.floor(cfg.qmw);
     if(typeof cfg.full==='boolean')wantFull=cfg.full;
     if(Array.isArray(cfg.sh)&&cfg.sh.length===3)acctShots=cfg.sh.map(n=>Math.max(0,Math.floor(+n||0)));
@@ -1329,7 +1342,7 @@ function applyCfg(cfg){
     if(owned.indexOf(pk2)<0||pk2===pk1)pk2=owned.find(n=>n!==pk1);
   }catch(e){}
 }
-function curCfg(){return {squad:squad,teamCol:teamCol,teamName:teamName,oppIdx:oppIdx,gameLen:gameLen,coins:coins,titles:titles,redeemed:redeemed,gm:gm,pk1:pk1,pk2:pk2,owned:(typeof devRealOwned!=='undefined'&&devRealOwned)?devRealOwned:owned,xp:acctXp,qmw:acctQmWins,dly:dly,stk:stk,mst:mst,cos:cos,cosU:cosU,full:wantFull,sh:acctShots,lb:lbShow,tr:tourSave?JSON.stringify(tourSave):null,cc:(typeof custom!=='undefined'&&custom)?JSON.stringify(custom):((typeof customRaw!=='undefined'&&customRaw)||null),stp:(typeof storyDone!=='undefined')?storyDone:0,spr:(typeof storyProDone!=='undefined'&&storyProDone)?1:0,sis:(typeof storyIntroSeen!=='undefined'&&storyIntroSeen)?1:0,sln:(typeof storyLineup!=='undefined'&&storyLineup)?storyLineup:null,stv:2,ts:Date.now()};}
+function curCfg(){return {squad:squad,teamCol:teamCol,teamName:teamName,oppIdx:oppIdx,gameLen:gameLen,coins:coins,titles:titles,redeemed:redeemed,gm:gm,pk1:pk1,pk2:pk2,owned:(typeof devRealOwned!=='undefined'&&devRealOwned)?devRealOwned:owned,xp:acctXp,qmw:acctQmWins,dly:dly,stk:stk,mst:mst,cos:cos,cosU:cosU,sd:sdRecS||null,full:wantFull,sh:acctShots,lb:lbShow,tr:tourSave?JSON.stringify(tourSave):null,cc:(typeof custom!=='undefined'&&custom)?JSON.stringify(custom):((typeof customRaw!=='undefined'&&customRaw)||null),stp:(typeof storyDone!=='undefined')?storyDone:0,spr:(typeof storyProDone!=='undefined'&&storyProDone)?1:0,sis:(typeof storyIntroSeen!=='undefined'&&storyIntroSeen)?1:0,sln:(typeof storyLineup!=='undefined'&&storyLineup)?storyLineup:null,stv:2,ts:Date.now()};}
 function readAccts(){try{return JSON.parse(localStorage.getItem('sk_accts')||'{}')||{};}catch(e){return {};}}
 function writeAccts(a){try{localStorage.setItem('sk_accts',JSON.stringify(a));}catch(e){}}
 try{
@@ -1449,15 +1462,16 @@ const keys={};
 const touch={active:false,x:0,y:0};
 
 function createGame(){
-  const stl=typeof story!=='undefined'&&story&&story.live&&!pvp;
-  setCourt(wantFull&&!pvp&&!practice&&!hangOn&&!(tour&&tour.live)&&!stl);
+  const stl=typeof story!=='undefined'&&story&&story.live&&!pvp,sdl=!!(sdG&&!pvp&&!stl&&custom);
+  setCourt(wantFull&&!pvp&&!practice&&!hangOn&&!(tour&&tour.live)&&!stl&&!sdl);
   forceW=null;pauseReq=false;guestPaused=false;
   teams=[
     {id:0,name:teamName,color:COLORS[teamCol].c,dark:COLORS[teamCol].d,accent:COLORS[teamCol].a,score:0,needClear:false},
     {id:1,name:curOpp().name,color:curOpp().c,dark:curOpp().d,accent:curOpp().a,score:0,needClear:false}
   ];
   let mine,theirs=curOpp().roster.slice();const GM=stl?3:(practice?(hangOn?1:2):gm);
-  if(stl){mine=storyMine(story.g);if(story.def.solo){mine=[custom?ccRoster(custom):mine[0]];theirs=theirs.slice(0,1);}}
+  if(sdl){const oc=sdG.opp,orow=ccRoster(Object.assign({},oc,{name:oc.name===custom.name?(oc.name.slice(0,9)+'2'):oc.name}));mine=[ccRoster(custom)];theirs=[orow];}
+  else if(stl){mine=storyMine(story.g);if(story.def.solo){mine=[custom?ccRoster(custom):mine[0]];theirs=theirs.slice(0,1);}}
   else if(GM===3)mine=SLOTS.map(s=>{const o=POOL[s][squad[s]];return [s,o.name,o.num,o.skin,o.mod];});
   else{
     mine=[pk1,pk2].slice(0,GM).map(nm=>{const c=findChar(nm)||findChar('DIME');return [c.s,c.o.name,c.o.num,c.o.skin,c.o.mod];});
@@ -1477,10 +1491,11 @@ function createGame(){
   if(stl){story.bench=story.def.solo?null:storyBenchMake(storyLineupFor(story.g).bench);players.forEach(p=>{p.en=1;if(p.team===0)p._row=roster[0][p.idx];});}
   if(!stl&&tour&&tour.live&&!pvp){tour.bench=null;if(tPlus()){const rows=tBenchGet().map(storyRowOf).filter(Boolean);if(rows.length){tour.bench=storyBenchMake(rows);players.forEach(p=>{p.en=1;if(p.team===0)p._row=roster[0][p.idx];});}}}
   if(stl){teams[0].name='ASH HOUNDS';teams[0].color='#c9ced9';teams[0].dark='#3a3f4f';teams[0].accent='#ff7a1a';if(story.def.solo){teams[0].name=custom?custom.name:'DIME';teams[1].name='BLAZE';}}
+  if(sdl){teams[0].name=custom.name;teams[1].name=players.find(p=>p.team===1).name;teams[1].color='#ff5ee0';teams[1].dark='#4a1640';teams[1].accent='#ffd166';const op=players.find(p=>p.team===1);op.lk=Object.assign({build:1},lookCustom(sdG.opp));}
   if(pvp)[0,1].forEach(i=>{const col=COLORS[netCfg.cols[i]];Object.assign(teams[i],{name:netCfg.names[i],color:col.c,dark:col.d,accent:col.a});});
   players.forEach(p=>{p.guard=players.find(q=>q.team!==p.team&&q.idx===p.idx);});
   ball={x:0,y:0,z:1,vx:0,vy:0,vz:0,state:'loose',holder:null,spin:0,age:0,shooter:null,shooterTeam:0,made:false,three:false,fromShot:false,scored:false,passer:null,target:null,passAge:0};
-  poss=0;setHoop(0);gameTime=0;timeLeft=pvp?netCfg.len:(stl?story.def.len:((tour&&tour.live&&gameLen<120)?120:gameLen));overtime=0;shotClock=SC;resultShown=false;floaters=[];vfx=[];freezeT=0;slowT=0;banner=null;shake=0;netT=0;ctrl=null;ctrl2=null;ctxTeam=0;
+  poss=0;setHoop(0);gameTime=0;timeLeft=pvp?netCfg.len:(sdl?SD.len:stl?story.def.len:((tour&&tour.live&&gameLen<120)?120:gameLen));overtime=0;shotClock=SC;resultShown=false;floaters=[];vfx=[];freezeT=0;slowT=0;banner=null;shake=0;netT=0;ctrl=null;ctrl2=null;ctxTeam=0;
 }
 
 function addVfx(type,x,y,z,dir,life){if(pvp&&role==='host')evq.push(['v',type,x,y,z,dir,life]);vfx.push({type:type,x:x,y:y,z:z,dir:dir,t:0,life:life});}
@@ -2609,13 +2624,13 @@ function lookGen(name){
   return L;
 }
 const LOOK_CACHE={},LOOK_BASE={};
-function lookBase(name){if(LOOK_BASE[name])return LOOK_BASE[name];const L=Object.assign({build:1,shoe:'#f4f6ff',sole:'#c9ced9'},LOOKS[name]||lookGen(name));LOOK_BASE[name]=L;return L;}
+function lookBase(name){if(LOOK_BASE[name])return LOOK_BASE[name];if(name==='YOU'&&typeof custom!=='undefined'&&custom&&typeof lookCustom==='function'){const L=Object.assign({build:1,shoe:'#f4f6ff',sole:'#c9ced9'},lookCustom(custom));LOOK_BASE[name]=L;return L;}const L=Object.assign({build:1,shoe:'#f4f6ff',sole:'#c9ced9'},LOOKS[name]||lookGen(name));LOOK_BASE[name]=L;return L;}
 function lookOf(name){if(LOOK_CACHE[name])return LOOK_CACHE[name];const L=typeof cosApply==='function'&&cos?cosApply(name,lookBase(name)):lookBase(name);LOOK_CACHE[name]=L;return L;}
 /* Adapt's gear follows his live level: 0.3 at tip-off, 1 when fully adapted, up to 1.35 */
 function lkLvl(p){try{return p&&p.arch&&p.arch.adapt&&typeof adk==='function'?adk(p):1;}catch(e){return 1;}}
 function lookOn(){return true;}
 function myTeamIdx(){return (typeof pvp!=='undefined'&&pvp&&role==='guest')?1:0;}
-function lookForPlayer(p){if(!p||!p.name||!lookOn())return null;if(typeof custom!=='undefined'&&custom&&p.name===custom.name)return lookOf('YOU');return p.team===myTeamIdx()?lookOf(p.name):lookBase(p.name);}
+function lookForPlayer(p){if(!p||!p.name||!lookOn())return null;if(p.lk)return p.lk;if(typeof custom!=='undefined'&&custom&&p.name===custom.name)return lookOf('YOU');return p.team===myTeamIdx()?lookOf(p.name):lookBase(p.name);}
 /* ---- in-game head: hair, headwear and face gear on the small court figures ---- */
 function lkHead(c,L,hx,hy,r,d,skin,acc,T,p){
   const hk=!!L.hat,hc=L.hc||'#17171c',st=(hk&&(L.hair==='hood'||L.hair==='beanie'))?'short':L.hair,hv=hk&&['afro','puff','curly','twists','bun'].indexOf(st)>=0,P2=Math.PI*2;
@@ -4108,6 +4123,7 @@ function showResult(){
   if(sl)$('rSub').textContent+=storyAfter(w);
   if(w===me&&pvp&&qmGame)acctQmWins++;
   if(tl)$('rSub').textContent+=tourAfterGame(w);
+  if(sdG&&!pvp){$('rSub').textContent+=sdAfter(w===me);$('againBtn').textContent='Next opponent';$('menuBtn').textContent='Events';}
   $('rSub').textContent+=addXp(xpg+pendingXp);pendingXp=0;
   try{$('rSub').textContent+=grindAfterGame(w,me);}catch(e){}
   if(pvp){$('againBtn').textContent=role==='host'?'Rematch':'Waiting for host';$('againBtn').disabled=role!=='host';$('menuBtn').textContent='Leave';}else $('againBtn').disabled=false;
@@ -4120,14 +4136,14 @@ function showResult(){
 function startGame(){
   gGreen=0;hangShutdown();practice=false;hangOn=false;hideEl('coach');hideEl('hang');hideEl('hangChal');hideEl('qchat');
   sfx.init();
-  diffIdx=(story&&story.live)?story.def.diff:((tour&&tour.live)?tDiffOk(tour.diff):selDiff);
+  diffIdx=(story&&story.live)?story.def.diff:(sdG?SD.diff:((tour&&tour.live)?tDiffOk(tour.diff):selDiff));
   createGame();
   hideScreens();hideEl('result');hideEl('pause');
   hintT=14;
   checkBall(0);
   if(story&&story.live)showBanner(story.def.pro?'PROLOGUE · THE TRYOUT':'CHAPTER '+(story.def.ci+1)+' · GAME '+(story.def.gi+1),'vs '+story.def.opp.name+' | '+DIFF[diffIdx].name,'#ff9a3d');
   sfx.whistle(1);
-  if(story&&story.live){}else showBanner('TIP OFF',(pvp?netCfg.gm:gm)+'v'+(pvp?netCfg.gm:gm)+' | '+fmt(pvp?netCfg.len:gameLen)+(pvp?'':' | '+DIFF[diffIdx].name),'#ffe066');
+  if(story&&story.live){}else if(sdG)showBanner('SPRAWL SHOWDOWN','vs '+sdG.opp.name+' | 1v1 | All-Star','#ff5ee0');else showBanner('TIP OFF',(pvp?netCfg.gm:gm)+'v'+(pvp?netCfg.gm:gm)+' | '+fmt(pvp?netCfg.len:gameLen)+(pvp?'':' | '+DIFF[diffIdx].name),'#ffe066');
 }
 function seg(id,cb){
   const el=$(id);
@@ -4672,7 +4688,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.3.3';
+const GAME_VER='2.3.4';
 const DEV_VER='2.3.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -4752,7 +4768,7 @@ function mergeCfg(R,L,B){
   o.owned=uni(R.owned,L.owned);o.redeemed=uni(R.redeemed,L.redeemed);o.cosU=uni(R.cosU,L.cosU);
   o.mst=Object.assign({},R.mst||{});for(const k in (L.mst||{}))o.mst[k]=Math.max(num(o.mst[k]),num(L.mst[k]));
   const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
-  ['squad','teamCol','teamName','oppIdx','gameLen','gm','pk1','pk2','full','lb','tr','cc','stp','spr','sln','sis','dly','stk','cos'].forEach(k=>{
+  ['squad','teamCol','teamName','oppIdx','gameLen','gm','pk1','pk2','full','lb','tr','cc','stp','spr','sln','sis','dly','stk','cos','sd'].forEach(k=>{
     if(!B||!same(L[k],B[k]))o[k]=L[k]===undefined?R[k]:L[k];
   });
   o.ts=Math.max(num(R.ts),num(L.ts));
@@ -4833,7 +4849,7 @@ async function cloudInit(){
   try{
     await fbLoad();startPresence();
     fb.au.onAuthStateChanged(fb.a,async u=>{
-      if(u){cloudUser=u;user=nameOf(u.email);await cloudPull();socStart();pollLoad(true);devCheckAdmin();setTimeout(wkClaim,1500);}
+      if(u){cloudUser=u;user=nameOf(u.email);await cloudPull();socStart();pollLoad(true);devCheckAdmin();setTimeout(wkClaim,1500);setTimeout(()=>{try{sdClaim();}catch(e){}},2500);}
       else if(cloudUser){poll.mine='';poll.t=0;setTimeout(()=>pollLoad(true),0);socStop();if(saveUnsub){try{saveUnsub();}catch(e){}saveUnsub=null;}cloudUser=null;user='';applyCfg(guestCfg());}
       refreshAll();maybeTutorial();tryInvite();
     });
@@ -4926,8 +4942,89 @@ function fmtLeft(ms){
   const m=Math.max(0,Math.floor(ms/60000)),d=Math.floor(m/1440),hh=Math.floor((m%1440)/60),mm=m%60;
   return d>0?d+'d '+hh+'h':(hh>0?hh+'h '+mm+'m':mm+'m');
 }
+
+/* ===== Sprawl Showdown: a story-mode event, 1v1 MyPLAYER against other players' MyPLAYERs (computer-controlled) ===== */
+const SD={id:'showdown2026',title:'Sprawl Showdown',start:Date.UTC(2026,10,15,5),end:Date.UTC(2026,11,1,5),when:'November 15 to 30',endTxt:'November 30 at 11:59 PM Eastern',len:180,diff:2,coins:50000};
+const sdEsc=v=>String(v).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
+var sdG=null,sdOpp=null,sdPool=null,sdAfterCC=false,sdLbRows=null;
+function sdOn(){return typeof devFeat==='function'&&devFeat('showdown');}
+function sdBoard(){return devOn?SD.id+'_dev':SD.id;}
+function sdOpen(){const n=Date.now();return devOn||(n>=SD.start&&n<SD.end);}
+function sdRef(uid){return fb.fs.doc(fb.db,'events',sdBoard(),'p',uid);}
+function sdRec(){const b=sdBoard();if(!sdRecS||sdRecS.k!==b)sdRecS={k:b,w:0,l:0};return sdRecS;}
+var sdRecS;
+function sdPack(c){const o={name:c.name,num:c.num,pos:c.pos,arch:c.arch,h:+(+c.h).toFixed(2),w:c.w,skin:c.skin,a:{},b:(c.b||[]).slice(0,3),ab:c.ab,lk:validLk(c.lk),ovr:ccOvr(c)};AKEYS.forEach(k=>{o.a[k]=c.a[k];});return o;}
+function sdUnpack(x){try{if(!x||!CC_H[x.pos])return null;const c={name:cleanName(String(x.name||'RIVAL')).slice(0,10)||'RIVAL',num:clamp(Math.floor(+x.num||0),0,99),pos:x.pos,arch:(ARCHS[x.pos].find(a=>a.id===x.arch)||ARCHS[x.pos][0]).id,
+    h:clamp(+x.h||CC_H[x.pos][0],CC_H[x.pos][0],CC_H[x.pos][1]),w:clamp(Math.round(+x.w||200),CC_W[x.pos][0],CC_W[x.pos][1]),skin:CC_SKINS.indexOf(x.skin)>=0?x.skin:CC_SKINS[2],a:{},
+    b:(Array.isArray(x.b)?x.b:[]).filter(id=>BADGES.some(q=>q.id===id)).slice(0,3),ab:CC_ABS.indexOf(x.ab)>=0?x.ab:'rex',lk:validLk(x.lk),ovr:clamp(Math.floor(+x.ovr||60),60,99)};
+  AKEYS.forEach(k=>{c.a[k]=clamp(Math.round(+((x.a||{})[k])||50),25,99);});return c;}catch(e){return null;}}
+/* Sprawl regulars: rival MyPLAYERs for when the board is still filling up */
+const SD_RIVALS=[['NOVA','PG','sharp',11,'#8d5524',{hair:'twists',hc:'#16110d',tip:'#ff5ee0',band:'#ff5ee0',wrist:'both',wristC:'#ff5ee0',shoe:'#1b1d26',sole:'#ff5ee0'},72],
+  ['RIFT','SG','slashp',23,'#e0ac69',{hair:'fade',hc:'#3b2414',beardT:'stubble',sleeve:'F',sleeveC:'#1b1d26',shoe:'#ff4d5e',sole:'#f4f6ff'},70],
+  ['TANK','C','beast',50,'#6b4423',{hair:'bald',beardT:'full',hc:'#16110d',knee:'both',shoe:'#1b1d26',sole:'#ffd166'},74],
+  ['JINX','PG','slash',3,'#f1c27d',{hair:'spiky',hc:'#d9b26a',tip:'#17d6ff',face:'goggles',faceC:'#17d6ff',shoe:'#17d6ff',sole:'#1b1d26'},68],
+  ['KODA','SG','shooter',30,'#a0693a',{hair:'locks',hc:'#16110d',hat:'#ffd166',socks:'#ffd166',shoe:'#f4f6ff',sole:'#ffd166'},76],
+  ['MESA','C','stretch',41,'#c68642',{hair:'curly',hc:'#6b3f1f',band:'#3dffa8',sleeve:'both',sleeveC:'#3dffa8',shoe:'#3dffa8',sole:'#1b1d26'},71],
+  ['ECHO','SG','3d',8,'#8d5524',{hair:'durag',hc:'#7a4dff',face:'scope',faceC:'#ff4d5e',wrist:'F',wristC:'#7a4dff',shoe:'#c9a0ff',sole:'#f4f6ff'},73],
+  ['BRUNO','C','lock',33,'#e0ac69',{hair:'buzz',hc:'#3b2414',beardT:'goatee',knee:'F',shoe:'#7a5a33',sole:'#c9ced9'},69],
+  ['PIXIE','PG','psc',1,'#6b4423',{hair:'buns',hc:'#16110d',tip:'#ffd166',face:'phones',faceC:'#ffd166',shoe:'#ffd166',sole:'#ff7a1a'},75],
+  ['STONE','SG','slashp',15,'#f1c27d',{hair:'mohawk',hc:'#b8322a',sleeve:'F',sleeveC:'#b8322a',shoe:'#1b1d26',sole:'#b8322a'},78]];
+function sdRival(r){const ar=ARCHS[r[1]].find(a=>a.id===r[2])||ARCHS[r[1]][0],hr=CC_H[r[1]],wr=CC_W[r[1]],k=(r[6]-60)/39;
+  const c={name:r[0],num:r[3],pos:r[1],arch:ar.id,skin:r[4],h:+((hr[0]+hr[1])/2).toFixed(2),w:Math.round((wr[0]+wr[1])/2),pot:Object.assign({},ar.a),b:ar.b.slice(),ab:CC_ABS[(r[3]*7)%CC_ABS.length],lk:validLk(Object.assign(ccLkDefault(),r[5])),ovr:r[6]};
+  ccFit(c);const a0=ccStart(c);c.a={};AKEYS.forEach(q=>{c.a[q]=Math.round(a0[q]+(c.pot[q]-a0[q])*k);});return c;}
+async function sdLoadPool(){
+  const out=[];if(cloudOn&&fb&&cloudUser){try{const F=fb.fs,snap=await F.getDocs(F.query(F.collection(fb.db,'events',sdBoard(),'p'),F.orderBy('w','desc'),F.limit(40)));
+    sdLbRows=snap.docs.map(d=>Object.assign({id:d.id},d.data())).filter(x=>(+x.w||0)>0).sort((a,b)=>b.w-a.w||(a.at||0)-(b.at||0));
+    snap.docs.forEach(d=>{if(d.id===cloudUser.uid)return;const c=sdUnpack(d.data().c);if(c){c.by=String(d.data().n||'').slice(0,12);out.push(c);}});}catch(e){}}
+  sdPool=out;return out;}
+function sdPick(){const mine=custom?custom.name:'';let list=(sdPool||[]).filter(c=>c.name!==mine);
+  const riv=SD_RIVALS.map(sdRival).filter(c=>c.name!==mine);if(list.length<6)list=list.concat(riv);
+  const prev=sdOpp?sdOpp.name+'|'+(sdOpp.by||''):'';let pick=null;for(let i=0;i<6;i++){pick=list[Math.floor(Math.random()*list.length)];if(pick.name+'|'+(pick.by||'')!==prev)break;}
+  sdOpp=pick;return pick;}
+function sdPortrait(cv,c){if(!cv||!c)return;const g=cv.getContext('2d'),W=cv.width,H=cv.height;g.clearRect(0,0,W,H);
+  try{ART.figure(g,W*0.5,H*0.5+H*2.2*0.94,H*2.2,1,lookCustom(c),{skin:c.skin,num:c.num,jc:'#2b2d3a',jt:'#ff5ee0',sc:'#1b1d26',name:c.name},'stand',{t:0,pose:{lean:0,aF:[-14,10],aB:[-20,8],neck:-4}});}catch(e){}}
+function sdCard(){
+  const R=sdRec(),now=Date.now(),open=sdOpen(),ended=!devOn&&now>=SD.end;let h='<div class="pc sdcard r-special"><div class="pn"><b>'+SD.title+'</b><span class="rb" style="color:#ff5ee0">'+(devOn?'Story event · dev preview':(ended?'Ended':'Story event'))+'</span></div>';
+  h+='<p>'+SD.when+'. Take your MyPLAYER one-on-one against other players\' MyPLAYERs, played by the computer. 3-minute games on All-Star. Every win counts.</p>';
+  h+='<p class="ab"><b>Prize:</b> the player with the most wins gets <b>Adapt</b> free, or <b>'+SD.coins.toLocaleString()+' coins</b> if they already have him. Ties go to whoever reached the total first.</p>';
+  h+='<p><b>'+(devOn?'Dev build: playable now. Wins go on a test leaderboard with no prize. The real event runs '+SD.when+'.':(ended?'Ended '+SD.endTxt+'.':(now<SD.start?'Starts November 15 ('+fmtLeft(SD.start-now)+').':'Ends '+SD.endTxt+' ('+fmtLeft(SD.end-now)+' left).')))+'</b></p>';
+  if(!custom){h+='<p>You need a MyPLAYER to enter.</p><div class="row"><button class="sbtn" data-sd="cc">Create your MyPLAYER</button></div>';}
+  else{const o=sdOpp||sdPick();
+    h+='<div class="sdvs"><canvas id="sdMe" width="84" height="84"></canvas><div><b>'+custom.name+'</b><br><small>'+ccOvr(custom)+' OVR · '+archOf(custom).n+'</small></div><b style="color:#ff5ee0;margin:0 .4em">VS</b><canvas id="sdOp" width="84" height="84"></canvas><div><b>'+o.name+'</b><br><small>'+o.ovr+' OVR · '+archOf(o).n+(o.by?' · '+sdEsc(o.by)+'\'s MyPLAYER':' · Sprawl regular')+'</small></div></div>';
+    h+='<p>Your record: <b>'+R.w+' win'+(R.w===1?'':'s')+'</b>, '+R.l+' loss'+(R.l===1?'':'es')+'.'+(cloudUser?'':' Log in to get on the leaderboard.')+'</p>';
+    h+='<div class="row">'+(open?'<button class="go" data-sd="play">Play</button><button class="sbtn" data-sd="new">New opponent</button>':'<button class="sbtn" disabled>'+(ended?'Event ended':'Not started yet')+'</button>')+'<button class="sbtn" data-sd="cc">Edit MyPLAYER</button></div>';}
+  h+='<div id="sdLb"><p class="tag">'+(cloudOn?'Loading the leaderboard...':'Leaderboards need cloud saves.')+'</p></div></div>';
+  return h;}
+function sdLbRender(){const el=$('sdLb');if(!el)return;const rows=(sdLbRows||[]).slice(0,10);
+  if(!rows.length){el.innerHTML='<p class="tag">No wins on the '+(devOn?'test ':'')+'leaderboard yet. Be the first!</p>';return;}
+  let h='<p class="tag">'+(devOn?'Test leaderboard':'Leaderboard')+'</p><div class="sdlb">';
+  rows.forEach((x,i)=>{const me=cloudUser&&x.id===cloudUser.uid,mp=x.c&&x.c.name?String(x.c.name).slice(0,10):'';h+='<span class="'+(me?'me':'')+'">#'+(i+1)+'</span><span class="'+(me?'me':'')+'">'+sdEsc(String(x.n||'?').slice(0,12))+(mp?' · '+sdEsc(mp):'')+'</span><span class="'+(me?'me':'')+'">'+x.w+(x.w==1?' win':' wins')+'</span>';});
+  el.innerHTML=h+'</div>';}
+function sdPaint(){sdPortrait($('sdMe'),custom?Object.assign({},custom,{lk:custom.lk}):null);sdPortrait($('sdOp'),sdOpp);}
+async function sdRefresh(){await sdLoadPool();if(!sdOpp||sdOpp.by===undefined)sdPick();if(!$('events').classList.contains('hide')){evRender();}}
+function sdPlay(){if(!custom||!sdOpen())return;const o=sdOpp||sdPick();tour=null;sdG={opp:o};hideScreens();hideEl('events');startGame();}
+function sdAfter(win){
+  const R=sdRec();if(win)R.w++;else R.l++;saveCfg();sdPushWin(win);
+  return ' Showdown record: '+R.w+'-'+R.l+'.'+(win?' Every win counts toward the prize.':'');}
+async function sdPushWin(win){
+  if(!cloudOn||!fb||!cloudUser||!custom)return;
+  try{const F=fb.fs,r=sdRef(cloudUser.uid),d=await F.getDoc(r),o=d.exists()?d.data():{};const w=(+o.w||0)+(win?1:0),l=(+o.l||0)+(win?0:1);
+    await F.setDoc(r,{n:user,w:w,l:l,at:win?Date.now():(+o.at||Date.now()),c:sdPack(custom)});
+    const R=sdRec();R.w=Math.max(R.w,w);R.l=Math.max(R.l,l);}catch(e){}}
+let sdChecked='';
+async function sdClaim(){
+  if(!cloudOn||!fb||!cloudUser||devOn||Date.now()<SD.end)return;if(sdChecked===cloudUser.uid)return;sdChecked=cloudUser.uid;
+  try{const F=fb.fs,mine=await F.getDoc(fb.fs.doc(fb.db,'events',SD.id,'p',cloudUser.uid));if(!mine.exists()||mine.data().paid||!(mine.data().w>0))return;
+    const snap=await F.getDocs(F.query(F.collection(fb.db,'events',SD.id,'p'),F.orderBy('w','desc'),F.limit(10)));
+    const rows=snap.docs.map(x=>({id:x.id,w:+x.data().w||0,at:+x.data().at||0})).filter(x=>x.w>0).sort((a,b)=>b.w-a.w||a.at-b.at);
+    if(!rows.length||rows[0].id!==cloudUser.uid)return;
+    await F.updateDoc(fb.fs.doc(fb.db,'events',SD.id,'p',cloudUser.uid),{paid:true});
+    if(owned.indexOf('ADAPT')<0){owned.push('ADAPT');toast('You won the Sprawl Showdown! Adapt is yours.');}else{coins+=SD.coins;try{bumpCoins();}catch(e){}toast('You won the Sprawl Showdown! You already have Adapt, so here are '+SD.coins.toLocaleString()+' coins.');}
+    saveCfg();renderSquad();uiSnd('uiGood');sfx.cheer(0.8);
+  }catch(e){sdChecked='';}}
+
 function evRender(){
-  let h='';
+  let h=sdOn()?sdCard():'';
   EVENTS.forEach(e=>{
     const have=Math.min(titles,e.need),pct=Math.round(have/e.need*100),own=owned.indexOf(e.reward)>=0,now=Date.now(),ended=!!e.end&&now>=e.end,can=!own&&!ended&&titles>=e.need;
     const o=findChar(e.reward),ab=ABIL[e.reward.toLowerCase()];
@@ -4944,8 +5041,11 @@ function evRender(){
     h+='</div>';
   });
   $('evList').innerHTML=h;
+  if(sdOn()){sdPaint();if(sdLbRows)sdLbRender();}
 }
 $('evList').addEventListener('click',e=>{
+  const sb=e.target.closest('button[data-sd]');if(sb){const a=sb.dataset.sd;uiSnd('uiSelect');
+    if(a==='play')sdPlay();else if(a==='new'){sdPick();evRender();}else if(a==='cc'){sdAfterCC=true;hideEl('events');openCC();}return;}
   const b=e.target.closest('button[data-claim]');if(!b)return;
   const ev=EVENTS.find(x=>x.id===b.dataset.claim);
   if(!ev||titles<ev.need||owned.indexOf(ev.reward)>=0||(ev.end&&Date.now()>=ev.end))return;
@@ -4953,7 +5053,7 @@ $('evList').addEventListener('click',e=>{
 });
 $('dailyBtn').onclick=()=>{uiSnd('uiSelect');dailyOpen();};
 $('dailyBack').onclick=()=>{hideEl('daily');renderSquad();show('menu');};
-$('evBtn').onclick=()=>{hideScreens();evRender();show('events');};
+$('evBtn').onclick=()=>{hideScreens();evRender();show('events');if(sdOn())sdRefresh().then(()=>{sdLbRender();});};
 $('evBack').onclick=()=>{hideEl('events');renderSquad();show('menu');};
 
 /* ===== weekly tournament leaderboard: weeks run Monday 12:00 AM to Sunday 11:59 PM, New York time ===== */
@@ -6151,8 +6251,8 @@ $('roomIn').addEventListener('keydown',e=>{if(e.key==='Enter')joinRoom();});
   if(m){try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}setTimeout(()=>{showNet('join');if(!user){inviteCode=m[1];netLockUi();$('netLockMsg').innerHTML="<b>Log in to join your friend's game.</b> You will join automatically right after you log in.";return;}joinRoom(m[1]);},0);}
 })();
 $('goBtn').onclick=startGame;
-$('againBtn').onclick=()=>{if(pvp){if(role==='host')hostStart();return;}if(story&&story.live){storyContinue();return;}if(tour&&tour.live)showBracket();else startGame();};
-$('menuBtn').onclick=()=>{if(story&&story.live){storyQuit();return;}if(pvp)netLeave('',true);tour=null;hideEl('result');show('menu');createGame();checkBall(0);phase='menu';renderSquad();};
+$('againBtn').onclick=()=>{if(pvp){if(role==='host')hostStart();return;}if(sdG&&!(story&&story.live)){sdPick();sdPlay();return;}if(story&&story.live){storyContinue();return;}if(tour&&tour.live)showBracket();else startGame();};
+$('menuBtn').onclick=()=>{if(story&&story.live){storyQuit();return;}if(sdG&&!pvp){sdG=null;hideEl('result');createGame();checkBall(0);phase='menu';hideScreens();evRender();show('events');sdRefresh().then(sdLbRender);return;}if(pvp)netLeave('',true);tour=null;hideEl('result');show('menu');createGame();checkBall(0);phase='menu';renderSquad();};
 $('resumeBtn').onclick=togglePause;
 
 /* ================= input ================= */
@@ -6232,7 +6332,7 @@ function startupPopups(){grindReady=true;let v='';try{v=localStorage.getItem('sk
 $('devOk').onclick=()=>{try{localStorage.setItem('sk_dev',DEV_VER);}catch(e){}hideEl('devlog');setTimeout(grindNudge,500);};
 $('newsBtn').onclick=showDevlog;
 function go(id){hideScreens();hideEl('net');show(id);}
-$('mPlay').onclick=()=>go('play');
+$('mPlay').onclick=()=>{sdG=null;go('play');};
 $('playBack').onclick=()=>go('menu');
 $('playOff').onclick=()=>go('offline');
 $('offBack').onclick=()=>go('play');
@@ -6353,6 +6453,7 @@ const DEV_HASH='11cal5ouw9s';
 /* Unreleased content lives here. Each entry is a toggle in the dev build (Settings, Help). */
 const DEV_FEATURES=[
   {id:'all',name:'All players unlocked',desc:'Every player, including hidden ones, is available to pick. Your real unlocks and coins are not changed.',on:true},
+  {id:'showdown',name:'Story event: Sprawl Showdown',desc:'November 15 to 30. One-on-one with your MyPLAYER against other players\' MyPLAYERs (played by the computer). Most wins gets Adapt, or 50,000 coins if they already have him. In the dev build it can be played any time and wins go on a separate test leaderboard.',on:true},
   {id:'story',name:'Story mode: Velocity Break',desc:'A four-chapter campaign with the Ash Hounds, from the cracked courts of the Lower Sprawl to the Sovereigns on the threshold, plus a custom player creator. Find it in Play, Offline.',on:true}
 ];
 var devTaps=0,devTapT=0,devMaster=false,devOn=false,devX={},devRealOwned=null,devTries=[];
@@ -8616,7 +8717,7 @@ function cineFig(sp,d){
   if(sp==='DIME'||sp==='BLAZE'||sp==='MOOSE'){const o=ch(sp);f.skin=o.skin;f.num=o.num;f.jc=HOUNDS_JERSEY.c;f.jt=HOUNDS_JERSEY.t;f.name=sp;}
   else if(sp==='YOU'){
     f.skin=custom?custom.skin:'#c68642';f.num=custom?custom.num:'?';f.jc=HOUNDS_JERSEY.c;f.jt=HOUNDS_JERSEY.t;
-    f.name=custom?custom.name:'YOU';f.build=custom?(custom.pos==='C'?1.22:(custom.pos==='SG'?1:0.96)):1;if(!custom)f.hood=1;
+    if(custom)f.look='YOU';f.name=custom?custom.name:'YOU';f.build=custom?(custom.pos==='C'?1.22:(custom.pos==='SG'?1:0.96)):1;if(!custom)f.hood=1;
     if(d&&d.pro){f.side=1;f.jc='#3a4256';f.jt='#9aa3c7';}
   }else if(RECRUIT_BY[sp]){
     const o=ch(sp),R=RECRUIT_BY[sp],g=(CN&&CN.o&&CN.o.g!=null)?CN.o.g:99;f.skin=o.skin;f.num=o.num;f.name=sp;
@@ -8956,6 +9057,24 @@ $('cLogBtn').onclick=cineLogToggle;$('cLogClose').onclick=()=>$('cLog').classLis
 window.addEventListener('resize',()=>{if(CN&&CN.open)cineSize();});
 /* ===== MyPLAYER builder (NBA 2K style): set potential once, grow from 60 to 99 ===== */
 const CC_SKINS=['#f1c27d','#e0ac69','#c68642','#a0693a','#8d5524','#6b4423'];
+/* ---- MyPLAYER style: hair, facial hair, headwear and gear ---- */
+const CC_HAIR=[['short','Short'],['buzz','Buzz cut'],['fade','Fade'],['part','Side part'],['slick','Slicked back'],['spiky','Spiky'],['flat','High top'],['mohawk','Mohawk'],['frohawk','Frohawk'],['afro','Afro'],['puff','Puff'],['curly','Curly'],['twists','Twists'],['rows','Cornrows'],['locks','Locks'],['locksUp','Locks up'],['pony','Ponytail'],['bun','Bun'],['buns','Two buns'],['durag','Durag'],['beanie','Beanie'],['hood','Hood up'],['bald','Bald']];
+const CC_HC=['#16110d','#3b2414','#6b3f1f','#a8672e','#d9b26a','#e8e2d0','#9a9a9a','#b8322a','#2f6bff','#3dffa8','#ff5ee0','#7a4dff'];
+const CC_AC=['#17d6ff','#ff7a1a','#3dffa8','#ff4d5e','#ffd166','#c9a0ff','#ff5ee0','#f4f6ff','#1b1d26','#2f6bff'];
+const CC_SHOE=['#f4f6ff','#1b1d26','#ff4d5e','#17d6ff','#ffd166','#3dffa8','#ff7a1a','#c9a0ff','#7a5a33'];
+const CC_BEARD=[['','None'],['stubble','Stubble'],['goatee','Goatee'],['chin','Chin strap'],['full','Full beard']];
+const CC_FACE=[['','None'],['goggles','Goggles'],['phones','Headphones'],['scope','Shooter\'s lens']];
+const CC_SIDE=[['','None'],['F','One'],['both','Both']];
+function ccLkDefault(old){return {hair:old?'buzz':'short',hc:'#16110d',tip:'',beardT:'',band:'',hat:'',face:'',faceC:'#17d6ff',sleeve:'',sleeveC:'#1b1d26',wrist:'',wristC:'#17d6ff',knee:'',socks:'',shoe:'#f4f6ff',sole:'#3dffa8'};}
+function validLk(l){const d=ccLkDefault(!l);if(!l||typeof l!=='object')return d;const o={};
+  const pick=(k,ok)=>{o[k]=ok(l[k])?l[k]:d[k];},col=v=>typeof v==='string'&&/^#[0-9a-f]{6}$/i.test(v),colE=v=>v===''||col(v),inL=L=>v=>L.some(x=>x[0]===v);
+  pick('hair',inL(CC_HAIR));pick('hc',col);pick('tip',colE);pick('beardT',inL(CC_BEARD));pick('band',colE);pick('hat',colE);pick('face',inL(CC_FACE));pick('faceC',col);
+  pick('sleeve',inL(CC_SIDE));pick('sleeveC',col);pick('wrist',inL(CC_SIDE));pick('wristC',col);pick('knee',inL(CC_SIDE));pick('socks',colE);pick('shoe',col);pick('sole',col);return o;}
+/* the drawing look for a MyPLAYER (yours, or a rival's in the Showdown) */
+function lookCustom(c){const k=validLk(c&&c.lk),L={hair:k.hair,hc:k.hc,shoe:k.shoe,sole:k.sole,build:c?(c.pos==='C'?1.22:(c.pos==='SG'?1:0.96)):1};
+  if(k.tip)L.tip=k.tip;if(k.beardT){L.beard=k.hc;L.beardT=k.beardT;}if(k.band)L.band=k.band;if(k.hat)L.hat=k.hat;if(k.hair==='hood')L.hood=k.hc==='#16110d'?'#2b2d3a':k.hc;
+  if(k.face)L[k.face]=k.faceC;if(k.sleeve){L.sleeve=k.sleeveC;L.sleeveArm=k.sleeve;}if(k.wrist){L.wrist=k.wristC;if(k.wrist==='both')L.wristBoth=1;}
+  if(k.knee){L.knee='#e9edf5';L.kneeLeg=k.knee;}if(k.socks)L.socks=k.socks;return L;}
 const CC_ABS=['kai','dime','flash','orbit','glove','rex','blaze','volt','haze','moose','rock','boom','atlas','dozer'];
 const CC_H={PG:[1.83,1.96],SG:[1.90,2.03],C:[2.06,2.21]},CC_W={PG:[170,215],SG:[185,230],C:[220,290]};
 const ATTRS=[['Finishing',[['close','Close shot'],['dunk','Driving dunk']]],['Shooting',[['mid','Mid-range shot'],['three','Three-point shot']]],['Playmaking',[['hdl','Ball handle'],['pass','Pass accuracy']]],['Defense',[['stl','Steal'],['blk','Block']]],['Physicals',[['spd','Speed'],['reb','Rebounding']]]];
@@ -9006,7 +9125,7 @@ function ccOvr(c){
 function archOf(c){return (ARCHS[c.pos]||[]).find(x=>x.id===c.arch)||ARCHS[c.pos][0];}
 function ccDefault(pos){
   pos=pos||'SG';const ar=ARCHS[pos][0],hr=CC_H[pos],wr=CC_W[pos];
-  const c={name:(user||'ROOKIE').slice(0,10),num:7,pos:pos,arch:ar.id,skin:CC_SKINS[2],h:+((hr[0]+hr[1])/2).toFixed(2),w:Math.round((wr[0]+wr[1])/2),ws:2,pot:Object.assign({},ar.a),b:ar.b.slice(),ab:'rex',locked:false,xp:0,pts:0};
+  const c={name:(user||'ROOKIE').slice(0,10),num:7,pos:pos,arch:ar.id,skin:CC_SKINS[2],h:+((hr[0]+hr[1])/2).toFixed(2),w:Math.round((wr[0]+wr[1])/2),ws:2,pot:Object.assign({},ar.a),b:ar.b.slice(),ab:'rex',lk:ccLkDefault(),locked:false,xp:0,pts:0};
   ccFit(c);c.a0=ccStart(c);c.a=Object.assign({},c.a0);return c;
 }
 const scl=(v,lo,hi)=>lo+(clamp(v,25,99)-25)/74*(hi-lo);
@@ -9025,25 +9144,12 @@ function ccRoster(c){
   return [c.pos,c.name,c.num,c.skin,m];
 }
 function drawPreview(c){
-  const cv=$('mpCv');if(!cv)return;const g=cv.getContext('2d'),W=cv.width,H=cv.height;g.clearRect(0,0,W,H);
+  const cv=$('mpCv');if(!cv)return;if(!cv._hd){const r=Math.min(2,window.devicePixelRatio||1);cv.width=300*r;cv.height=400*r;cv._hd=1;}const g=cv.getContext('2d'),W=cv.width,H=cv.height;g.clearRect(0,0,W,H);
   const fl=g.createRadialGradient(W/2,H*0.93,10,W/2,H*0.93,W*0.45);fl.addColorStop(0,'rgba(23,214,255,.35)');fl.addColorStop(1,'rgba(23,214,255,0)');g.fillStyle=fl;g.fillRect(0,0,W,H);
   g.fillStyle='rgba(0,0,0,.35)';g.beginPath();g.ellipse(W/2,H*0.93,W*0.2,H*0.025,0,0,6.283);g.fill();
-  const HP=H*0.82*(c.h/2.21),bw=0.85+(c.w-170)/120*0.45,arm=0.36+c.ws*0.006,X=W/2,Y=H*0.93,sk=c.skin;
-  g.save();g.translate(X,Y);g.lineCap='round';
-  const hipY=-HP*0.48,shY=-HP*0.8;
-  const line=(x1,y1,x2,y2,w,col)=>{g.strokeStyle=col;g.lineWidth=w;g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();};
-  line(-HP*0.05*bw,hipY,-HP*0.09,-HP*0.03,HP*0.09*bw,shade(sk,-25));line(HP*0.05*bw,hipY,HP*0.09,-HP*0.03,HP*0.09*bw,sk);
-  g.fillStyle='#f5f5f5';[[-HP*0.1,-HP*0.02],[HP*0.1,-HP*0.02]].forEach(f=>{g.beginPath();g.ellipse(f[0],f[1],HP*0.07,HP*0.033,0,0,6.283);g.fill();});
-  const ah=HP*arm;line(-HP*0.12*bw,shY+HP*0.02,-HP*0.18*bw,shY+ah*0.95,HP*0.07*bw,shade(sk,-25));line(HP*0.12*bw,shY+HP*0.02,HP*0.18*bw,shY+ah*0.95,HP*0.07*bw,sk);
-  g.fillStyle='#3a3f4f';g.fillRect(-HP*0.13*bw,hipY-HP*0.09,HP*0.26*bw,HP*0.17);
-  g.fillStyle='#ff7a1a';g.fillRect(HP*0.1*bw,hipY-HP*0.09,HP*0.03*bw,HP*0.17);
-  g.fillStyle='#c9ced9';g.beginPath();g.moveTo(-HP*0.14*bw,shY-HP*0.04);g.lineTo(HP*0.14*bw,shY-HP*0.04);g.lineTo(HP*0.13*bw,hipY-HP*0.03);g.lineTo(-HP*0.13*bw,hipY-HP*0.03);g.closePath();g.fill();
-  g.fillStyle='#ff7a1a';g.font='900 '+Math.round(HP*0.14)+'px Arial';g.textAlign='center';g.textBaseline='middle';g.fillText(String(c.num),0,shY+HP*0.13);
-  const hr=HP*0.075,hy=shY-HP*0.115;
-  g.fillStyle=sk;g.beginPath();g.arc(0,hy,hr,0,6.283);g.fill();
-  g.fillStyle='#17171c';g.beginPath();g.arc(0,hy-hr*0.1,hr*1.02,Math.PI,Math.PI*2);g.fill();
-  g.fillStyle='#ff7a1a';g.fillRect(-hr,hy-hr*0.22,hr*2,hr*0.28);
-  g.restore();
+  const L=Object.assign({},lookCustom(c));L.build=(L.build||1)*(0.88+(c.w-170)/120*0.3);
+  const fh=H*0.8*(c.h/2.21);
+  try{ART.figure(g,W*0.5,H*0.93,fh,1,L,{skin:c.skin,num:c.num,jc:'#c9ced9',jt:'#ff7a1a',sc:'#3a3f4f',name:c.name},'stand',{t:performance.now()/1000,pose:{lean:0,aF:[-14,10],aB:[-20,8],neck:-4}});}catch(e){}
 }
 function prow(p,lab,el){const r=document.createElement('div');r.className='prow';const l=document.createElement('span');l.textContent=lab;r.append(l,el);const sp=document.createElement('span');r.appendChild(sp);p.appendChild(r);return sp;}
 function roTxt(t){const b=document.createElement('b');b.style.textAlign='left';b.style.color='var(--ink)';b.textContent=t;return b;}
@@ -9074,6 +9180,18 @@ function ccBodyPane(p,c){
   CC_SKINS.forEach(k=>{const b=document.createElement('button');b.style.background=k;b.className=c.skin===k?'sel':'';b.setAttribute('aria-label','Skin tone');b.onclick=()=>{c.skin=k;ccRender();};sw.appendChild(b);});
   prow(p,'Skin tone',sw);
   if(!c.locked){const n=document.createElement('p');n.id='ccCapNote';n.className='tag';p.appendChild(n);ccCapNote();}
+}
+function ccStylePane(p,c){
+  c.lk=validLk(c.lk);const k=c.lk;
+  const t=document.createElement('p');t.className='tag';t.textContent='Your style shows in games, cutscenes and the Showdown. You can change it any time.';p.appendChild(t);
+  const opts=(lab,list,key)=>{const g=document.createElement('div');g.className='ccopt';list.forEach(x=>{const b=document.createElement('button');b.type='button';b.textContent=x[1];b.className=k[key]===x[0]?'sel':'';b.onclick=()=>{k[key]=x[0];uiSnd('uiTick');ccRender();};g.appendChild(b);});prow(p,lab,g);};
+  const sw=(lab,cols,key,none)=>{const g=document.createElement('div');g.className='sw';if(none){const b=document.createElement('button');b.className='none'+(k[key]===''?' sel':'');b.textContent='×';b.setAttribute('aria-label',lab+': none');b.onclick=()=>{k[key]='';ccRender();};g.appendChild(b);}
+    cols.forEach(cl=>{const b=document.createElement('button');b.style.background=cl;b.className=k[key]===cl?'sel':'';b.setAttribute('aria-label',lab);b.onclick=()=>{k[key]=cl;uiSnd('uiTick');ccRender();};g.appendChild(b);});prow(p,lab,g);};
+  const hd=x=>{const h=document.createElement('div');h.className='agrp';h.textContent=x;p.appendChild(h);};
+  hd('HAIR');opts('Hair',CC_HAIR,'hair');sw('Hair colour',CC_HC,'hc');sw('Dyed tips',CC_AC,'tip',1);opts('Facial hair',CC_BEARD,'beardT');
+  hd('HEAD AND FACE');sw('Headband',CC_AC,'band',1);sw('Cap',CC_AC,'hat',1);opts('Face gear',CC_FACE,'face');if(k.face)sw('Face gear colour',CC_AC,'faceC');
+  hd('ARMS AND LEGS');opts('Arm sleeve',CC_SIDE,'sleeve');if(k.sleeve)sw('Sleeve colour',CC_AC,'sleeveC');opts('Wristbands',CC_SIDE,'wrist');if(k.wrist)sw('Wristband colour',CC_AC,'wristC');opts('Knee pads',CC_SIDE,'knee');sw('Socks',CC_AC,'socks',1);
+  hd('SHOES');sw('Shoes',CC_SHOE,'shoe');sw('Soles',CC_AC.concat(['#c9ced9']),'sole');
 }
 function ccCapNote(){const n=$('ccCapNote');if(!n||!ccEdit)return;const cap=ccCaps(ccEdit);n.textContent='Your body sets the highest potential each attribute can have. Taller and heavier raises block and rebound caps but lowers speed and handles. A longer wingspan helps steals and blocks but lowers the three-point cap. Caps now: speed '+cap.spd+', handle '+cap.hdl+', three '+cap.three+', block '+cap.blk+', rebound '+cap.reb+'.';}
 function ccPotPane(p,c){
@@ -9118,14 +9236,14 @@ function ccHead(){
 }
 function ccTabs(){
   const c=ccEdit,t=$('mpTabs');t.innerHTML='';
-  const list=c.locked?[['info','Info'],['body','Look'],['badge','Badges'],['ab','Takeover']]:[['info','Info'],['body','Body'],['pot','Potential'],['badge','Badges'],['ab','Takeover']];
+  const list=c.locked?[['info','Info'],['style','Style'],['body','Body'],['badge','Badges'],['ab','Takeover']]:[['info','Info'],['body','Body'],['style','Style'],['pot','Potential'],['badge','Badges'],['ab','Takeover']];
   if(!list.some(x=>x[0]===mpTab))mpTab='info';
   list.forEach(x=>{const b=document.createElement('button');b.dataset.t=x[0];b.textContent=x[1];b.className=x[0]===mpTab?'sel':'';t.appendChild(b);});
 }
 function ccRender(){
   const c=ccEdit;ccTabs();
   const p=$('mpPane');p.innerHTML='';
-  ({info:ccInfoPane,body:ccBodyPane,pot:ccPotPane,badge:ccBadgePane,ab:ccAbPane})[mpTab](p,c);
+  ({info:ccInfoPane,body:ccBodyPane,style:ccStylePane,pot:ccPotPane,badge:ccBadgePane,ab:ccAbPane})[mpTab](p,c);
   $('ccSave').textContent=c.locked?'Save changes':(ccArm?'Press again to create (body and potential lock)':'Create player');
   ccHead();
 }
@@ -9166,13 +9284,14 @@ function upgRender(){
       ccFit(c);c.a0=ccStart(c);c.a=Object.assign({},c.a0);c.locked=true;c.xp=c.xp||0;c.pts=c.pts||0;
     }
     c.name=nm;
-    if(custom&&custom.locked){const keep=custom;['name','num','skin','b','ab'].forEach(k=>{keep[k]=JSON.parse(JSON.stringify(c[k]));});custom=keep;}
+    if(custom&&custom.locked){const keep=custom;['name','num','skin','b','ab','lk'].forEach(k=>{keep[k]=JSON.parse(JSON.stringify(c[k]));});custom=keep;}
     else custom=JSON.parse(JSON.stringify(c));
-    saveCfg();uiSnd('uiGood');hideEl('cc');
+    delete LOOK_BASE.YOU;delete LOOK_CACHE.YOU;saveCfg();uiSnd('uiGood');hideEl('cc');
+    if(sdAfterCC){sdAfterCC=false;hideScreens();evRender();show('events');toast(nm+' is ready for the Showdown.');return;}
     if(storyAfterCC){storyAfterCC=false;toast(nm+' ('+ccOvr(custom)+' OVR) heads to the Hounds\' court for the tryout.');storyStart(-1);return;}
     storyRender();show('story');toast(nm+' ('+ccOvr(custom)+' OVR) is part of the Ash Hounds.');
   };
-  $('ccBack').onclick=()=>{if(invCC){invCC=false;storyAfterCC=false;storyIntroNow=false;hideEl('cc');invOpen();return;}storyAfterCC=false;storyIntroNow=false;hideEl('cc');storyRender();show('story');};
+  $('ccBack').onclick=()=>{if(sdAfterCC){sdAfterCC=false;hideEl('cc');evRender();show('events');return;}if(invCC){invCC=false;storyAfterCC=false;storyIntroNow=false;hideEl('cc');invOpen();return;}storyAfterCC=false;storyIntroNow=false;hideEl('cc');storyRender();show('story');};
   $('upBack').onclick=()=>{hideEl('upg');storyRender();show('story');};
   $('stBack').onclick=()=>{hideEl('story');go('offline');};
   $('stIntro').onclick=()=>{hideEl('story');filmPlay(()=>{storyRender();show('story');});};
@@ -9190,7 +9309,7 @@ function validCustom(c){
     const o={name:cleanName(String(c.name||'ROOKIE')).slice(0,10)||'ROOKIE',num:clamp(Math.floor(+c.num||0),0,99),pos:c.pos,arch:(ARCHS[c.pos].find(x=>x.id===c.arch)||ARCHS[c.pos][0]).id,
       skin:CC_SKINS.indexOf(c.skin)>=0?c.skin:CC_SKINS[2],h:clamp(+c.h||CC_H[c.pos][0],CC_H[c.pos][0],CC_H[c.pos][1]),w:clamp(Math.round(+c.w||d.w),CC_W[c.pos][0],CC_W[c.pos][1]),ws:clamp(Math.round(+c.ws||0),-2,8),
       pot:{},b:(Array.isArray(c.b)?c.b:[]).filter(id=>BADGES.some(x=>x.id===id)).slice(0,BADGE_SLOTS),ab:CC_ABS.indexOf(c.ab)>=0?c.ab:'rex',
-      locked:c.locked!==false,xp:Math.max(0,Math.floor(+c.xp||0)),pts:Math.max(0,Math.floor(+c.pts||0)),earn:(typeof c.earn==='number'?Math.max(0,Math.floor(c.earn)):undefined)};
+      lk:validLk(c.lk),locked:c.locked!==false,xp:Math.max(0,Math.floor(+c.xp||0)),pts:Math.max(0,Math.floor(+c.pts||0)),earn:(typeof c.earn==='number'?Math.max(0,Math.floor(c.earn)):undefined)};
     AKEYS.forEach(k=>{o.pot[k]=Math.round(+pot[k]||AT_MIN);});ccFit(o);
     o.a0=c.a0&&c.pot?{}:ccStart(o);if(c.a0&&c.pot)AKEYS.forEach(k=>{o.a0[k]=clamp(Math.round(+c.a0[k]||AT_MIN),AT_MIN,o.pot[k]);});
     o.a={};const cur=(c.a0&&c.pot&&c.a)?c.a:o.a0;AKEYS.forEach(k=>{o.a[k]=clamp(Math.round(+cur[k]||o.a0[k]),o.a0[k],o.pot[k]);});
