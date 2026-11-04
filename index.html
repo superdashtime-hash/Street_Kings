@@ -1166,6 +1166,8 @@ function renderSettings(){
         const m4=add('button','Reset mastery and cosmetics','sbtn');m4.onclick=()=>{mst={};cos={};cosU=[];redo('Mastery and cosmetics reset.');};}
       const lv=add('button','Leave dev build','sbtn');lv.onclick=()=>{devLeave();renderSettings();};
     }
+    {const rt=add('button','Test online relay','sbtn');const rm=add('p','','tag');rm.setAttribute('role','status');rt.title='Checks whether online play can get through this network (useful on school Wi-Fi).';
+     rt.onclick=()=>{rt.disabled=true;rm.textContent='Testing... (up to 8 seconds)';relayTest().then(r=>{rt.disabled=false;rm.textContent=r;});};}
     const h3=add('button',"What's new",'sbtn');h3.onclick=()=>showDevlog();
     const h4=add('button','Reset every setting to default','sbtn');h4.onclick=()=>{SET=setDefaults();saveSettings();rebuildMap();applyAudio();applyVis();toast('Settings reset.');renderSettings();};
   }
@@ -4670,7 +4672,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.3.2';
+const GAME_VER='2.3.3';
 const DEV_VER='2.3.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -5268,8 +5270,20 @@ const ICE_SERVERS=[
 /* Optional: your own TURN server makes online play work behind strict networks (schools, some mobile data).
    Free accounts: Metered (metered.ca) or Cloudflare Calls. Paste them here, for example:
    const TURN_EXTRA=[{urls:['turn:YOUR.relay.metered.ca:80','turn:YOUR.relay.metered.ca:443?transport=tcp'],username:'...',credential:'...'}]; */
-const TURN_EXTRA=[];
-const ICE={iceServers:ICE_SERVERS.concat(TURN_EXTRA),iceCandidatePoolSize:4,bundlePolicy:'max-bundle'};
+const MT_U='3d9503b2fd72bd995227f06b',MT_C='TUVq4zNQp3JiEHyw';
+/* The game's own relay (Metered). TURN over TLS on port 443 first: it looks like normal HTTPS, so it gets through school firewalls. */
+const TURN_EXTRA=[
+  {urls:'turns:global.relay.metered.ca:443?transport=tcp',username:MT_U,credential:MT_C},
+  {urls:['turn:global.relay.metered.ca:443','turn:global.relay.metered.ca:80?transport=tcp','turn:global.relay.metered.ca:80'],username:MT_U,credential:MT_C}
+];
+function relayTest(){return new Promise(done=>{let pc,fin=false,tls=false,any=false,err='';
+  const end=()=>{if(fin)return;fin=true;try{pc.close();}catch(e){}
+    done(tls?'Relay works on this network, including the secure port 443 route. Online play should connect here.':any?'Relay works on this network. Online play should connect here.':err&&/401|auth/i.test(err)?'The relay rejected the login. The relay credentials need updating.':'The relay could not be reached from this network. Online play may not connect here.');};
+  try{pc=new RTCPeerConnection({iceServers:TURN_EXTRA,iceTransportPolicy:'relay'});pc.createDataChannel('t');
+    pc.onicecandidate=e=>{if(e.candidate&&/ typ relay/.test(e.candidate.candidate)){any=true;if(e.candidate.relayProtocol==='tls')tls=true;if(e.candidate.relayProtocol==='tls')end();}else if(!e.candidate)end();};
+    pc.onicecandidateerror=e=>{err=(e.errorCode||'')+' '+(e.errorText||'');};
+    pc.createOffer().then(o=>pc.setLocalDescription(o)).catch(()=>end());setTimeout(end,8000);}catch(e){done('This browser does not support online play.');}});}
+const ICE={iceServers:TURN_EXTRA.concat([{urls:'stun:stun.relay.metered.ca:80'},ICE_SERVERS[0],ICE_SERVERS[1],ICE_SERVERS[2]]),iceCandidatePoolSize:4,bundlePolicy:'max-bundle'};
 function mkPeer(id){const p=new Peer(id,{debug:0,pingInterval:4000,config:ICE});let tries=0;const again=()=>{if(p.destroyed||!p.disconnected)return;tries++;setTimeout(()=>{try{if(!p.destroyed&&p.disconnected)p.reconnect();}catch(e){}if(p.disconnected&&!p.destroyed&&tries<40)again();},Math.min(8000,600*tries));};p.on('disconnected',again);p.on('open',()=>{tries=0;});return p;}
 addEventListener('online',()=>{try{if(peer&&peer.disconnected&&!peer.destroyed)peer.reconnect();}catch(e){}});
 let netAway=false;
