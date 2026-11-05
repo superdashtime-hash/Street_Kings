@@ -52,6 +52,10 @@ td i{display:inline-block;width:.8cqw;height:.8cqw;border-radius:50%;background:
 #bTurbo{right:20%;bottom:21%;width:12vmin;height:12vmin}
 #bSwitch{left:30%;bottom:7%;width:11vmin;height:11vmin;font-size:2.2vmin}
 #bPause{right:2%;top:3%;width:8vmin;height:8vmin;font-size:3vmin}
+#bCall{left:30%;bottom:22%;width:10vmin;height:10vmin;font-size:2vmin;border-color:#ff5ee0}
+#callMenu{position:absolute;left:30%;bottom:34%;display:flex;gap:1.2vmin}#callMenu.hide{display:none}
+#callMenu .tb{position:static;width:11vmin;height:11vmin;font-size:2vmin;border-radius:3vmin}
+#callMenu .tb[data-k=iso]{border-color:#ffd166}#callMenu .tb[data-k=open]{border-color:#3dffa8}#callMenu .tb[data-k=cut]{border-color:#ff5ee0}
 #rotate{position:absolute;left:0;right:0;bottom:4%;text-align:center;z-index:6;font-size:12px;color:var(--gold);display:none}
 @media (orientation:portrait) and (pointer:coarse){#rotate{display:block}}
 .row b{min-width:11cqw}
@@ -946,6 +950,8 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     <button class="tb" id="bTurbo">TURBO</button>
     <button class="tb" id="bSwitch">SWITCH</button>
     <button class="tb" id="bAbility">ABILITY</button>
+    <button class="tb hide" id="bCall">CALL</button>
+    <div id="callMenu" class="hide"><button class="tb" data-k="iso">ISO</button><button class="tb" data-k="open">OPEN</button><button class="tb" data-k="cut">CUT</button></div>
     <button class="tb" id="bPause">II</button>
   </div>
   <div id="rotate">Rotate your phone to landscape for the best view</div>
@@ -960,6 +966,9 @@ const cv=document.getElementById('c'),ctx=cv.getContext('2d');
 const VW=1280,VH=720,PPM=80,DEP=28,X0=50,Y0=235,CLH=14.5,CW=15;
 let CL=14.5,FULL=false,camX=0,SC=12,courtWide=null,bdNoMarks=false,wantFull=false;
 let HX=1.575,HS=1;const HXL=1.575,HY=7.5,HZ=3.05,ARC=6.75,G=9.8,JUMP_VZ=3.6,T_PERF=0.37,PASS_SPD=16;
+const C3=6.6,C3X=ARC*Math.cos(Math.asin(C3/ARC));
+/* behind the three-point line (m = extra margin past the line). On the line counts as inside, like real rules. */
+function isThreeAt(x,y,m){m=m||0;const ax=HS*(x-HX),ay=Math.abs(y-HY);if(ax<=C3X)return ay>C3+m;return Math.hypot(x-HX,y-HY)>ARC+m;}
 let DPR=1,QCAP=3,needFit=true,perfAcc=0,perfN=0;
 cv.width=VW;cv.height=VH;
 function fitRes(){
@@ -976,8 +985,8 @@ window.addEventListener('resize',()=>{needFit=true;});
 const $=id=>document.getElementById(id);
 const clamp=(v,a,b)=>v<a?a:(v>b?b:v);
 /* ================= settings, keybinds and input ================= */
-const BIND_DEF={up:['KeyW','ArrowUp'],down:['KeyS','ArrowDown'],left:['KeyA','ArrowLeft'],right:['KeyD','ArrowRight'],shoot:['Space','KeyJ'],pass:['KeyK','KeyE'],juke:['KeyL',''],sprint:['ShiftLeft','ShiftRight'],sw:['KeyQ','Tab'],ab:['KeyI','KeyU'],pause:['KeyP','Escape'],mute:['KeyM','']};
-const ACT_NAME={up:'Move up',down:'Move down',left:'Move left',right:'Move right',shoot:'Shoot / block',pass:'Pass / steal',juke:'Crossover',sprint:'Turbo',sw:'Switch defender',ab:'Special ability',pause:'Pause (online: after the next point)',mute:'Mute sound'};
+const BIND_DEF={up:['KeyW','ArrowUp'],down:['KeyS','ArrowDown'],left:['KeyA','ArrowLeft'],right:['KeyD','ArrowRight'],shoot:['Space','KeyJ'],pass:['KeyK','KeyE'],juke:['KeyL',''],sprint:['ShiftLeft','ShiftRight'],sw:['KeyQ','Tab'],ab:['KeyI','KeyU'],pause:['KeyP','Escape'],mute:['KeyM',''],call1:['Digit1','KeyZ'],call2:['Digit2','KeyX'],call3:['Digit3','KeyC']};
+const ACT_NAME={up:'Move up',down:'Move down',left:'Move left',right:'Move right',shoot:'Shoot / block',pass:'Pass / steal',juke:'Crossover',sprint:'Turbo',sw:'Switch defender',ab:'Special ability',pause:'Pause (online: after the next point)',mute:'Mute sound',call1:'Call: ISO play',call2:'Call: get open',call3:'Call: cut to basket'};
 const ACT_ORDER=Object.keys(ACT_NAME);
 const SET_KEY='sk_settings';
 function setDefaults(){const o={binds:{},vol:{m:1,s:1,c:1,mute:false,ui:true},vis:{res:'auto',shake:true,hints:true,ping:true,anim:true},ctl:{manual:false,keep:false}};ACT_ORDER.forEach(a=>{o.binds[a]=BIND_DEF[a].slice();});return o;}
@@ -1035,6 +1044,7 @@ addEventListener('keydown',e=>{
     else if(a==='sprint')held.sprint=true;
     else if(a==='pause')requestPause();
     else if(a==='mute')toggleMute();
+    else if(a==='call1'||a==='call2'||a==='call3')callPress(['iso','open','cut'][+a.slice(4)-1]);
   }
 });
 addEventListener('keyup',e=>{downKeys.delete(e.code);held.shoot=isDown('shoot');held.sprint=isDown('sprint');held.pass=isDown('pass');});
@@ -1090,6 +1100,7 @@ function renderSettings(){
   if(setTab==='controls'){
     add('p','Click a key box, then press the key you want. Esc cancels and Backspace clears it. Each action has two slots.');
     ACT_ORDER.forEach(a=>{
+      if(a.indexOf('call')===0&&!callsOn())return;
       const r=document.createElement('div');r.className='krow';
       const l=document.createElement('span');l.textContent=ACT_NAME[a];r.appendChild(l);
       [0,1].forEach(sl=>{
@@ -1710,7 +1721,7 @@ function tryShoot(p,human){
   if(!p.hasBall||p.shot||p.dunk)return false;
   if(tNow<shotLock){if(human&&tNow-(p.lockPop||-9)>0.6){p.lockPop=tNow;popup('WAIT TO SHOOT','#ffd166',p);}return false;}
   const dh=dst(p.x,p.y,HX,HY);
-  if(teams[p.team].needClear&&dh<ARC+0.15){if(human)popup('CLEAR IT FIRST','#ffd166',p);return false;}
+  if(teams[p.team].needClear&&!isThreeAt(p.x,p.y,0.15)){if(human)popup('CLEAR IT FIRST','#ffd166',p);return false;}
   const spd=Math.hypot(p.vx,p.vy);
   const toward=(dh>0.05&&spd>0.1)?((HX-p.x)*p.vx+(HY-p.y)*p.vy)/(dh*spd):0;
   const dR=p.arch.dunk*fxv(p,'dunkR',1);
@@ -1727,7 +1738,7 @@ function tryShoot(p,human){
   /* the computer hits the green only now and then (more on higher difficulties); otherwise it lets go a little early */
   const gp=isCPU(p)?[0.05,0.08,0.12,0.17][diffIdx]:0.12,gs=(Math.random()+Math.random()+Math.random()-1.5)*2;
   const aiRel=Math.random()<gp?g0.tp+(Math.random()-0.5)*(g0.Tf-g0.lo)*0.8:g0.lo-0.004-Math.abs(gs)*Math.max(0.03,noise)*0.8*sk;
-  p.shot={t:0,k:sk,tp:g0.tp,ai:!human,aiRel:aiRel};
+  p.shot={t:0,k:sk,tp:g0.tp,ai:!human,aiRel:aiRel,ox:p.x,oy:p.y,o3:isThreeAt(p.x,p.y)};p.tk={x:p.x,y:p.y,three:p.shot.o3,until:tNow+9};
   p.vz=JUMP_VZ*sk;p.vx*=0.35;p.vy*=0.35;sfx.release();
   scheduleBlocks(p);
   return true;
@@ -1735,7 +1746,8 @@ function tryShoot(p,human){
 function releaseShot(p,t){
   const s=p.shot;p.shot=null;p.follow=0.55;
   const hum=!s.ai;lastShotHum=hum;if(hum&&p.team===0){pEvt('shoot');shotStat('att');}
-  const dh=dst(p.x,p.y,HX,HY),three=dh>=ARC-0.05,c=contest(p),skill=skillOf(p);
+  const dh=dst(p.x,p.y,HX,HY),three=s.ox!=null?s.o3:isThreeAt(p.x,p.y),c=contest(p),skill=skillOf(p);if(p.tk)p.tk.until=tNow+1.3;
+  if(s.ox!=null&&three!==isThreeAt(p.x,p.y)&&!s.ai)setTimeout(()=>{try{popup(three?'3PT: TOOK OFF BEHIND THE LINE':'2PT: TOOK OFF INSIDE THE LINE',three?'#ffd166':'#c9ced9',p);}catch(e){}},650);
   const GW=greenWin(p,s),tp=GW.tp,zh=GW.zh,hb=barH(t,GW.Tf),green=hb>=1-GW.gz-0.01;
   const q=green?1:clamp(hb,0,1);
   const df=dh<1.6?0.92:dh<3.2?0.72:dh<5?0.55:dh<ARC-0.05?0.5:0.46;
@@ -1806,6 +1818,7 @@ function updateDunk(p,dt){
 function pickPassTarget(p){
   const mates=players.filter(q=>q.team===p.team&&q!==p);
   const m=Math.hypot(inp.mx,inp.my);
+  {const cc=callsOn()?callOf(p.team):null;if(cc&&cc.k==='cut'&&cc.p&&cc.p!==p&&m<=0.3)return cc.p;}
   let best=null,bs=-99;
   for(const q of mates){
     const dx=q.x-p.x,dy=q.y-p.y,d=Math.hypot(dx,dy)||1;
@@ -2084,14 +2097,67 @@ function aiHandler(p,dt){
   if(p.think<=0){
     p.think=rnd(0.5,1.2)*D.think;
     const canShoot=!(t.needClear&&dh<ARC+0.15),rr_=Math.random();
+    if(callsOn()&&p.cutT&&tNow-p.cutT<5&&dh<2.6&&canShoot){p.cutT=0;aiShoot(p);return;}
     if(canShoot&&(shotClock<2.4||(dh<3.1&&p.drive>0&&open>0.6))){aiShoot(p);return;}
     if(canShoot&&open>1.9&&dh<7.9&&dh>3.1&&rr_<0.55*(dh>ARC-0.2?ST.three:1)){aiShoot(p);return;}
     const tm=bestPass(p);
+    {const cc=callsOn()?callOf(p.team):null;if(cc&&cc.k==='cut'&&cc.p&&cc.p!==p&&tNow-cc.t>0.6&&!laneBlocked(p,cc.p)&&p.passCd<=0){doPass(p,cc.p);return;}}
     if(tm&&rr_<0.5&&tm.open>2.0&&p.passCd<=0){doPass(p,tm.p);return;}
-    if(rr_<0.8*ST.drive&&!t.needClear)p.drive=rnd(1,1.8);
+    if(rr_<0.8*ST.drive*((callsOn()&&callOf(p.team)&&callOf(p.team).k==='iso')?1.6:1)&&!t.needClear)p.drive=rnd(1,1.8);
   }
 }
+
+/* ===== callouts (dev build): ISO play, get open, cut to basket ===== */
+const CALL_TXT={iso:['ISO!','CLEARING OUT','#ffd166'],open:['GET OPEN!','GETTING OPEN','#3dffa8'],cut:['CUT!','CUTTING!','#ff5ee0']};
+function callsOn(){return typeof devFeat==='function'&&devFeat('calls');}
+function callOf(team){const t=teams[team],c=t&&t.call;if(!c)return null;
+  if(tNow>c.until||poss!==team||ball.state==='shot'||ball.state==='loose'){t.call=null;return null;}return c;}
+function callPress(k){
+  if(!callsOn()||phase!=='play')return;
+  if(pvp&&role==='guest'){sendDc({t:'call',k:k});return;}
+  callFor(myTeamIdx(),k,ctrl);}
+function callFor(team,k,caller){
+  if(!callsOn()||!teams[team])return;
+  const mates=players.filter(q=>q.team===team&&q!==caller&&!q.hasBall&&(!pvp||true));
+  if(poss!==team){if(caller&&caller.team===myTeamIdx()&&!pvp)popup('Calls are for offense','#9aa3c7',caller);return;}
+  if(!players.some(q=>q.team===team&&q!==ball.holder)){if(caller)popup('No teammates to call','#9aa3c7',caller);return;}
+  const c={k:k,t:tNow,until:tNow+(k==='cut'?4.5:7),p:null,side:Math.random()<0.5?-1:1};
+  const T=CALL_TXT[k];if(caller)popup(T[0],T[2],caller);
+  const off=players.filter(q=>q.team===team&&q!==ball.holder&&!(q===ctrl&&team===myTeamIdx()&&!pvp)&&!(pvp&&isHumanP(q)));
+  if(k==='cut'){
+    let best=null,bs=-99;off.forEach(q=>{const dfd=q.guard||nearestOpp(q).p,sep=dfd?dst(q.x,q.y,dfd.x,dfd.y):3,dh=dst(q.x,q.y,HX,HY);const s=sep*1.2-Math.abs(dh-5.5)*0.4;if(s>bs){bs=s;best=q;}});
+    if(!best){if(caller)popup('No one to cut','#9aa3c7',caller);return;}
+    c.p=best;best.cutT=tNow;best.callRing={t:c.until,c:T[2]};popup(T[1],T[2],best);
+    c.side=best.y>HY?1:-1;
+  }else off.forEach((q,i)=>{q.callSpot=null;q.callT=0;if(i===0)popup(T[1],T[2],q);q.callRing={t:tNow+1.6,c:T[2]};});
+  teams[team].call=c;
+  try{sfx.whistle&&sfx.whistle(0.25);}catch(e){}
+}
+function isHumanP(q){return q===ctrl||(typeof ctrl2!=='undefined'&&q===ctrl2);}
+/* where an off-ball teammate goes for the current call (null = normal spacing) */
+function callMove(p,dt,c){
+  const h=ball.holder,S=s0=>[HS>0?s0[0]:CL-s0[0],s0[1]];
+  if(c.k==='iso'){
+    if(!p.callSpot||tNow-p.callT>2){const used=players.filter(q=>q.team===p.team&&q!==p&&q.callSpot).map(q=>q.callSpot+'');
+      const cand=[[0.9,1.0],[0.9,CW-1.0],[4.2,0.8],[4.2,CW-0.8],[8.8,1.6],[8.8,CW-1.6]].map(S).filter(s=>used.indexOf(s+'')<0);
+      cand.sort((a,b)=>(h?dst(b[0],b[1],h.x,h.y):0)-(h?dst(a[0],a[1],h.x,h.y):0));p.callSpot=cand[0]||null;p.callT=tNow;}
+    return p.callSpot?{x:p.callSpot[0],y:p.callSpot[1],mul:0.95,sprint:false}:null;}
+  if(c.k==='open'){
+    if(!p.callSpot||tNow-p.callT>0.8){
+      const opp=players.filter(q=>q.team!==p.team),mates=players.filter(q=>q.team===p.team&&q!==p);let best=null,bs=-99;
+      SPOTS.concat([[1.2,2.2],[1.2,12.8],[5.5,1.2],[5.5,13.8],[8.2,4.5],[8.2,10.5]]).map(S).forEach(s=>{
+        const od=Math.min.apply(null,opp.map(q=>dst(q.x,q.y,s[0],s[1]))),md=Math.min.apply(null,mates.map(q=>dst(q.x,q.y,s[0],s[1])).concat([9])),dh=dst(s[0],s[1],HX,HY);
+        const sc=od-Math.max(0,1.8-md)*1.5-dst(p.x,p.y,s[0],s[1])*0.12-(dh>8.6?2:0);if(sc>bs){bs=sc;best=s;}});
+      p.callSpot=best;p.callT=tNow;}
+    return p.callSpot?{x:p.callSpot[0],y:p.callSpot[1],mul:1,sprint:dst(p.x,p.y,p.callSpot[0],p.callSpot[1])>1.5}:null;}
+  if(c.k==='cut'){
+    if(c.p!==p)return null;const e=tNow-c.t;
+    if(e<0.3){const dx=p.x-HX,dy=p.y-HY,d=Math.hypot(dx,dy)||1;return {x:p.x+dx/d,y:p.y+dy/d,mul:0.8,sprint:false};}   /* jab step away */
+    return {x:HX+HS*0.95,y:HY+c.side*0.55,mul:1,sprint:true};}
+  return null;}
 function aiSpot(p,dt){
+  {const cc=callsOn()?callOf(p.team):null,m=cc?callMove(p,dt,cc):null;
+    if(m){const dx=m.x-p.x,dy=m.y-p.y,d=Math.hypot(dx,dy);if(d>0.25)steer(p,dx/d,dy/d,m.mul,dt,m.sprint&&!p.exhausted);else steer(p,0,0,1,dt,false);p.dir=sgn(HX-p.x);p.stance=false;return;}}
   p.spotT-=dt;
   if(p.spotT<=0){
     p.spotT=rnd(2.2,4);
@@ -2109,13 +2175,13 @@ function aiDefend(p,dt){
   let tx,ty,face=opp;
   const odx=HX-opp.x,ody=HY-opp.y,od=Math.hypot(odx,ody)||1;
   if(h&&h.team!==p.team&&opp===h){tx=opp.x+odx/od*0.95;ty=opp.y+ody/od*0.95;face=h;}
-  else if(h&&h.team!==p.team&&players.indexOf(p)===helperId){
+  else if(h&&h.team!==p.team&&players.indexOf(p)===helperId&&!(callsOn()&&callOf(h.team)&&callOf(h.team).k==='iso')){
     const hx=HX-h.x,hy=HY-h.y,hl=Math.hypot(hx,hy)||1;tx=h.x+hx/hl*1.25;ty=h.y+hy/hl*1.25;face=h;
   }else{
     const off=Math.min(1.7,od*0.45);tx=opp.x+odx/od*off;ty=opp.y+ody/od*off;
     if(h&&dst(opp.x,opp.y,h.x,h.y)>6)tx+=(HX+HS*2-tx)*0.25;
   }
-  const lag=ai?D.lag:6;
+  let lag=ai?D.lag:6;if(opp&&opp.cutT&&tNow-opp.cutT<1.1&&callsOn())lag*=0.18;
   p.tx+=(tx-p.tx)*Math.min(1,dt*lag);p.ty+=(ty-p.ty)*Math.min(1,dt*lag);
   const dx=p.tx-p.x,dy=p.ty-p.y,d=Math.hypot(dx,dy);
   if(d>0.12)steer(p,dx/d,dy/d,Math.min(1,d*1.5),dt,d>3&&!p.exhausted);else steer(p,0,0,1,dt,false);
@@ -2324,7 +2390,7 @@ function update(dt){
     separate();
     updateBall(dt);
     const hd=ball.state==='held'?ball.holder:null;
-    if(hd){const t=teams[hd.team];if(t.needClear&&dst(hd.x,hd.y,HX,HY)>=ARC+0.1)t.needClear=false;}
+    if(hd){const t=teams[hd.team];if(t.needClear&&isThreeAt(hd.x,hd.y,0.1))t.needClear=false;}
     if(phase==='play'&&(ball.state==='held'||ball.state==='pass')){
       shotClock=SC;
     }
@@ -2880,6 +2946,56 @@ function head(g,L,J,r,fd,T,pose,eyes,lvl){
     const k=A(-0.5+1.05*((T*0.6)%1));circ(g,cx+Math.cos(k)*R,cy+Math.sin(k)*R,r*0.07,'#e6fff3');g.restore();}
 }
 /* ---------- the full figure ---------- */
+
+/* ---- jersey designs: tl(a,b) maps a = -1 (back) .. 1 (front), b = 0 (waist) .. 1 (shoulders) onto the torso; U = half the torso width in px ---- */
+function jdDraw(g,D,J,tl,U,T){
+  const C=x=>x==='jt'?J.jt:x==='dk'?sh(J.jc,-55):x==='lt'?sh(J.jc,55):(x||J.jt),c=C(D.c),c2=C(D.c2||'dk');
+  const poly=(pts,col)=>{g.fillStyle=col;g.beginPath();pts.forEach((q,i)=>{const p=tl(q[0],q[1]);if(i)g.lineTo(p[0],p[1]);else g.moveTo(p[0],p[1]);});g.closePath();g.fill();};
+  const line=(pts,col,w)=>{g.strokeStyle=col;g.lineWidth=w*U;g.beginPath();pts.forEach((q,i)=>{const p=tl(q[0],q[1]);if(i)g.lineTo(p[0],p[1]);else g.moveTo(p[0],p[1]);});g.stroke();};
+  const dot=(a,b,r,col)=>{const p=tl(a,b);g.fillStyle=col;g.beginPath();g.arc(p[0],p[1],r*U,0,6.2832);g.fill();};
+  const ring=(a,b,r,col,w,s0,s1)=>{const p=tl(a,b);g.strokeStyle=col;g.lineWidth=w*U;g.beginPath();g.arc(p[0],p[1],r*U,s0||0,s1||6.2832);g.stroke();};
+  const rnd=(i)=>{const x=Math.sin(i*127.1+(D.s||3)*311.7)*43758.5453;return x-Math.floor(x);};
+  const star=(a,b,r,col,n)=>{const p=tl(a,b);n=n||5;g.fillStyle=col;g.beginPath();for(let i=0;i<n*2;i++){const rr=(i%2?0.45:1)*r*U,an=-Math.PI/2+i*Math.PI/n;g.lineTo(p[0]+Math.cos(an)*rr,p[1]+Math.sin(an)*rr);}g.closePath();g.fill();};
+  g.lineCap='round';g.lineJoin='round';
+  switch(D.p){
+  case 'flames':for(let k=0;k<5;k++){const a=-1.1+k*0.55,hh=0.55+0.2*Math.sin(k*2.1+T*6)*0.25+(k%2)*0.12;
+      poly([[a-0.32,-0.05],[a-0.2,hh*0.45],[a-0.05,hh*0.7],[a+0.06,hh],[a+0.08,hh*0.62],[a+0.2,hh*0.5],[a+0.32,-0.05]],c);
+      poly([[a-0.16,-0.05],[a-0.06,hh*0.38],[a+0.04,hh*0.6],[a+0.08,hh*0.36],[a+0.16,-0.05]],c2);}break;
+  case 'bolt':poly([[-0.25,1.08],[1.0,1.08],[0.62,0.6],[1.35,0.64],[0.05,-0.12],[0.48,0.4],[-0.2,0.38]],c2);
+      poly([[-0.1,1.0],[0.82,1.0],[0.48,0.55],[1.18,0.58],[0.18,0.0],[0.58,0.45],[-0.08,0.43]],c);break;
+  case 'pin':for(let a=-1.05;a<=1.1;a+=0.3)line([[a,-0.05],[a,1.05]],c,0.07);break;
+  case 'hstripe':for(let b=-0.02;b<1.05;b+=0.22)poly([[-1.3,b],[1.3,b],[1.3,b+0.11],[-1.3,b+0.11]],c);break;
+  case 'fade':for(let i=0;i<10;i++){g.globalAlpha=0.85*(1-i/10);poly([[-1.3,i*0.07-0.02],[1.3,i*0.07-0.02],[1.3,i*0.07+0.06],[-1.3,i*0.07+0.06]],c);}g.globalAlpha=1;break;
+  case 'chev':[[0.58,c],[0.36,c2],[0.14,c]].forEach(q=>{const b=q[0];poly([[-1.3,b+0.3],[0.1,b],[1.3,b+0.3],[1.3,b+0.17],[0.1,b-0.13],[-1.3,b+0.17]],q[1]);});break;
+  case 'camo':for(let i=0;i<18;i++){const p=tl(-1.1+rnd(i)*2.2,rnd(i+40)*1.05);g.fillStyle=i%3===0?c2:(i%3===1?c:sh(J.jc,-20));g.beginPath();g.ellipse(p[0],p[1],(0.22+rnd(i+80)*0.25)*U,(0.12+rnd(i+90)*0.12)*U,rnd(i+7)*3,0,6.2832);g.fill();}break;
+  case 'check':for(let r=0;r<2;r++)for(let k=0;k<12;k++){const a=-1.3+k*0.22,b=0.1+r*0.11;poly([[a,b],[a+0.22,b],[a+0.22,b+0.11],[a,b+0.11]],(k+r)%2?c:c2);}
+      for(let k=0;k<3;k++)line([[0.2+k*0.25,0.5],[1.2,0.5]],c,0.05);break;
+  case 'tape':poly([[-1.3,0.08],[1.3,0.08],[1.3,0.34],[-1.3,0.34]],c2);g.save();g.beginPath();[[-1.3,0.08],[1.3,0.08],[1.3,0.34],[-1.3,0.34]].forEach((q,i)=>{const p=tl(q[0],q[1]);i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]);});g.clip();
+      for(let k=-6;k<8;k++){const a=k*0.3;poly([[a,0.05],[a+0.15,0.05],[a+0.32,0.38],[a+0.17,0.38]],c);}g.restore();break;
+  case 'circuit':g.save();g.shadowColor=c;g.shadowBlur=U*0.4;[[[-1.2,0.2],[-0.4,0.2],[-0.2,0.38],[0.5,0.38]],[[-1.2,0.55],[-0.7,0.55],[-0.5,0.75],[0.3,0.75],[0.3,0.95]],[[1.2,0.12],[0.6,0.12],[0.45,0.28]],[[-0.3,-0.05],[-0.3,0.1],[0.2,0.1]],[[1.2,0.6],[0.8,0.6],[0.65,0.48]]].forEach(L=>{line(L,c,0.06);const e=L[L.length-1];dot(e[0],e[1],0.1,c);});g.restore();break;
+  case 'crack':g.save();g.shadowColor=c;g.shadowBlur=U*0.5;[[[-0.9,-0.05],[-0.75,0.2],[-0.85,0.35],[-0.6,0.6],[-0.65,0.78]],[[0.4,-0.05],[0.3,0.18],[0.5,0.32],[0.35,0.52]],[[-0.75,0.2],[-0.4,0.28],[-0.3,0.45]],[[1.1,0.3],[0.8,0.42],[0.85,0.6],[0.6,0.8]]].forEach(L=>{line(L,c,0.11);line(L,c2,0.04);});g.restore();break;
+  case 'wave':for(let r=0;r<3;r++){const b=0.1+r*0.16,pts=[];for(let k=0;k<=12;k++){const a=-1.3+k*0.22;pts.push([a,b+Math.sin(k*1.3+r+T*2)*0.035]);}line(pts,r===1?c2:c,0.13);}break;
+  case 'scope':ring(0.5,0.55,0.6,c,0.1);ring(0.5,0.55,0.28,c,0.06);line([[0.5,0.15],[0.5,0.98]],c,0.06);line([[-0.2,0.55],[1.2,0.55]],c,0.06);dot(0.5,0.55,0.1,c2);break;
+  case 'sash':poly([[-1.4,0.98],[-1.4,0.72],[1.4,0.02],[1.4,0.28]],c);line([[-1.4,0.985],[1.4,0.29]],c2,0.06);line([[-1.4,0.715],[1.4,0.015]],c2,0.06);star(-0.35,0.62,0.2,c2);break;
+  case 'stars':[[-0.7,0.85],[0.1,0.92],[0.75,0.78],[-0.35,0.62],[0.5,0.55],[-0.85,0.35],[0.05,0.3],[0.8,0.25],[-0.4,0.08],[0.45,0.05]].forEach((q,i)=>star(q[0],q[1],i%3===0?0.17:0.11,c));break;
+  case 'prism':['#ff4d5e','#ff9a2e','#ffd166','#3dffa8','#17d6ff','#9b6bff'].forEach((col,i)=>{g.globalAlpha=0.85;poly([[-1.3,0.05+i*0.1],[1.3,0.45+i*0.1],[1.3,0.55+i*0.1],[-1.3,0.15+i*0.1]],col);});g.globalAlpha=1;break;
+  case 'subway':line([[-1.3,0.3],[-0.2,0.3],[0.15,0.62],[1.3,0.62]],c,0.2);line([[-0.6,-0.1],[-0.6,0.3]],c2,0.12);[[-0.95,0.3],[-0.2,0.3],[0.5,0.62],[1.0,0.62]].forEach(q=>{dot(q[0],q[1],0.15,'#f4f6ff');ring(q[0],q[1],0.15,c,0.07);});break;
+  case 'platform':poly([[-1.3,0.04],[1.3,0.04],[1.3,0.3],[-1.3,0.3]],c);for(let r=0;r<2;r++)for(let k=0;k<11;k++)dot(-1.15+k*0.23+(r?0.115:0),0.11+r*0.11,0.045,c2);line([[-1.3,0.33],[1.3,0.33]],'#f4f6ff',0.04);break;
+  case 'live':g.globalAlpha=0.16;for(let b=0;b<1.05;b+=0.07)line([[-1.3,b],[1.3,b]],'#ffffff',0.025);g.globalAlpha=1;{const on=Math.sin(T*5)>-0.3;ring(0.7,0.84,0.2,c,0.06);if(on)dot(0.7,0.84,0.12,c);}line([[-0.9,0.14],[-0.6,0.14],[-0.45,0.3],[-0.25,0.05],[-0.05,0.22],[0.3,0.14],[1.2,0.14]],c,0.06);break;
+  case 'claw':[[-0.35,0],[0.05,0.08],[0.45,0.16]].forEach(q=>{poly([[q[0],q[1]+0.05],[q[0]+0.12,q[1]],[q[0]+0.85,q[1]+0.8],[q[0]+0.78,q[1]+0.86]],c);line([[q[0]+0.12,q[1]],[q[0]+0.85,q[1]+0.8]],c2,0.04);});break;
+  case 'smoke':for(let k=0;k<6;k++){const a=-1+k*0.4,ph=T*0.8+k;g.globalAlpha=0.45;line([[a,-0.05],[a+0.15*Math.sin(ph),0.25],[a-0.12*Math.cos(ph),0.5],[a+0.1*Math.sin(ph+1),0.75]],k%2?c:c2,0.22);}g.globalAlpha=1;break;
+  case 'retro':poly([[-1.3,0.64],[1.3,0.64],[1.3,0.74],[-1.3,0.74]],c);poly([[-1.3,0.78],[1.3,0.78],[1.3,0.84],[-1.3,0.84]],c2);poly([[-1.3,0.56],[1.3,0.56],[1.3,0.6],[-1.3,0.6]],c2);line([[0.95,-0.05],[0.95,0.5]],c,0.12);line([[1.12,-0.05],[1.12,0.5]],c2,0.06);break;
+  case 'enso':ring(0.45,0.5,0.6,c,0.2,0.5,5.9);ring(0.45,0.5,0.6,c2,0.05,0.8,5.5);break;
+  case 'strata':for(let r=0;r<5;r++){const b=r*0.13,pts=[[-1.3,b-0.02]];for(let k=0;k<=8;k++)pts.push([-1.3+k*0.33,b+0.06+Math.sin(k*2.3+r)*0.03]);pts.push([1.3,b-0.02]);poly(pts,r%2?c2:c);}break;
+  case 'burst':star(0.45,0.5,0.85,c,12);star(0.45,0.5,0.55,c2,12);break;
+  case 'peak':poly([[-1.3,-0.05],[-1.3,0.22],[-0.65,0.58],[-0.3,0.3],[0.15,0.78],[0.6,0.36],[1.3,0.55],[1.3,-0.05]],c);poly([[-0.65,0.58],[-0.78,0.5],[-0.56,0.47]],c2);poly([[0.15,0.78],[-0.02,0.64],[0.12,0.6],[0.3,0.64]],c2);poly([[1.3,0.55],[1.12,0.5],[1.3,0.45]],c2);break;
+  case 'tentacle':for(let k=0;k<3;k++){const a0=-0.8+k*0.75,ph=T*1.5+k*2;for(let i=0;i<=14;i++){const t=i/14,a=a0+Math.sin(t*4+ph)*0.22*t,b=-0.05+t*0.75;dot(a,b,0.2*(1-t*0.8),c);if(i%3===1&&i<12)dot(a+0.08,b,0.05,c2);}}break;
+  case 'arrows':[0.12,0.38,0.64].forEach((b,i)=>poly([[-0.1,b],[0.55,b+0.24],[1.2,b],[1.2,b+0.11],[0.55,b+0.35],[-0.1,b+0.11]],i===2?c2:c));break;
+  case 'side':poly([[0.78,-0.1],[1.3,-0.1],[1.3,1.1],[0.78,1.1]],c);poly([[-1.3,-0.1],[-0.78,-0.1],[-0.78,1.1],[-1.3,1.1]],c);line([[0.72,-0.1],[0.72,1.1]],c2,0.05);line([[-0.72,-0.1],[-0.72,1.1]],c2,0.05);break;
+  case 'drip':poly([[-1.3,1.1],[1.3,1.1],[1.3,0.88],[-1.3,0.88]],c);for(let k=0;k<9;k++){const a=-1.15+k*0.29,l=0.15+rnd(k)*0.45;line([[a,0.9],[a,0.9-l]],c,0.12);dot(a,0.9-l,0.09,c);}break;
+  case 'plaid':g.globalAlpha=0.55;for(let b=0.05;b<1.05;b+=0.26)poly([[-1.3,b],[1.3,b],[1.3,b+0.1],[-1.3,b+0.1]],c);for(let a=-1.1;a<1.2;a+=0.5)poly([[a,-0.1],[a+0.16,-0.1],[a+0.16,1.1],[a,1.1]],c);g.globalAlpha=0.8;for(let b=0.13;b<1.05;b+=0.26)line([[-1.3,b],[1.3,b]],c2,0.03);g.globalAlpha=1;break;
+  }
+}
 function figure(g,x0,y0,h,d,L,J,poseName,o){
   o=o||{};const pose=Object.assign({},POSE[poseName]||POSE.stand,o.pose||{}),Q=o.Q||solve(pose),B=L.build||1,W=Math.sqrt(B),T=o.t||0;
   const P=p=>[x0+d*p[0]*h,y0+p[1]*h],skin=J.skin,dk=sh(skin,-30),hoodC=L.hair==='hood'?(L.hood||'#2b2d3a'):null;
@@ -2925,11 +3041,12 @@ function figure(g,x0,y0,h,d,L,J,poseName,o){
     if(hoodC){g.fillStyle=hoodC;path();g.fill();}
     const tg=g.createLinearGradient(sb[0],sb[1],cf[0],cf[1]);tg.addColorStop(0,sh(J.jc,-38));tg.addColorStop(0.55,J.jc);tg.addColorStop(1,sh(J.jc,18));g.fillStyle=tg;
     if(hoodC){g.save();path();g.clip();g.fillRect(Math.min(sb[0],cf[0])-h,Math.min(st1[1],sb[1])+0.04*h,h*2,h);g.restore();}else{path();g.fill();}
+    if(J.jd){const hp=Q.hip,sp=Q.S,tl=(a,b)=>{const bb=0.3+0.72*b;return P([hp[0]+(sp[0]-hp[0])*bb+n[0]*a*0.07*B,hp[1]+(sp[1]-hp[1])*bb+n[1]*a*0.07*B]);};const p0=tl(-1,0.5),p1=tl(1,0.5);g.save();path();g.clip();if(hoodC){g.beginPath();g.rect(Math.min(sb[0],cf[0])-h,Math.min(st1[1],sb[1])+0.04*h,h*2,h);g.clip();}try{jdDraw(g,J.jd,J,tl,Math.hypot(p1[0]-p0[0],p1[1]-p0[1])/2,T);}catch(e){}g.restore();}
     g.strokeStyle=J.jt;g.lineWidth=0.012*h;path();g.stroke();
     /* arm hole and neckline trim */
     const ah=pp(Q.S,0.0,-0.05);g.strokeStyle=sh(J.jc,-45);g.lineWidth=0.008*h;g.beginPath();g.ellipse(ah[0],ah[1],0.035*h*B,0.05*h,-d*Q.lean,0,P2);g.stroke();
     /* number */
-    const mid=pp(Q.S,0.012*B,-0.15);g.save();g.translate(mid[0],mid[1]);g.rotate(d*Q.lean);g.fillStyle=J.jt;g.font='900 '+Math.round(0.085*h)+'px Impact,"Arial Black",sans-serif';g.textAlign='center';g.textBaseline='middle';if(J.num!=null&&J.num!=='')g.fillText(String(J.num),0,0);g.restore();
+    const mid=pp(Q.S,0.012*B,-0.15);g.save();g.translate(mid[0],mid[1]);g.rotate(d*Q.lean);g.fillStyle=J.jt;g.font='900 '+Math.round(0.085*h)+'px Impact,"Arial Black",sans-serif';g.textAlign='center';g.textBaseline='middle';if(J.num!=null&&J.num!==''){if(J.jd){g.lineWidth=0.014*h;g.strokeStyle=J.jd.no||'rgba(8,10,20,.7)';g.strokeText(String(J.num),0,0);if(J.jd.nc)g.fillStyle=J.jd.nc;}g.fillText(String(J.num),0,0);}g.restore();
     if(L.suit){g.fillStyle='#f4f6ff';const a1=pp(Q.S,0.072*B,-0.005),a2=pp(Q.S,0.03*B,-0.01),a3=pp(Q.S,0.064*B,-0.15);g.beginPath();g.moveTo(a1[0],a1[1]);g.lineTo(a2[0],a2[1]);g.lineTo(a3[0],a3[1]);g.closePath();g.fill();const t1=pp(Q.S,0.06*B,-0.02),t2=pp(Q.S,0.062*B,-0.13);limb(g,t1,t2,0.009*h,0.013*h,'#10131f');}
     /* shorts waist */
     const s1=pp(Q.hip,-0.07*B,0.03),s2=pp(Q.hip,0.066*B,0.03),s3=pp(Q.hip,0.07*B,-0.09),s4=pp(Q.hip,-0.074*B,-0.09);g.fillStyle=J.sc;g.beginPath();g.moveTo(s1[0],s1[1]);g.lineTo(s2[0],s2[1]);g.lineTo(s3[0],s3[1]);g.lineTo(s4[0],s4[1]);g.closePath();g.fill();
@@ -3644,6 +3761,8 @@ return {scene:scene,prepare:prepare,portrait:portrait,figure:figure,POSE:POSE,ga
 
 function drawPlayer(p){
   const tm=teams[p.team];if(!tm)return;
+  if(p.tk&&p.tk.until>tNow&&(p.shot||ball.state==='shot'||ball.state==='held'&&ball.holder!==p)){const k=Math.min(1,(p.tk.until-tNow)/0.4);ctx.save();ctx.globalAlpha=0.85*k;const X=sx(p.tk.x),Y=sy(p.tk.y,0);ctx.fillStyle=p.tk.three?'rgba(255,209,102,.35)':'rgba(255,255,255,.22)';ctx.strokeStyle=p.tk.three?'#ffd166':'#e8ecf5';ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(X,Y,15,6,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.font='900 13px system-ui,sans-serif';ctx.textAlign='center';ctx.fillStyle=ctx.strokeStyle;ctx.fillText(p.tk.three?'3':'2',X,Y-9);ctx.restore();}
+  if(p.callRing&&p.callRing.t>tNow&&callsOn()){const k=0.6+0.4*Math.sin(tNow*10);ctx.save();ctx.globalAlpha=k;ctx.strokeStyle=p.callRing.c;ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(sx(p.x),sy(p.y,0),30,11,0,0,Math.PI*2);ctx.stroke();ctx.restore();}
   const X=sx(p.x),Y=sy(p.y,p.z),HP=p.h*PPM*0.96,d=p.dir||1,T=tNow;
   const sp=Math.hypot(p.vx||0,p.vy||0),air=p.z>0.04||!!p.dunk,onG=!air;
   const runK=onG?Math.min(1,sp/5.2):0,ph=p.runPh||0;
@@ -3720,7 +3839,7 @@ function drawPlayer(p){
   ctx.lineCap='round';ctx.lineJoin='round';
   {const LKX=lookForPlayer(p);
    if(LKX&&typeof ART!=='undefined'&&ART.game){
-    const J={skin:p.skin,num:p.num,jc:tm.color,jt:(p.team===myTeamIdx()&&typeof cosTrim==='function'&&cosTrim(p.name))||tm.accent,sc:tm.dark,name:p.name};
+    const J={skin:p.skin,num:p.num,jc:tm.color,jt:(p.team===myTeamIdx()&&typeof cosTrim==='function'&&cosTrim(p.name))||tm.accent,sc:tm.dark,name:p.name,jd:(p.team===myTeamIdx()&&typeof cosKit==='function'&&cosKit(p.name))||null};
     const ftF=air?(p.dunk?34:40):(fF[1]<-HP*0.03?26:0),ftB=air?46:(fB[1]<-HP*0.03?26:0);
     ART.game(ctx,{HP:HP,d:d,L:LKX,J:J,hip:[hipX,hipY],S:[shX,shY],hF:hF,hB:hB,fF:fF,fB:fB,t:T,lvl:lkLvl(p),ft:[ftF,ftB],
       neck:(st||fol>0||p.blocking>0||swat>0)?-20:(def?-14:-8),mouth:cel>0?'grin':(p.stumble>0||p.stripped>0?'o':(p.dunk?'shout':null)),wrist:fol>0&&!st,alpha:ctx.globalAlpha,cvW:VW,cvH:VH,pr:DPR});
@@ -4046,7 +4165,7 @@ function drawHUD(){
   }
   if(hintT>0&&SET.vis.hints&&!touch.active&&!('ontouchstart' in window)){
     ctx.globalAlpha=Math.min(1,hintT/2);
-    const txt=kn('shoot')+' shoot (release in the green)   '+kn('pass')+' pass / steal (hold: pressure D)   '+kn('juke')+' crossover   '+kn('sprint')+' turbo   '+kn('sw')+' switch   '+kn('ab')+' ability';
+    const txt=kn('shoot')+' shoot (release in the green)   '+kn('pass')+' pass / steal (hold: pressure D)   '+kn('juke')+' crossover   '+kn('sprint')+' turbo   '+kn('sw')+' switch   '+kn('ab')+' ability'+(callsOn()&&players.filter(q=>q.team===myTeamIdx()).length>1?'   '+kn('call1')+'/'+kn('call2')+'/'+kn('call3')+' ISO / open / cut':'');
     ctx.font='700 14px Arial,sans-serif';ctx.textAlign='center';
     const w=ctx.measureText(txt).width+30;
     const hy=teamHud()?VH-104:VH-44;
@@ -4389,7 +4508,7 @@ function ppStats(o,s){const e=Object.assign({},ARCH[s],o.mod||{});const n=(v,a,b
   return [['Speed',R(n(e.spd,4.3,6.3))],['Shooting',R(shot)],['Handles',R(n(e.handle,0.6,2.0))],['Passing',R(n(e.pass,0.9,1.6))],['Defense',R((n(e.steal,0.4,1.5)+n(e.block,0.35,1.5))/2)],['Inside',R(n(e.dunk,2,4)*0.5+n(e.reb,0.4,1.5)*0.3+n(e.paint,0,0.3)*0.2)]];}
 function ppHeight(o,s){const m=(o.mod&&o.mod.h)||ARCH[s].h,inch=Math.round(m/0.0254);return Math.floor(inch/12)+"'"+(inch%12)+'" ('+m.toFixed(2)+' m)';}
 function ppKit(n){const p=PROFILES[n];return p?p.kit:HOUNDS_KIT;}
-function ppJ(o){const k=ppKit(o.name);return {skin:o.skin,num:o.num,jc:k.c,jt:(typeof cosTrim==='function'&&cosTrim(o.name))||k.t,sc:k.s,name:o.name};}
+function ppJ(o){const k=ppKit(o.name);return {skin:o.skin,num:o.num,jc:k.c,jt:(typeof cosTrim==='function'&&cosTrim(o.name))||k.t,sc:k.s,name:o.name,jd:(typeof cosKit==='function'&&cosKit(o.name))||null};}
 function ppOrder(){const a=[];SLOTS.forEach(s=>{POOL[s].map((o,i)=>i).sort((x,y)=>rarIdx(POOL[s][x].name)-rarIdx(POOL[s][y].name)||x-y).forEach(i=>{const o=POOL[s][i];if((!o.hidden||owned.indexOf(o.name)>=0)&&PROFILES[o.name])a.push(o.name);});});return a;}
 function ppTitle(n){return n.charAt(0)+n.slice(1).toLowerCase();}
 /* shop cards: a portrait button on top */
@@ -4688,7 +4807,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.3.4';
+const GAME_VER='2.3.7';
 const DEV_VER='2.3.1';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -5164,38 +5283,40 @@ function mstLvl(n){const x=mst[n]||0;let l=1;while(l<10&&x>=MST_XP(l+1))l++;retu
 /* ---- cosmetics: every player has their own signature set, unlocked by mastery; a few shared shoes fill the levels between ---- */
 /* each set: [slot, name, look changes (or a trim colour for 'kit')], unlocked at mastery 2, 4, 6, 8 and 10 */
 const CHAR_COS={
-  DIME:[['head','Noodles 24 Headband',{band:'#ff6fc0'}],['arms',"Captain's Wristbands",{wrist:'#ffd166',wristBoth:1}],['shoes','Note Paper',{shoe:'#f3ead2',sole:'#1f2a55'}],['kit','Captain Trim','#ffd166'],['shoes','Lower Sprawl Legacy',{shoe:'#17d6ff',sole:'#ffd166',band:'#ffd166'}]],
-  BLAZE:[['head','Ember Tips',{tip:'#ffd166'}],['arms','Flash Burst Sleeve',{sleeve:'#ffd166',sleeveArm:'F'}],['shoes','Wildfire',{shoe:'#ff3b1f',sole:'#ffd166'}],['kit','Scorched Trim','#ff3b1f'],['shoes','Blue Flame',{shoe:'#3d8bff',sole:'#ffffff',tip:'#7fd1ff'}]],
-  MOOSE:[['head','Hounds Headband',{band:'#c9a0ff'}],['legs','Anchor Knee Pads',{knee:'#c9a0ff',kneeLeg:'both'}],['shoes','Bedrock',{shoe:'#6b6f7a',sole:'#3a3d45'}],['kit','Antler Brown','#8a5a2b'],['shoes','Immovable',{shoe:'#c9a0ff',sole:'#1b1d26',knee:'#1b1d26',kneeLeg:'both'}]],
-  KAI:[['head','Rail Yard Cap',{hat:'#ffb000'}],['legs','Reflective Socks',{socks:'#e8ff3d'}],['shoes','Express Line',{shoe:'#ff4d5e',sole:'#ffffff'}],['kit','Platform Yellow','#ffd23f'],['shoes','Right On Time',{shoe:'#ffb000',sole:'#ffffff',watch:'#3dffa8'}]],
-  FLASH:[['head','Bleached Spikes',{tip:'#f4f6ff'}],['legs','Lightning Leg Sleeve',{legSleeve:'#ffffff',legLeg:'B'}],['shoes','Redline',{shoe:'#ff3b1f',sole:'#ffe45c'}],['kit','Checkered Flag','#f4f6ff'],['shoes','Zero to Sixty',{shoe:'#ffe45c',sole:'#c6ff3d',tip:'#c6ff3d'}]],
-  ORBIT:[['head','Stream Headphones',{phones:'#17d6ff'}],['arms','Chat Wristbands',{wrist:'#9b6bff',wristBoth:1}],['shoes','Subscriber',{shoe:'#9b6bff',sole:'#ff5ee0'}],['kit','Live Red','#ff3b3b'],['shoes','Gone Viral',{shoe:'#ffffff',sole:'#ff5ee0',phones:'#ffd166'}]],
-  GLOVE:[['head','Yard Headband',{band:'#d81e3a'}],['arms','Lockdown Sleeves',{sleeve:'#d81e3a',sleeveArm:'both'}],['shoes','Sticky Fingers',{shoe:'#1b1d26',sole:'#d81e3a'}],['kit','Pickpocket Gold','#ffd166'],['shoes','Stripped',{shoe:'#ffffff',sole:'#d81e3a',sleeve:'#ffffff',sleeveArm:'both'}]],
-  SAGE:[['head','Chalk Dust Headband',{band:'#e8e8e8'}],['arms',"Professor's Watch",{watch:'#d4af37'}],['shoes','Tenure Loafers',{shoe:'#5a4030',sole:'#f4f6ff'}],['kit','Prism Violet','#9b6bff'],['shoes','Court Vision',{shoe:'#5bbf7a',sole:'#f4f6ff',watch:'#5bbf7a'}]],
-  PHANTOM:[['head','Time Warp Mask',{maskC:'#3a0d4a'}],['arms','Smoke Sleeves',{sleeve:'#5a5a6a',sleeveArm:'both'}],['shoes','Untouchable',{shoe:'#f4f6ff',sole:'#15151c'}],['kit','Hellfire Trim','#ff3b1f'],['shoes','Phantom Pair',{shoe:'#3a0d4a',sole:'#bba0ff',hc:'#3a0d4a',maskC:'#3a0d4a'}]],
-  WARDEN:[['head','Jumpsuit Beanie',{hc:'#ff7a1a',stripe:'#1b1d26'}],['legs','Shackle Knee Pads',{knee:'#c9ced9',kneeLeg:'both'}],['shoes','Full Court Press',{shoe:'#ff4d5e',sole:'#1b1d26'}],['kit','Cell Block Gray','#c9ced9'],['shoes',"Warden's Keys",{shoe:'#d4af37',sole:'#1b1d26',stripe:'#d4af37'}]],
-  REX:[['head',"Gauntlet Finalist Band",{band:'#2a3a6a'}],['legs','Retro Leg Sleeves',{legSleeve:'#d4af37',legLeg:'both'}],['shoes','Throwback',{shoe:'#f4f6ff',sole:'#2a3a6a'}],['kit','Finalist Gold','#d4af37'],['shoes','Pure Stroke',{shoe:'#2a3a6a',sole:'#d4af37',gray:'#e8e8e8'}]],
-  SNIPE:[['head','Green Dot Lens',{scope:'#3dff6a'}],['legs','Ghillie Socks',{socks:'#4a5a2a'}],['shoes','Rooftop Camo',{shoe:'#4a5a2a',sole:'#2b2f3a'}],['kit','Crosshair Red','#ff3b3b'],['shoes','Long Range',{shoe:'#8aff8a',sole:'#2b2f3a',scope:'#ffd166'}]],
-  HAZE:[['head','Ghost Hood',{hood:'#e8e8f0',trim:'#9fb3c8'}],['legs','Third Rail Socks',{socks:'#ff9a9a'}],['shoes','Last Train',{shoe:'#1b1d26',sole:'#ff3b3b'}],['kit','Red Line','#ff3b3b'],['shoes','Phase Step',{shoe:'#e8e8f0',sole:'#9fb3c8',hood:'#7a2020',trim:'#ffd166'}]],
-  VOLT:[['head','Welding Goggles',{goggles:'#3dd6ff'}],['arms','Insulated Wristbands',{wrist:'#1b1d26',wristBoth:1}],['shoes','High Voltage',{shoe:'#3dd6ff',sole:'#ffee3a'}],['kit','Hazard Stripe','#ffee3a'],['shoes','Short Circuit',{shoe:'#ffffff',sole:'#3dd6ff',tip:'#3dd6ff'}]],
-  HEATER:[['head','Foundry Headband',{band:'#ffd166'}],['arms','Molten Sleeve',{sleeve:'#ffd166',sleeveArm:'F'}],['shoes','Cast Iron',{shoe:'#3a3a40',sole:'#ff4d1f'}],['kit','Furnace Orange','#ff4d1f'],['shoes','White Hot',{shoe:'#fff3d0',sole:'#ff4d1f',band:'#fff3d0'}]],
-  ZEN:[['head','Zenith Headband',{band:'#3d6aff'}],['arms','Silk Sleeve',{sleeve:'#3d6aff',sleeveArm:'F'}],['shoes','Still Water',{shoe:'#bfe0ff',sole:'#3d6aff'}],['kit','Zenith Gold','#d4af37'],['shoes','Heat Check',{shoe:'#3d6aff',sole:'#ffffff'}]],
-  APEX:[['head','Afterimage Mohawk',{hc:'#3dd6ff'}],['arms','Hellfire Sleeve',{sleeve:'#ff3b1f',sleeveArm:'F'}],['shoes','Blink',{shoe:'#f4f6ff',sole:'#ff3b1f'}],['kit','Neo League Red','#ff3b1f'],['shoes','Apex Predator',{shoe:'#d4af37',sole:'#15151c',hc:'#d4af37'}]],
-  ADAPT:[['head','Data Fade',{line:'#3dd6ff'}],['arms','Overclock Wristbands',{wrist:'#3dd6ff',wristBoth:1}],['shoes','Beta Build',{shoe:'#1f2430',sole:'#3dffa8'}],['kit','Source Code','#3dffa8'],['shoes','Version 1.35',{shoe:'#3dffa8',sole:'#f4f6ff'}]],
-  ROCK:[['head','Megaphone Headband',{band:'#ffd166'}],['arms','Loudmouth Wristbands',{wrist:'#ff4d5e',wristBoth:1}],['shoes','Cousin Moose',{shoe:'#c9a0ff',sole:'#6b4a2b'}],['kit','Bedrock Brown','#6b4a2b'],['shoes','Big Mouth',{shoe:'#ffd166',sole:'#ff4d5e'}]],
-  BOOM:[['head','Poster Headband',{band:'#ffffff'}],['arms','Slam Wristbands',{wrist:'#ff6a3d',wristBoth:1}],['shoes','Southside',{shoe:'#1b1d26',sole:'#ff6a3d'}],['kit','Highlight Gold','#ffd166'],['shoes','Posterized',{shoe:'#ffd166',sole:'#ff6a3d',band:'#ffd166'}]],
-  ATLAS:[['head','Squeegee Headband',{band:'#3d7bff'}],['arms','Harbor Elbow Pads',{elbow:'#3d7bff'}],['shoes','Glass Cleaner',{shoe:'#bfe9ff',sole:'#ffffff'}],['kit','Harbor Blue','#3d7bff'],['shoes','High Tide',{shoe:'#1f3f8a',sole:'#bfe9ff',elbow:'#bfe9ff'}]],
-  DOZER:[['head','Hi-Vis Hard Hat',{hat:'#ff7a1a'}],['legs','Steel Toe Socks',{socks:'#ffd23f'}],['shoes','Dock Boots',{shoe:'#3a2a1a',sole:'#ffd23f'}],['kit','Hazard Tape','#ffd23f'],['head','Lucky Gold Hat',{hat:'#d4af37'}]],
-  GOLIATH:[['head','Mountain Headband',{band:'#e9edf5'}],['legs','Summit Knee Pads',{knee:'#c9a227',kneeLeg:'both'}],['shoes','Avalanche',{shoe:'#ffffff',sole:'#9fb3c8'}],['kit','Sovereign Gold','#c9a227'],['shoes','The Peak',{shoe:'#c9a227',sole:'#1b1d26',knee:'#1b1d26',kneeLeg:'both'}]],
-  KRAKEN:[['head','Deep Sea Tips',{tip:'#3dd6ff'}],['arms','Tentacle Sleeve',{sleeve:'#1a5a6a',sleeveArm:'both'}],['shoes','The Abyss',{shoe:'#0b2a3a',sole:'#3dd6ff'}],['kit','Hellfire Trim','#ff3b1f'],['shoes','World Breaker',{shoe:'#ff3b1f',sole:'#ffd166',tip:'#ffd166'}]],
-  RALLY:[['head','Comeback Headband',{band:'#ff9a2e'}],['arms','Never Over Wristbands',{wrist:'#ff9a2e',wristBoth:1}],['shoes','Fourth Quarter',{shoe:'#1b1d26',sole:'#ff9a2e'}],['kit','Eastport Blue','#3d7bff'],['shoes','Comeback Kid',{shoe:'#ff9a2e',sole:'#ffffff'}]]
+  DIME:[['head','Noodles 24 Headband',{band:'#ff6fc0'}],['arms',"Captain's Wristbands",{wrist:'#ffd166',wristBoth:1}],['shoes','Note Paper',{shoe:'#f3ead2',sole:'#1f2a55'}],['kit','Captain\'s Sash',{p:'sash',c:'#ffd166',c2:'#fff4d6',tr:'#ffd166'}],['shoes','Lower Sprawl Legacy',{shoe:'#17d6ff',sole:'#ffd166',band:'#ffd166'}]],
+  BLAZE:[['head','Ember Tips',{tip:'#ffd166'}],['arms','Flash Burst Sleeve',{sleeve:'#ffd166',sleeveArm:'F'}],['shoes','Wildfire',{shoe:'#ff3b1f',sole:'#ffd166'}],['kit','Scorched Flames',{p:'flames',c:'#ff5a1f',c2:'#ffd166',tr:'#ff3b1f'}],['shoes','Blue Flame',{shoe:'#3d8bff',sole:'#ffffff',tip:'#7fd1ff'}]],
+  MOOSE:[['head','Hounds Headband',{band:'#c9a0ff'}],['legs','Anchor Knee Pads',{knee:'#c9a0ff',kneeLeg:'both'}],['shoes','Bedrock',{shoe:'#6b6f7a',sole:'#3a3d45'}],['kit','Antler Flannel',{p:'plaid',c:'#8a5a2b',c2:'#f1e3c6',tr:'#8a5a2b'}],['shoes','Immovable',{shoe:'#c9a0ff',sole:'#1b1d26',knee:'#1b1d26',kneeLeg:'both'}]],
+  KAI:[['head','Rail Yard Cap',{hat:'#ffb000'}],['legs','Reflective Socks',{socks:'#e8ff3d'}],['shoes','Express Line',{shoe:'#ff4d5e',sole:'#ffffff'}],['kit','Mind the Gap',{p:'platform',c:'#ffd23f',c2:'#6b5a12',tr:'#ffd23f'}],['shoes','Right On Time',{shoe:'#ffb000',sole:'#ffffff',watch:'#3dffa8'}]],
+  FLASH:[['head','Bleached Spikes',{tip:'#f4f6ff'}],['legs','Lightning Leg Sleeve',{legSleeve:'#ffffff',legLeg:'B'}],['shoes','Redline',{shoe:'#ff3b1f',sole:'#ffe45c'}],['kit','Checkered Flag',{p:'check',c:'#f4f6ff',c2:'#11131c',tr:'#f4f6ff'}],['shoes','Zero to Sixty',{shoe:'#ffe45c',sole:'#c6ff3d',tip:'#c6ff3d'}]],
+  ORBIT:[['head','Stream Headphones',{phones:'#17d6ff'}],['arms','Chat Wristbands',{wrist:'#9b6bff',wristBoth:1}],['shoes','Subscriber',{shoe:'#9b6bff',sole:'#ff5ee0'}],['kit','On Air',{p:'live',c:'#ff3b3b',c2:'#ffffff',tr:'#ff3b3b'}],['shoes','Gone Viral',{shoe:'#ffffff',sole:'#ff5ee0',phones:'#ffd166'}]],
+  GLOVE:[['head','Yard Headband',{band:'#d81e3a'}],['arms','Lockdown Sleeves',{sleeve:'#d81e3a',sleeveArm:'both'}],['shoes','Sticky Fingers',{shoe:'#1b1d26',sole:'#d81e3a'}],['kit','Pickpocket Claws',{p:'claw',c:'#ffd166',c2:'#7a5a12',tr:'#ffd166'}],['shoes','Stripped',{shoe:'#ffffff',sole:'#d81e3a',sleeve:'#ffffff',sleeveArm:'both'}]],
+  SAGE:[['head','Chalk Dust Headband',{band:'#e8e8e8'}],['arms',"Professor's Watch",{watch:'#d4af37'}],['shoes','Tenure Loafers',{shoe:'#5a4030',sole:'#f4f6ff'}],['kit','Prism Split',{p:'prism',c:'#9b6bff',tr:'#9b6bff'}],['shoes','Court Vision',{shoe:'#5bbf7a',sole:'#f4f6ff',watch:'#5bbf7a'}]],
+  PHANTOM:[['head','Time Warp Mask',{maskC:'#3a0d4a'}],['arms','Smoke Sleeves',{sleeve:'#5a5a6a',sleeveArm:'both'}],['shoes','Untouchable',{shoe:'#f4f6ff',sole:'#15151c'}],['kit','Smoke Screen',{p:'smoke',c:'#8a7bb5',c2:'#2a2340',tr:'#ff3b1f'}],['shoes','Phantom Pair',{shoe:'#3a0d4a',sole:'#bba0ff',hc:'#3a0d4a',maskC:'#3a0d4a'}]],
+  WARDEN:[['head','Jumpsuit Beanie',{hc:'#ff7a1a',stripe:'#1b1d26'}],['legs','Shackle Knee Pads',{knee:'#c9ced9',kneeLeg:'both'}],['shoes','Full Court Press',{shoe:'#ff4d5e',sole:'#1b1d26'}],['kit','Cell Block Stripes',{p:'hstripe',c:'#c9ced9',tr:'#c9ced9'}],['shoes',"Warden's Keys",{shoe:'#d4af37',sole:'#1b1d26',stripe:'#d4af37'}]],
+  REX:[['head',"Gauntlet Finalist Band",{band:'#2a3a6a'}],['legs','Retro Leg Sleeves',{legSleeve:'#d4af37',legLeg:'both'}],['shoes','Throwback',{shoe:'#f4f6ff',sole:'#2a3a6a'}],['kit','Finals Throwback',{p:'retro',c:'#d4af37',c2:'#f4f6ff',tr:'#d4af37'}],['shoes','Pure Stroke',{shoe:'#2a3a6a',sole:'#d4af37',gray:'#e8e8e8'}]],
+  SNIPE:[['head','Green Dot Lens',{scope:'#3dff6a'}],['legs','Ghillie Socks',{socks:'#4a5a2a'}],['shoes','Rooftop Camo',{shoe:'#4a5a2a',sole:'#2b2f3a'}],['kit','Crosshair',{p:'scope',c:'#ff3b3b',c2:'#3dffa8',tr:'#ff3b3b'}],['shoes','Long Range',{shoe:'#8aff8a',sole:'#2b2f3a',scope:'#ffd166'}]],
+  HAZE:[['head','Ghost Hood',{hood:'#e8e8f0',trim:'#9fb3c8'}],['legs','Third Rail Socks',{socks:'#ff9a9a'}],['shoes','Last Train',{shoe:'#1b1d26',sole:'#ff3b3b'}],['kit','Red Line Map',{p:'subway',c:'#ff3b3b',c2:'#9fb3c8',tr:'#ff3b3b'}],['shoes','Phase Step',{shoe:'#e8e8f0',sole:'#9fb3c8',hood:'#7a2020',trim:'#ffd166'}]],
+  VOLT:[['head','Welding Goggles',{goggles:'#3dd6ff'}],['arms','Insulated Wristbands',{wrist:'#1b1d26',wristBoth:1}],['shoes','High Voltage',{shoe:'#3dd6ff',sole:'#ffee3a'}],['kit','High Voltage',{p:'bolt',c:'#ffee3a',c2:'#11131c',tr:'#ffee3a'}],['shoes','Short Circuit',{shoe:'#ffffff',sole:'#3dd6ff',tip:'#3dd6ff'}]],
+  HEATER:[['head','Foundry Headband',{band:'#ffd166'}],['arms','Molten Sleeve',{sleeve:'#ffd166',sleeveArm:'F'}],['shoes','Cast Iron',{shoe:'#3a3a40',sole:'#ff4d1f'}],['kit','Molten Cracks',{p:'crack',c:'#ff6a1f',c2:'#ffe08a',tr:'#ff4d1f'}],['shoes','White Hot',{shoe:'#fff3d0',sole:'#ff4d1f',band:'#fff3d0'}]],
+  ZEN:[['head','Zenith Headband',{band:'#3d6aff'}],['arms','Silk Sleeve',{sleeve:'#3d6aff',sleeveArm:'F'}],['shoes','Still Water',{shoe:'#bfe0ff',sole:'#3d6aff'}],['kit','Enso',{p:'enso',c:'#d4af37',c2:'#f6efd9',tr:'#d4af37'}],['shoes','Heat Check',{shoe:'#3d6aff',sole:'#ffffff'}]],
+  APEX:[['head','Afterimage Mohawk',{hc:'#3dd6ff'}],['arms','Hellfire Sleeve',{sleeve:'#ff3b1f',sleeveArm:'F'}],['shoes','Blink',{shoe:'#f4f6ff',sole:'#ff3b1f'}],['kit','Predator Chevrons',{p:'chev',c:'#ff3b1f',c2:'#ff9a6b',tr:'#ff3b1f'}],['shoes','Apex Predator',{shoe:'#d4af37',sole:'#15151c',hc:'#d4af37'}]],
+  ADAPT:[['head','Data Fade',{line:'#3dd6ff'}],['arms','Overclock Wristbands',{wrist:'#3dd6ff',wristBoth:1}],['shoes','Beta Build',{shoe:'#1f2430',sole:'#3dffa8'}],['kit','Source Code',{p:'circuit',c:'#3dffa8',tr:'#3dffa8'}],['shoes','Version 1.35',{shoe:'#3dffa8',sole:'#f4f6ff'}]],
+  ROCK:[['head','Megaphone Headband',{band:'#ffd166'}],['arms','Loudmouth Wristbands',{wrist:'#ff4d5e',wristBoth:1}],['shoes','Cousin Moose',{shoe:'#c9a0ff',sole:'#6b4a2b'}],['kit','Bedrock Layers',{p:'strata',c:'#6b4a2b',c2:'#a07a52',tr:'#6b4a2b'}],['shoes','Big Mouth',{shoe:'#ffd166',sole:'#ff4d5e'}]],
+  BOOM:[['head','Poster Headband',{band:'#ffffff'}],['arms','Slam Wristbands',{wrist:'#ff6a3d',wristBoth:1}],['shoes','Southside',{shoe:'#1b1d26',sole:'#ff6a3d'}],['kit','Poster Burst',{p:'burst',c:'#ffd166',c2:'#ff4d5e',tr:'#ffd166'}],['shoes','Posterized',{shoe:'#ffd166',sole:'#ff6a3d',band:'#ffd166'}]],
+  ATLAS:[['head','Squeegee Headband',{band:'#3d7bff'}],['arms','Harbor Elbow Pads',{elbow:'#3d7bff'}],['shoes','Glass Cleaner',{shoe:'#bfe9ff',sole:'#ffffff'}],['kit','High Tide',{p:'wave',c:'#3d7bff',c2:'#d8f3ff',tr:'#3d7bff'}],['shoes','High Tide',{shoe:'#1f3f8a',sole:'#bfe9ff',elbow:'#bfe9ff'}]],
+  DOZER:[['head','Hi-Vis Hard Hat',{hat:'#ff7a1a'}],['legs','Steel Toe Socks',{socks:'#ffd23f'}],['shoes','Dock Boots',{shoe:'#3a2a1a',sole:'#ffd23f'}],['kit','Hazard Tape',{p:'tape',c:'#ffd23f',c2:'#11131c',tr:'#ffd23f'}],['head','Lucky Gold Hat',{hat:'#d4af37'}]],
+  GOLIATH:[['head','Mountain Headband',{band:'#e9edf5'}],['legs','Summit Knee Pads',{knee:'#c9a227',kneeLeg:'both'}],['shoes','Avalanche',{shoe:'#ffffff',sole:'#9fb3c8'}],['kit','Summit Peaks',{p:'peak',c:'#c9a227',c2:'#f4f6ff',tr:'#c9a227'}],['shoes','The Peak',{shoe:'#c9a227',sole:'#1b1d26',knee:'#1b1d26',kneeLeg:'both'}]],
+  KRAKEN:[['head','Deep Sea Tips',{tip:'#3dd6ff'}],['arms','Tentacle Sleeve',{sleeve:'#1a5a6a',sleeveArm:'both'}],['shoes','The Abyss',{shoe:'#0b2a3a',sole:'#3dd6ff'}],['kit','Deep Sea Tentacles',{p:'tentacle',c:'#1fb6a8',c2:'#c9fff6',tr:'#ff3b1f'}],['shoes','World Breaker',{shoe:'#ff3b1f',sole:'#ffd166',tip:'#ffd166'}]],
+  RALLY:[['head','Comeback Headband',{band:'#ff9a2e'}],['arms','Never Over Wristbands',{wrist:'#ff9a2e',wristBoth:1}],['shoes','Fourth Quarter',{shoe:'#1b1d26',sole:'#ff9a2e'}],['kit','Comeback Arrows',{p:'arrows',c:'#3d7bff',c2:'#ffd166',tr:'#3d7bff'}],['shoes','Comeback Kid',{shoe:'#ff9a2e',sole:'#ffffff'}]]
 };
-const COS_SLOTS={head:'Head',arms:'Arms',legs:'Legs',shoes:'Shoes',kit:'Jersey trim'};
+const COS_SLOTS={head:'Head',arms:'Arms',legs:'Legs',shoes:'Shoes',kit:'Jersey'};
 const COS_GEN=[['ice','Ice',{shoe:'#d8f3ff',sole:'#5fb8e8'},3],['neon','Neon',{shoe:'#3dffa8',sole:'#0d6b45'},5],['shadow','Shadow',{shoe:'#16181f',sole:'#ff3b1f'},7],['gold','Gold',{shoe:'#ffd166',sole:'#8a6a1a'},9],['streak','Streak Flame',{shoe:'#ff7a1a',sole:'#ffd166'},0]];
 const COS_LV=[2,4,6,8,10];
 const COS_UNI=[['sunset','head','Sunset Coast Cap',{hat:'#ff5e8a',hatBrim:'#1fc8bd',hatBand:'#ff9f2e',hatBand2:'#ffe066'}]];
-function cosItems(n){const out=[];(CHAR_COS[n]||[]).forEach((c,i)=>out.push({id:'c'+i,slot:c[0],name:c[1],set:typeof c[2]==='object'?c[2]:null,trim:typeof c[2]==='string'?c[2]:null,lv:COS_LV[i],sig:i===4}));
+const COS_KITS=[['pin','Pinstripes',{p:'pin',c:'jt'},1],['side','Side Panels',{p:'side',c:'jt',c2:'lt'},3],['fade','Fade',{p:'fade',c:'dk'},5],['drip','Paint Drip',{p:'drip',c:'jt'},6],['camo','Street Camo',{p:'camo',c:'dk',c2:'lt'},7],['stars','All-Star',{p:'stars',c:'jt'},9]];
+function cosItems(n){const out=[];(CHAR_COS[n]||[]).forEach((c,i)=>out.push({id:'c'+i,slot:c[0],name:c[1],set:c[0]!=='kit'&&typeof c[2]==='object'?c[2]:null,trim:c[0]==='kit'?(typeof c[2]==='string'?c[2]:c[2].tr||null):null,jd:c[0]==='kit'&&typeof c[2]==='object'?c[2]:null,lv:COS_LV[i],sig:i===4}));
   COS_GEN.forEach(g=>out.push({id:'g_'+g[0],slot:'shoes',name:g[1],set:g[2],lv:g[3],streak:g[0]==='streak'}));
+  COS_KITS.forEach(k=>out.push({id:'k_'+k[0],slot:'kit',name:k[1],set:null,trim:null,jd:k[2],lv:k[3]}));
   COS_UNI.forEach(u=>{const k=u[1]+':'+u[0];if(cosU.indexOf(k)>=0)out.push({id:'u_'+u[0],slot:u[1],name:u[2],set:u[3],lv:0,uni:k});});return out;}
 function cosItem(n,id){return cosItems(n).find(x=>x.id===id);}
 function cosHas(n,it){if(!it)return false;if(it.uni)return cosU.indexOf(it.uni)>=0;if(it.streak)return cosU.indexOf('shoe:streak')>=0;return mstLvl(n)>=it.lv;}
@@ -5206,7 +5327,8 @@ function cosApply(n,L){
   return o||L;
 }
 function cosTrim(n){if(!grindOn())return null;const c=cos[n];if(!c||!c.kit)return null;const it=cosItem(n,c.kit);return it&&it.trim&&cosHas(n,it)?it.trim:null;}
-function cosSwatch(it){if(it.trim)return it.trim;const v=it.set;return v.shoe&&it.slot==='shoes'?v.shoe:(v.band||v.hat||v.hc||v.tip||v.phones||v.goggles||v.scope||v.hood||v.maskC||v.line||v.wrist||v.sleeve||v.watch||v.elbow||v.knee||v.legSleeve||v.socks||v.shoe||'#888');}
+function cosKit(n){if(!grindOn())return null;const c=cos[n];if(!c||!c.kit)return null;const it=cosItem(n,c.kit);return it&&it.jd&&cosHas(n,it)?it.jd:null;}
+function cosSwatch(it){if(it.jd){const q=x=>x==='jt'?'#ffd166':x==='dk'?'#2b2d3a':x==='lt'?'#c9ced9':x;return it.jd.p==='prism'?'linear-gradient(135deg,#ff4d5e,#ffd166,#3dffa8,#17d6ff,#9b6bff)':'linear-gradient(135deg,'+q(it.jd.c)+' 0 45%,'+q(it.jd.c2||'dk')+' 45% 60%,'+q(it.jd.tr||it.jd.c)+' 60%)';}if(it.trim)return it.trim;const v=it.set;return v.shoe&&it.slot==='shoes'?v.shoe:(v.band||v.hat||v.hc||v.tip||v.phones||v.goggles||v.scope||v.hood||v.maskC||v.line||v.wrist||v.sleeve||v.watch||v.elbow||v.knee||v.legSleeve||v.socks||v.shoe||'#888');}
 /* ---- the Daily screen ---- */
 function dailyRender(){
   if(!$('daily'))return;const D=dlyNow(),S=stkState();let h='';
@@ -5506,6 +5628,7 @@ function netMsg(m){
   if(m.t==='pz'&&role==='guest'){pauseReq=false;$('toast').classList.add('hide');if(m.on){guestPaused=true;showPauseMenu();}else{guestPaused=false;hideEl('pause');hideEl('settings');}return;}
   if(m.t==='ff'){const me=pvp&&role==='guest'?1:0;forceW=me;hideEl('pause');hideEl('settings');guestPaused=false;pauseReq=false;phase='over';resultShown=false;showResult();return;}
   if(m.t==='pi'){try{dc.send(JSON.stringify({t:'po',ts:m.ts}));}catch(e){}return;}
+  if(m.t==='call'&&role==='host'){if(['iso','open','cut'].indexOf(m.k)>=0)callFor(1,m.k,players.find(q=>q.team===1&&q.hasBall)||players.find(q=>q.team===1));return;}
   if(m.t==='away'){netAway=!!m.on;if(netAway)toast('Your opponent switched away from the game. Waiting for them...');return;}
   if(m.t==='po'){pingIn(m.ts);return;}
   if(m.t==='resume'&&role==='host'){netLost=false;hideEl('netLostBar');netLostT=0;return;}
@@ -6290,6 +6413,9 @@ bindBtn('bTurbo',()=>{held.sprint=true;},()=>{held.sprint=false;});
 bindBtn('bSwitch',()=>{press('sw');});
 bindBtn('bAbility',()=>{press('ab');});
 bindBtn('bPause',()=>{requestPause();});
+let callMenuT=0;bindBtn('bCall',()=>{const m=$('callMenu');m.classList.toggle('hide');clearTimeout(callMenuT);if(!m.classList.contains('hide'))callMenuT=setTimeout(()=>m.classList.add('hide'),3500);});
+$('callMenu').querySelectorAll('button').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();callPress(b.dataset.k);$('callMenu').classList.add('hide');}));
+setInterval(()=>{const on=callsOn()&&phase==='play';$('bCall').classList.toggle('hide',!on);if(!on)$('callMenu').classList.add('hide');},500);
 let lblOff=null;
 function updateTouchLabels(){
   const off=!!(ctrl&&ctrl.hasBall);
@@ -6453,6 +6579,7 @@ const DEV_HASH='11cal5ouw9s';
 /* Unreleased content lives here. Each entry is a toggle in the dev build (Settings, Help). */
 const DEV_FEATURES=[
   {id:'all',name:'All players unlocked',desc:'Every player, including hidden ones, is available to pick. Your real unlocks and coins are not changed.',on:true},
+  {id:'calls',name:'Callouts: ISO, get open, cut',desc:'On offense, press 1 (or Z) for an ISO play: teammates clear out and the help defender stays home. 2 (or X): teammates sprint to open spots. 3 (or C): your best-placed teammate cuts to the rim while his defender ball-watches; a plain pass (no direction) finds him. Phones get a CALL button. Keys can be changed in Controls.',on:true},
   {id:'showdown',name:'Story event: Sprawl Showdown',desc:'November 15 to 30. One-on-one with your MyPLAYER against other players\' MyPLAYERs (played by the computer). Most wins gets Adapt, or 50,000 coins if they already have him. In the dev build it can be played any time and wins go on a separate test leaderboard.',on:true},
   {id:'story',name:'Story mode: Velocity Break',desc:'A four-chapter campaign with the Ash Hounds, from the cracked courts of the Lower Sprawl to the Sovereigns on the threshold, plus a custom player creator. Find it in Play, Offline.',on:true}
 ];
@@ -9857,7 +9984,7 @@ function drawBubble(X,Y,txt){
 addEventListener('keydown',e=>{
   if(!hang||e.repeat||capture)return;
   const t=e.target;if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'))return;
-  const m=/^Digit([1-8])$/.exec(e.code);if(m&&!(CODE2A[e.code]&&CODE2A[e.code].length))hangQcSend(+m[1]-1);
+  const m=/^Digit([1-8])$/.exec(e.code);if(m&&!(CODE2A[e.code]&&CODE2A[e.code].some(a=>a.indexOf('call')!==0)))hangQcSend(+m[1]-1);
 });
 async function hangAddFriend(name,btn){
   if(!socOk()){toast(cloudOn?'Log in to add friends.':'Friends need cloud accounts.');return;}
