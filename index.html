@@ -2764,7 +2764,12 @@ function lookOf(name){if(LOOK_CACHE[name])return LOOK_CACHE[name];const L=typeof
 function lkLvl(p){try{return p&&p.arch&&p.arch.adapt&&typeof adk==='function'?adk(p):1;}catch(e){return 1;}}
 function lookOn(){return true;}
 function myTeamIdx(){return (typeof pvp!=='undefined'&&pvp&&role==='guest')?1:0;}
-function lookForPlayer(p){if(!p||!p.name||!lookOn())return null;if(p.lk)return p.lk;if(typeof custom!=='undefined'&&custom&&p.name===custom.name)return lookOf('YOU');return p.team===myTeamIdx()?lookOf(p.name):lookBase(p.name);}
+let LOOK_STY=null;
+/* story mode: the plain look. No mastery gear; your MyPLAYER keeps hair, beard and shoes but no accessories */
+function lookStory(name){const B=lookBase(name);if(name!=='YOU')return B;if(LOOK_STY&&LOOK_STY.src===B)return LOOK_STY.out;const o=Object.assign({},B);
+  ['band','hat','hatBrim','hatBand','hatBand2','goggles','phones','scope','sleeve','sleeveArm','wrist','wristBoth','knee','kneeLeg','socks'].forEach(k=>{delete o[k];});LOOK_STY={src:B,out:o};return o;}
+function storyLive(){return typeof story!=='undefined'&&!!story&&!!story.live;}
+function lookForPlayer(p){if(!p||!p.name||!lookOn())return null;if(storyLive())return lookStory(typeof custom!=='undefined'&&custom&&p.name===custom.name?'YOU':p.name);if(p.lk)return p.lk;if(typeof custom!=='undefined'&&custom&&p.name===custom.name)return lookOf('YOU');return p.team===myTeamIdx()?lookOf(p.name):lookBase(p.name);}
 /* ---- in-game head: hair, headwear and face gear on the small court figures ---- */
 function lkHead(c,L,hx,hy,r,d,skin,acc,T,p){
   const hk=!!L.hat,hc=L.hc||'#17171c',st=(hk&&(L.hair==='hood'||L.hair==='beanie'))?'short':L.hair,hv=hk&&['afro','puff','curly','twists','bun'].indexOf(st)>=0,P2=Math.PI*2;
@@ -3907,7 +3912,7 @@ function drawPlayer(p){
   ctx.lineCap='round';ctx.lineJoin='round';
   {const LKX=lookForPlayer(p);
    if(LKX&&typeof ART!=='undefined'&&ART.game){
-    const J={skin:p.skin,num:p.num,jc:tm.color,jt:(p.team===myTeamIdx()&&typeof cosTrim==='function'&&cosTrim(p.name))||tm.accent,sc:tm.dark,name:p.name,jd:(p.team===myTeamIdx()&&typeof cosKit==='function'&&cosKit(p.name))||null};
+    const J={skin:p.skin,num:p.num,jc:tm.color,jt:(p.team===myTeamIdx()&&!storyLive()&&typeof cosTrim==='function'&&cosTrim(p.name))||tm.accent,sc:tm.dark,name:p.name,jd:(p.team===myTeamIdx()&&!storyLive()&&typeof cosKit==='function'&&cosKit(p.name))||null};
     const ftF=air?(p.dunk?34:40):(fF[1]<-HP*0.03?26:0),ftB=air?46:(fB[1]<-HP*0.03?26:0);
     ART.game(ctx,{HP:HP,d:d,L:LKX,J:J,hip:[hipX,hipY],S:[shX,shY],hF:hF,hB:hB,fF:fF,fB:fB,t:T,lvl:lkLvl(p),ft:[ftF,ftB],
       neck:(st||fol>0||p.blocking>0||swat>0)?-20:(def?-14:-8),mouth:cel>0?'grin':(p.stumble>0||p.stripped>0?'o':(p.dunk?'shout':null)),wrist:fol>0&&!st,alpha:ctx.globalAlpha,cvW:VW,cvH:VH,pr:DPR});
@@ -7530,7 +7535,7 @@ function fquality(){if(FDBG.hq)return;const now=performance.now(),dt=now-QL.last
 /* ---------- looks for the people in the films (the profile art) ---------- */
 const FLOOK=new WeakMap();
 function filmLook(P){let L=FLOOK.get(P);if(L)return L;const nm=P.look||P.name;
-  if(nm&&typeof LOOKS!=='undefined'&&LOOKS[nm]&&typeof lookOf==='function')L=Object.assign({},lookOf(nm));
+  if(nm&&typeof LOOKS!=='undefined'&&LOOKS[nm]&&typeof lookOf==='function')L=Object.assign({},typeof lookStory==='function'?lookStory(nm):lookOf(nm));
   else L={hair:P.hood?'hood':(P.hair||'short'),hc:P.hc||'#15100c',hood:P.hood?P.jc:undefined,tip:P.tip,beard:P.beard,beardT:P.beard?(P.beardT||'full'):undefined,band:P.band,hat:P.hat,mask:P.mask,shades:P.shades,build:P.w||1,
     shoe:P.shoe||(P.suit?'#16181f':'#f4f6ff'),sole:P.suit?'#0b0c10':(P.hood?'#3a3f4c':'#c9ced9'),pants:(P.hood||P.suit||P.pants)?(P.pants||P.sc):undefined,suit:P.suit,sleeve:P.suit?P.jc:P.sleeve,sleeveArm:'both',faceShade:!!(P.hood&&P.shade)};
   if(P.fire)L.fire=1;FLOOK.set(P,L);return L;}
