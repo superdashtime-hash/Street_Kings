@@ -1429,9 +1429,13 @@ function applyCfg(cfg){
     if([1,2,3].indexOf(cfg.gm)>=0)gm=cfg.gm;
     tourSave=validTour(cfg.tr);
     if(typeof validCustom==='function'){customRaw=cfg.cc||null;try{custom=validCustom(cfg.cc);}catch(e){custom=null;}storyDone=clamp(Math.floor(+cfg.stp||0),0,40);if(cfg.stv!==2&&storyDone<=4)storyDone*=10;storyProDone=!!cfg.spr||storyDone>0;storyIntroSeen=!!cfg.sis||storyProDone;storyLineup=Array.isArray(cfg.sln)?cfg.sln.filter(x=>typeof x==='string').slice(0,3):null;}
-    if(!(typeof devOn!=='undefined'&&devOn)&&!cfg.cc&&!cfg.stp&&typeof validCustom==='function')try{const mk='sk_stmig_'+devSaveKey(),d=devSaveGet();
-      if(d&&(d.cc||d.stp)&&!localStorage.getItem(mk)&&(!d.ts||d.ts<Date.UTC(2026,10,13,15))){customRaw=d.cc||null;try{custom=validCustom(d.cc);}catch(e){custom=null;}storyDone=clamp(Math.floor(+d.stp||0),0,40);if(d.stv!==2&&storyDone<=4)storyDone*=10;storyProDone=!!d.spr||storyDone>0;storyIntroSeen=!!d.sis||storyProDone;storyLineup=Array.isArray(d.sln)?d.sln.filter(x=>typeof x==='string').slice(0,3):null;
-        setTimeout(()=>{try{if((custom||storyDone)&&!devOn){saveCfg();localStorage.setItem(mk,'1');}}catch(e){}},1500);}}catch(e){}
+    /* 3.0.0 copied dev-build story progress into the real save once. Undo that where it happened and nothing was played since. */
+    if(!(typeof devOn!=='undefined'&&devOn)&&(cfg.cc||cfg.stp))try{const mk='sk_stmig_'+devSaveKey();
+      if(localStorage.getItem(mk)==='1'){const d=devSaveGet();let ds=d?clamp(Math.floor(+d.stp||0),0,40):0;if(d&&d.stv!==2&&ds<=4)ds*=10;
+        const nm=x=>{try{return x?String((typeof x==='string'?JSON.parse(x):x).name||''):'';}catch(e){return '';}};
+        if(d&&nm(cfg.cc)===nm(d.cc)&&storyDone===ds){custom=null;customRaw=null;storyDone=0;storyProDone=false;storyLineup=null;storyIntroSeen=false;
+          setTimeout(()=>{try{if(!devOn){saveCfg();localStorage.setItem(mk,'u');}}catch(e){}},1500);}
+        else localStorage.setItem(mk,'u');}}catch(e){}
     if(typeof cfg.pk1==='string')pk1=cfg.pk1;
     if(typeof cfg.pk2==='string')pk2=cfg.pk2;
     SLOTS.forEach(s=>{if(owned.indexOf(POOL[s][squad[s]].name)<0)squad[s]=POOL[s].findIndex(o=>owned.indexOf(o.name)>=0);});
@@ -4952,7 +4956,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='3.0.0';
+const GAME_VER='3.0.1';
 const DEV_VER='3.0';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
