@@ -174,7 +174,23 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 .ccopt button.sel{background:var(--accent,#17d6ff);border-color:transparent;color:#071018}
 .sw button.none{background:rgba(255,255,255,.08);color:var(--muted);font-weight:900;line-height:1}
 .sdcard{border-color:#ff5ee0 !important}
-.sdcard .sdvs{display:flex;align-items:center;gap:.8em;margin:.5em 0}
+#evList{display:flex;flex-direction:column;gap:1em;margin:.6em 0 .2em}
+#evList .pc{margin:0;min-width:0}
+#evList .pc>button{align-self:flex-start}
+.sdcard .sdvs{display:flex;align-items:center;flex-wrap:wrap;gap:.6em 1em;margin:.5em 0}
+.sdcard .sdvs{font-size:clamp(11px,1.25cqw,16px)}
+.sdcard .sdvs canvas{width:clamp(46px,6.6cqw,84px);height:auto}
+.sdcard .sdp{display:flex;align-items:center;gap:.7em;flex:1 1 11em;min-width:0}
+.sdcard .sdp>div{min-width:0;overflow-wrap:anywhere}
+.sdcard .sdvs>b{flex:none}
+/* something is on: the menu button and the live cards glow */
+#evBtn.live{border-color:rgba(255,94,224,.75)!important;box-shadow:0 0 1.6cqw rgba(255,94,224,.45),0 0 .4cqw rgba(255,209,102,.5)}
+#evBtn.live::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 1.8cqw rgba(255,94,224,.55);animation:evPulse 1.8s ease-in-out infinite}
+#evBtn.live>span::after{content:'LIVE';display:inline-block;margin-left:.7em;padding:.15em .55em;border-radius:99px;background:#ff5ee0;color:#1a0616;font-size:.42em;font-weight:900;letter-spacing:.08em;vertical-align:middle}
+#evList .pc.evlive{animation:evCard 2.2s ease-in-out infinite}
+@keyframes evPulse{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes evCard{0%,100%{box-shadow:0 0 .5cqw var(--evc,#3dffa8)}50%{box-shadow:0 0 1.9cqw var(--evc,#3dffa8)}}
+@media (prefers-reduced-motion:reduce){#evBtn.live::before,#evList .pc.evlive{animation:none!important}#evList .pc.evlive{box-shadow:0 0 1.2cqw var(--evc,#3dffa8)}}
 .sdcard .sdvs canvas{border-radius:10px;background:rgba(255,255,255,.05);flex:none}
 .sdcard .sdvs b{font-size:1.1em}
 .sdcard .row{justify-content:flex-start;flex-wrap:wrap;gap:.4em;margin:.4em 0}
@@ -625,7 +641,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     <div class="mbtns">
       <button class="mbtn" id="offQp"><span>Quick play</span><small>One game against the computer</small></button>
       <button class="mbtn" id="offTour"><span>Tournament</span><small>Win an 8-team bracket</small></button>
-      <button class="mbtn hide" id="offStory"><span>Story mode</span><small>Velocity Break: The King's Gambit (dev build)</small></button>
+      <button class="mbtn" id="offStory"><span>Story mode</span><small>Velocity Break: The King's Gambit</small></button>
     </div>
     <div class="row"><button class="go back" id="offBack">Back</button></div>
   </div></div>
@@ -884,15 +900,16 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     <div class="row"><b>Game length</b><div class="seg" id="chLen"><button data-v="60">1:00</button><button data-v="120">2:00</button><button data-v="240">4:00</button><button data-v="360">6:00</button></div></div>
     <div class="row"><button class="go" id="chGo">Challenge</button><button class="go back" id="chCancel">Cancel</button></div></div></div>
 
-  <div id="devlog" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(24px,5cqw,66px)">WHAT'S NEW</h1><p class="tag">Update 2.3.1</p>
+  <div id="devlog" class="ov hide" role="dialog" aria-modal="true"><div class="card scr"><h1 style="font-size:clamp(24px,5cqw,66px)">WHAT'S NEW</h1><p class="tag">Update 3.0</p>
     <ul class="dl">
-      <li><b>New code: STORYMODEBEFOREGTA6TRUST</b><span>Redeem it for 2,000 coins and the Sunset Coast Cap, which every player can wear. Codes is now a link next to What's new, under the menu.</span></li>
-      <li><b>Daily challenges</b><span>Three new challenges every day at midnight Eastern. Each one pays coins, and finishing all three pays a bonus. Open Daily on the main menu.</span></li>
-      <li><b>Login streak</b><span>Claim coins every day you play. The rewards grow each day, and day 7 unlocks the Streak Flame shoes for every player. Miss a day and the streak starts over.</span></li>
-      <li><b>Player mastery</b><span>Every player levels up from 1 to 10 as you play with them. Points, rebounds, steals, blocks, dunks and wins all earn mastery XP. See it on the Mastery tab of any profile.</span></li>
-      <li><b>Signature gear</b><span>Mastery unlocks a five-piece set for each player, made from their own story: headwear, arm gear, leg gear, jersey trim and signature shoes, plus Ice, Neon, Shadow and Gold shoes for everyone. Equip it from My players (Looks) or the Mastery tab. Your gear shows up in your games.</span></li>
-      <li><b>Pause option</b><span>Settings, Controls: choose whether the game pauses when you click away or switch tabs.</span></li>
-      <li><b>Hats fit your hair</b><span>Caps now sit on top of any hairstyle: afros, locks, ponytails and curls show under the brim, and tall styles tuck in.</span></li>
+      <li><b>New code: STORYTIME</b><span>Redeem it for 5,000 coins and 1,000 XP. Open Codes, the link under the main menu.</span></li>
+      <li><b>Story mode: Velocity Break</b><span>The King's Gambit, a four-chapter campaign. Join the Ash Hounds on the cracked courts of the Lower Sprawl and climb to the Sovereigns' arena in the Upper City, with a full intro and ending film. Find it in Play, Offline.</span></li>
+      <li><b>MyPLAYER</b><span>Create your own player for the story and pick their look on the Style tab: hair, beard, shoes and accessories. Story mode keeps everyone in their plain look, so accessories show in the Showdown instead.</span></li>
+      <li><b>Story event: Sprawl Showdown</b><span>November 15 to 30. Take your MyPLAYER one-on-one against other players' MyPLAYERs. The player with the most wins gets Adapt free, or 50,000 coins if they already have him. Open Events.</span></li>
+      <li><b>New look</b><span>Solid menus, a new main menu, tidier setup screens with Play always in reach, a cleaner phone layout, and smoother in-game effects: score pops, a real net swish and a clearer scoreboard.</span></li>
+      <li><b>Events glow</b><span>The Events button glows with a LIVE tag whenever an event is going on.</span></li>
+      <li><b>Jersey designs</b><span>Mastery jersey rewards are now full designs: pinstripes, side panels, fades, drips, camo and stars.</span></li>
+      <li><b>Real three-point rules</b><span>A shot counts by where your feet left the floor. Jump from behind the line and it is a three, even if you drift inside.</span></li>
     </ul>
     <div class="row"><button class="go" id="devOk">Got it</button></div></div></div>
 
@@ -956,7 +973,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 
   <div id="story" class="ov hide"><div class="card scr wide">
       <h1 style="font-size:clamp(22px,4.6cqw,62px)">VELOCITY BREAK</h1>
-      <p class="tag" style="margin-top:0">The King's Gambit &middot; Story mode (dev build)</p>
+      <p class="tag" style="margin-top:0">The King's Gambit &middot; Story mode</p>
       <div id="stHero" class="chap"></div>
       <div class="row"><button class="go" id="stNext" style="margin-top:0">Play next game</button></div>
       <div id="stList"></div>
@@ -1411,8 +1428,10 @@ function applyCfg(cfg){
     if(Array.isArray(cfg.redeemed))redeemed=cfg.redeemed.filter(x=>typeof x==='string').slice(0,200);
     if([1,2,3].indexOf(cfg.gm)>=0)gm=cfg.gm;
     tourSave=validTour(cfg.tr);
-    if(typeof validCustom==='function'){customRaw=cfg.cc||null;custom=validCustom(cfg.cc);storyDone=clamp(Math.floor(+cfg.stp||0),0,40);if(cfg.stv!==2&&storyDone<=4)storyDone*=10;storyProDone=!!cfg.spr||storyDone>0;storyIntroSeen=!!cfg.sis||storyProDone;storyLineup=Array.isArray(cfg.sln)?cfg.sln.filter(x=>typeof x==='string').slice(0,3):null;}
-    if(!(typeof devOn!=='undefined'&&devOn)&&(cfg.cc||cfg.stp)){devStash(cfg.cc,cfg.stp);custom=null;customRaw=null;storyDone=0;storyProDone=false;storyLineup=null;storyIntroSeen=false;}
+    if(typeof validCustom==='function'){customRaw=cfg.cc||null;try{custom=validCustom(cfg.cc);}catch(e){custom=null;}storyDone=clamp(Math.floor(+cfg.stp||0),0,40);if(cfg.stv!==2&&storyDone<=4)storyDone*=10;storyProDone=!!cfg.spr||storyDone>0;storyIntroSeen=!!cfg.sis||storyProDone;storyLineup=Array.isArray(cfg.sln)?cfg.sln.filter(x=>typeof x==='string').slice(0,3):null;}
+    if(!(typeof devOn!=='undefined'&&devOn)&&!cfg.cc&&!cfg.stp&&typeof validCustom==='function')try{const mk='sk_stmig_'+devSaveKey(),d=devSaveGet();
+      if(d&&(d.cc||d.stp)&&!localStorage.getItem(mk)&&(!d.ts||d.ts<Date.UTC(2026,10,13,15))){customRaw=d.cc||null;try{custom=validCustom(d.cc);}catch(e){custom=null;}storyDone=clamp(Math.floor(+d.stp||0),0,40);if(d.stv!==2&&storyDone<=4)storyDone*=10;storyProDone=!!d.spr||storyDone>0;storyIntroSeen=!!d.sis||storyProDone;storyLineup=Array.isArray(d.sln)?d.sln.filter(x=>typeof x==='string').slice(0,3):null;
+        setTimeout(()=>{try{if((custom||storyDone)&&!devOn){saveCfg();localStorage.setItem(mk,'1');}}catch(e){}},1500);}}catch(e){}
     if(typeof cfg.pk1==='string')pk1=cfg.pk1;
     if(typeof cfg.pk2==='string')pk2=cfg.pk2;
     SLOTS.forEach(s=>{if(owned.indexOf(POOL[s][squad[s]].name)<0)squad[s]=POOL[s].findIndex(o=>owned.indexOf(o.name)>=0);});
@@ -4115,7 +4134,7 @@ function drawVfx(){
 }
 
 /* ===== UI and animation cleanup (dev toggle 'clean') ===== */
-function ui2On(){return typeof devFeat==='function'&&devFeat('clean');}
+function ui2On(){return true;}
 let ui2Prepped=false;
 /* lone Back buttons at the end of a screen get an action row, so they stay in reach when the screen scrolls */
 function ui2Prep(){if(ui2Prepped)return;ui2Prepped=true;document.querySelectorAll('.ov>.card').forEach(c=>{const l=c.lastElementChild;if(l&&l.tagName==='BUTTON'&&l.classList.contains('go')){const r=document.createElement('div');r.className='row';c.insertBefore(r,l);r.appendChild(l);}});}
@@ -4933,8 +4952,8 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='2.3.9';
-const DEV_VER='2.3.1';let tutI=0,tutChecked=false;
+const GAME_VER='3.0.0';
+const DEV_VER='3.0';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
   $('tutTitle').textContent=s.t;$('tutBody').innerHTML=tok(s.b);$('tutStep').textContent='Step '+(tutI+1)+' of '+TUT.length;
@@ -5192,7 +5211,7 @@ function fmtLeft(ms){
 const SD={id:'showdown2026',title:'Sprawl Showdown',start:Date.UTC(2026,10,15,5),end:Date.UTC(2026,11,1,5),when:'November 15 to 30',endTxt:'November 30 at 11:59 PM Eastern',len:180,diff:2,coins:50000};
 const sdEsc=v=>String(v).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
 var sdG=null,sdOpp=null,sdPool=null,sdAfterCC=false,sdLbRows=null;
-function sdOn(){return typeof devFeat==='function'&&devFeat('showdown');}
+function sdOn(){return true;}
 function sdBoard(){return devOn?SD.id+'_dev':SD.id;}
 function sdOpen(){const n=Date.now();return devOn||(n>=SD.start&&n<SD.end);}
 function sdRef(uid){return fb.fs.doc(fb.db,'events',sdBoard(),'p',uid);}
@@ -5229,13 +5248,13 @@ function sdPick(){const mine=custom?custom.name:'';let list=(sdPool||[]).filter(
 function sdPortrait(cv,c){if(!cv||!c)return;const g=cv.getContext('2d'),W=cv.width,H=cv.height;g.clearRect(0,0,W,H);
   try{ART.figure(g,W*0.5,H*0.5+H*2.2*0.94,H*2.2,1,lookCustom(c),{skin:c.skin,num:c.num,jc:'#2b2d3a',jt:'#ff5ee0',sc:'#1b1d26',name:c.name},'stand',{t:0,pose:{lean:0,aF:[-14,10],aB:[-20,8],neck:-4}});}catch(e){}}
 function sdCard(){
-  const R=sdRec(),now=Date.now(),open=sdOpen(),ended=!devOn&&now>=SD.end;let h='<div class="pc sdcard r-special"><div class="pn"><b>'+SD.title+'</b><span class="rb" style="color:#ff5ee0">'+(devOn?'Story event · dev preview':(ended?'Ended':'Story event'))+'</span></div>';
+  const R=sdRec(),now=Date.now(),open=sdOpen(),ended=!devOn&&now>=SD.end;let h='<div class="pc sdcard r-special'+(evGlowOn()&&open?' evlive':'')+'" style="--evc:#ff5ee0"><div class="pn"><b>'+SD.title+'</b><span class="rb" style="color:#ff5ee0">'+(devOn?'Story event · dev preview':(ended?'Ended':'Story event'))+'</span></div>';
   h+='<p>'+SD.when+'. Take your MyPLAYER one-on-one against other players\' MyPLAYERs, played by the computer. 3-minute games on All-Star. Every win counts.</p>';
   h+='<p class="ab"><b>Prize:</b> the player with the most wins gets <b>Adapt</b> free, or <b>'+SD.coins.toLocaleString()+' coins</b> if they already have him. Ties go to whoever reached the total first.</p>';
   h+='<p><b>'+(devOn?'Dev build: playable now. Wins go on a test leaderboard with no prize. The real event runs '+SD.when+'.':(ended?'Ended '+SD.endTxt+'.':(now<SD.start?'Starts November 15 ('+fmtLeft(SD.start-now)+').':'Ends '+SD.endTxt+' ('+fmtLeft(SD.end-now)+' left).')))+'</b></p>';
   if(!custom){h+='<p>You need a MyPLAYER to enter.</p><div class="row"><button class="sbtn" data-sd="cc">Create your MyPLAYER</button></div>';}
   else{const o=sdOpp||sdPick();
-    h+='<div class="sdvs"><canvas id="sdMe" width="84" height="84"></canvas><div><b>'+custom.name+'</b><br><small>'+ccOvr(custom)+' OVR · '+archOf(custom).n+'</small></div><b style="color:#ff5ee0;margin:0 .4em">VS</b><canvas id="sdOp" width="84" height="84"></canvas><div><b>'+o.name+'</b><br><small>'+o.ovr+' OVR · '+archOf(o).n+(o.by?' · '+sdEsc(o.by)+'\'s MyPLAYER':' · Sprawl regular')+'</small></div></div>';
+    h+='<div class="sdvs"><div class="sdp"><canvas id="sdMe" width="84" height="84"></canvas><div><b>'+custom.name+'</b><br><small>'+ccOvr(custom)+' OVR · '+archOf(custom).n+'</small></div></div><b style="color:#ff5ee0">VS</b><div class="sdp"><canvas id="sdOp" width="84" height="84"></canvas><div><b>'+o.name+'</b><br><small>'+o.ovr+' OVR · '+archOf(o).n+(o.by?' · '+sdEsc(o.by)+'\'s MyPLAYER':' · Sprawl regular')+'</small></div></div></div>';
     h+='<p>Your record: <b>'+R.w+' win'+(R.w===1?'':'s')+'</b>, '+R.l+' loss'+(R.l===1?'':'es')+'.'+(cloudUser?'':' Log in to get on the leaderboard.')+'</p>';
     h+='<div class="row">'+(open?'<button class="go" data-sd="play">Play</button><button class="sbtn" data-sd="new">New opponent</button>':'<button class="sbtn" disabled>'+(ended?'Event ended':'Not started yet')+'</button>')+'<button class="sbtn" data-sd="cc">Edit MyPLAYER</button></div>';}
   h+='<div id="sdLb"><p class="tag">'+(cloudOn?'Loading the leaderboard...':'Leaderboards need cloud saves.')+'</p></div></div>';
@@ -5268,12 +5287,18 @@ async function sdClaim(){
     saveCfg();renderSquad();uiSnd('uiGood');sfx.cheer(0.8);
   }catch(e){sdChecked='';}}
 
+/* an event counts as going on while you can still play it or earn its reward */
+function evGlowOn(){return true;}
+function evLive(){if(sdOn()&&sdOpen())return true;const now=Date.now();return EVENTS.some(e=>owned.indexOf(e.reward)<0&&!(e.end&&now>=e.end));}
+function evGlow(){try{$('evBtn').classList.toggle('live',evGlowOn()&&evLive());}catch(e){}}
+setInterval(evGlow,4000);setTimeout(evGlow,300);
 function evRender(){
+  evGlow();
   let h=sdOn()?sdCard():'';
   EVENTS.forEach(e=>{
     const have=Math.min(titles,e.need),pct=Math.round(have/e.need*100),own=owned.indexOf(e.reward)>=0,now=Date.now(),ended=!!e.end&&now>=e.end,can=!own&&!ended&&titles>=e.need;
     const o=findChar(e.reward),ab=ABIL[e.reward.toLowerCase()];
-    h+='<div class="pc r-special" style="border-color:#3dffa8;'+(ended&&!own?'opacity:.65':'')+'"><div class="pn"><b>'+e.title+'</b><span class="rb" style="color:'+(ended?'#ff8a8a':'#3dffa8')+'">'+(ended?'Ended':'Event')+'</span></div>';
+    h+='<div class="pc r-special'+(evGlowOn()&&!own&&!ended?' evlive':'')+'" style="border-color:#3dffa8;'+(ended&&!own?'opacity:.65':'')+'"><div class="pn"><b>'+e.title+'</b><span class="rb" style="color:'+(ended?'#ff8a8a':'#3dffa8')+'">'+(ended?'Ended':'Event')+'</span></div>';
     h+='<p>'+e.desc+'</p>';
     if(e.end)h+='<p><b>'+(ended?'Ended '+e.endTxt:'Ends '+e.endTxt+' ('+fmtLeft(e.end-now)+' left)')+'</b></p>';
     h+='<p class="ab"><b>Reward - '+o.o.name+' (Special '+o.s+'):</b> '+o.o.tag+' <b>'+ab.name+':</b> '+ab.desc+'</p>';
@@ -5490,7 +5515,7 @@ function ppMastery(body){
 var invTab='all',invCC=false;
 function invRender(){
   const L=$('invList');if(!L)return;let h='',n=0,tot=0;
-  if(typeof custom!=='undefined'&&custom&&devFeat('story')&&invTab==='all'){h+='<div class="pc invc mine"><div class="pn"><b>'+custom.name+'</b><span>Your MyPLAYER</span><span class="rb" style="color:#3dffa8">'+ccOvr(custom)+' OVR</span></div><p>'+custom.pos+' · story mode player</p><div class="row"><button class="sbtn" data-a="cc">Edit player</button></div></div>';}
+  if(typeof custom!=='undefined'&&custom&&invTab==='all'){h+='<div class="pc invc mine"><div class="pn"><b>'+custom.name+'</b><span>Your MyPLAYER</span><span class="rb" style="color:#3dffa8">'+ccOvr(custom)+' OVR</span></div><p>'+custom.pos+' · story mode player</p><div class="row"><button class="sbtn" data-a="cc">Edit player</button></div></div>';}
   SLOTS.forEach(s=>{POOL[s].forEach((o,i)=>{if(o.hidden&&owned.indexOf(o.name)<0)return;tot++;if(owned.indexOf(o.name)<0)return;n++;if(invTab!=='all'&&invTab!==s)return;
     const ri=rarIdx(o.name),st=squad[s]===i,p1=pk1===o.name,p2=pk2===o.name,ab=ABIL[o.name.toLowerCase()],gr=grindOn()&&PROFILES[o.name];
     h+='<div class="pc invc r-'+RARS[ri].k+(st?' start':'')+'" data-n="'+o.name+'">';
@@ -5581,7 +5606,8 @@ const CODES=[
   {h:'61c6wrsi1i',unlock:"PHANTOM"},
   {h:'kzetu2gd3a',unlock:"ADAPT"},
   {h:'1jo0ar4xsz9',coins:1000},
-  {h:'1awnthwv16j',coins:2000,cos:'head:sunset'}
+  {h:'1awnthwv16j',coins:2000,cos:'head:sunset'},
+  {h:'2ehpl6fb6se',coins:5000,xp:1000}
 ];
 function redeem(){
   const raw=$('codeIn').value.toUpperCase().replace(/[^A-Z0-9]/g,''),msg=$('codeMsg');
@@ -5598,7 +5624,9 @@ function redeem(){
     if(cosU.indexOf(c.cos)<0){cosU.push(c.cos);for(const k in LOOK_CACHE)delete LOOK_CACHE[k];parts.push('unlocked the '+nm+' for every player (equip it in My players, Looks)');}
     else parts.push('the '+nm+' was already yours');}
   if(add){coins+=add;parts.push('+'+add+' coins');}
-  redeemed.push(h);saveCfg();renderSquad();sfx.cheer(0.6);
+  redeemed.push(h);
+  if(c.xp){const b4=lvInfo(acctXp).L,c4=coins;addXp(c.xp);const a4=lvInfo(acctXp).L;parts.push('+'+c.xp+' XP'+(a4>b4?' (level up! You reached level '+a4+(coins>c4?' and got '+(coins-c4)+' more coins':'')+')':''));}
+  saveCfg();renderSquad();sfx.cheer(0.6);
   uiSnd('uiGood');msg.textContent='Code redeemed: '+parts.join(', ')+'.';$('codeIn').value='';
 }
 $('codeBtn').onclick=()=>{hideScreens();$('codeMsg').textContent='';show('codes');};
@@ -6689,8 +6717,8 @@ function devStash(cc,stp){
 function devSandboxIn(){
   devRealCfg=curCfg();
   const d=devSaveGet();
-  const start=Object.assign({},devRealCfg,{tr:null,cc:null,stp:0,spr:0,sln:null,sis:0});
-  applyCfg(d&&d.owned?Object.assign({},start,d):Object.assign({},start,d?{cc:d.cc||null,stp:d.stp||0,spr:d.spr||0}:{}));
+  const start=Object.assign({},devRealCfg,{tr:null});
+  applyCfg(d&&d.owned?Object.assign({},start,d):start);
   devSaveNow();
 }
 function devSandboxOut(){
@@ -6705,10 +6733,7 @@ const DEV_HASH='11cal5ouw9s';
 /* Unreleased content lives here. Each entry is a toggle in the dev build (Settings, Help). */
 const DEV_FEATURES=[
   {id:'all',name:'All players unlocked',desc:'Every player, including hidden ones, is available to pick. Your real unlocks and coins are not changed.',on:true},
-  {id:'clean',name:'UI and animation cleanup',desc:'Solid menus that hide the court behind them, a new main menu, lined-up setup screens with Play always in reach, tidier phone layout, and smoother in-game effects: score pops, stacked pop-up text, a real net swish and a cleaner score banner.',on:true},
-  {id:'calls',name:'Callouts: ISO, get open, cut',desc:'On offense, press 1 (or Z) for an ISO play: teammates clear out and the help defender stays home. 2 (or X): teammates sprint to open spots. 3 (or C): your best-placed teammate cuts to the rim while his defender ball-watches; a plain pass (no direction) finds him. Phones get a CALL button. Keys can be changed in Controls.',on:true},
-  {id:'showdown',name:'Story event: Sprawl Showdown',desc:'November 15 to 30. One-on-one with your MyPLAYER against other players\' MyPLAYERs (played by the computer). Most wins gets Adapt, or 50,000 coins if they already have him. In the dev build it can be played any time and wins go on a separate test leaderboard.',on:true},
-  {id:'story',name:'Story mode: Velocity Break',desc:'A four-chapter campaign with the Ash Hounds, from the cracked courts of the Lower Sprawl to the Sovereigns on the threshold, plus a custom player creator. Find it in Play, Offline.',on:true}
+  {id:'calls',name:'Callouts: ISO, get open, cut',desc:'On offense, press 1 (or Z) for an ISO play: teammates clear out and the help defender stays home. 2 (or X): teammates sprint to open spots. 3 (or C): your best-placed teammate cuts to the rim while his defender ball-watches; a plain pass (no direction) finds him. Phones get a CALL button. Keys can be changed in Controls.',on:true}
 ];
 var devTaps=0,devTapT=0,devMaster=false,devOn=false,devX={},devRealOwned=null,devTries=[];
 function devFeat(id){return devOn&&!!devX[id];}
@@ -6718,11 +6743,11 @@ function devLog(ok,code){
   F.addDoc(F.collection(fb.db,'devlog'),{by:cloudUser.uid,n:user,ok:!!ok,code:String(code||'').slice(0,30),v:GAME_VER,t:F.serverTimestamp()}).catch(()=>{});
 }
 function devApply(){
+  setTimeout(()=>{try{evGlow();}catch(e){}},0);
   const allNames=SLOTS.reduce((a,sl)=>a.concat(POOL[sl].map(o=>o.name)),[]);
   if(devOn&&devX.all){if(!devRealOwned)devRealOwned=owned.slice();owned=allNames.slice();}
   else if(devRealOwned){const real=devRealOwned;devRealOwned=null;owned=real;SLOTS.forEach(sl=>{if(owned.indexOf(POOL[sl][squad[sl]].name)<0)squad[sl]=POOL[sl].findIndex(o=>owned.indexOf(o.name)>=0);});if(owned.indexOf(pk1)<0)pk1='DIME';if(owned.indexOf(pk2)<0||pk2===pk1)pk2=owned.find(n=>n!==pk1);}
   $('stage').classList.toggle('ui2',ui2On());if(ui2On())ui2Prep();$('devBadge').classList.toggle('hide',!devOn);$('dailyBtn').classList.toggle('hide',!grindOn());for(const k in LOOK_CACHE)delete LOOK_CACHE[k];
-  $('offStory').classList.toggle('hide',!devFeat('story'));
   try{renderOpp();renderTBench();}catch(e){}
   try{renderSquad();}catch(e){}
 }
@@ -7273,7 +7298,7 @@ const STORY=[
 ];
 const STORY_GAMES=STORY.length*10;
 const SYL=['VEX','RO','KO','DAX','ZED','JUNO','RIGG','NOX','TAJ','IKE','LUX','BO','CY','DRE','FLIP','GUS','HEX','JAX','KO','MACE','NYX','OZ','PIKE','QUINN','RIOT','SAL','TANK','VOLT','WREN','YAZ'];
-var story=null,storyDone=0,storyProDone=false,storyLineup=null,storyIntroSeen=false,storyIntroNow=false,storyAfterCC=false,custom=null,customRaw=null,storyOpen=-1;
+var story=null,storyIntroNow=false,storyAfterCC=false,storyOpen=-1;var storyDone=storyDone||0,storyProDone=storyProDone||false,storyLineup=storyLineup||null,storyIntroSeen=storyIntroSeen||false,custom=custom||null,customRaw=customRaw||null;
 function sHash(s){let h=7;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h;}
 function storyProGame(){
   const b=(findChar('BLAZE')||{o:{num:8,skin:'#e0ac69',mod:{}}}).o;
@@ -7445,7 +7470,7 @@ function storyRender(){
   nb.textContent=!custom?'Create your MyPLAYER to start':!storyProDone?'Play the prologue: The Tryout':storyDone>=STORY_GAMES?'Story complete! Replay any game':'Play next: Chapter '+(ng.ci+1)+', game '+(ng.gi+1)+' vs '+ng.opp.name;
   nb.disabled=storyProDone&&storyDone>=STORY_GAMES;
 }
-function openStory(){if(!devFeat('story')){toast('Story mode is only in the dev build right now.');return;}hideScreens();storyRender();show('story');}
+function openStory(){hideScreens();storyRender();show('story');}
 /* ===== story courts: every chapter plays on its own court ===== */
 function ctSkyline(g,R,base,col,lit){let x=-10;while(x<VW+10){const w=40+R()*70,h=50+R()*120;g.fillStyle=col;g.fillRect(x,base-h,w,h);for(let k=0;k<6;k++)if(R()<lit){g.fillStyle=R()<0.5?'rgba(255,210,122,.6)':'rgba(122,240,255,.5)';g.fillRect(x+4+R()*(w-10),base-h+6+R()*(h-14),5,6);}x+=w+R()*6;}}
 function ctMesh(g,y0,y1,a){g.strokeStyle='rgba(170,175,190,'+a+')';g.lineWidth=1;g.beginPath();for(let x=-(y1-y0);x<VW;x+=16){g.moveTo(x,y1);g.lineTo(x+(y1-y0),y0);g.moveTo(x+(y1-y0),y1);g.lineTo(x,y0);}g.stroke();g.fillStyle='rgba(110,115,130,'+(a+0.3)+')';for(let x=30;x<VW;x+=210)g.fillRect(x-3,y0-6,6,y1-y0+6);g.fillRect(0,y0-6,VW,4);}
@@ -10140,6 +10165,7 @@ function frame(now){
   updateTouchLabels();
   requestAnimationFrame(frame);
 }
+try{$('stage').classList.add('ui2');ui2Prep();evGlow();}catch(e){}
 createGame();checkBall(0);phase='menu';
 requestAnimationFrame(frame);
 })();
