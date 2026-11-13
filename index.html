@@ -186,6 +186,7 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
 /* something is on: the menu button and the live cards glow */
 #evBtn.live{border-color:rgba(255,94,224,.75)!important;box-shadow:0 0 1.6cqw rgba(255,94,224,.45),0 0 .4cqw rgba(255,209,102,.5)}
 #evBtn.live::before{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;box-shadow:inset 0 0 1.8cqw rgba(255,94,224,.55);animation:evPulse 1.8s ease-in-out infinite}
+#evBtn.live.soon>span::after{content:'SOON'!important;background:#ffd166!important}
 #evBtn.live>span::after{content:'LIVE';display:inline-block;margin-left:.7em;padding:.15em .55em;border-radius:99px;background:#ff5ee0;color:#1a0616;font-size:.42em;font-weight:900;letter-spacing:.08em;vertical-align:middle}
 #evList .pc.evlive{animation:evCard 2.2s ease-in-out infinite}
 @keyframes evPulse{0%,100%{opacity:.35}50%{opacity:1}}
@@ -904,10 +905,11 @@ summary{cursor:pointer;color:var(--ink);font-weight:700;text-align:center}
     <ul class="dl">
       <li><b>New code: STORYTIME</b><span>Redeem it for 5,000 coins and 1,000 XP. Open Codes, the link under the main menu.</span></li>
       <li><b>Story mode: Velocity Break</b><span>The King's Gambit, a four-chapter campaign. Join the Ash Hounds on the cracked courts of the Lower Sprawl and climb to the Sovereigns' arena in the Upper City, with a full intro and ending film. Find it in Play, Offline.</span></li>
-      <li><b>MyPLAYER</b><span>Create your own player for the story and pick their look on the Style tab: hair, beard, shoes and accessories. Story mode keeps everyone in their plain look, so accessories show in the Showdown instead.</span></li>
+      <li><b>MyPLAYER</b><span>Create your own player for the story and pick their look on the Style tab: hair, beard, shoes and accessories. Your style shows in story games, scenes and the Showdown.</span></li>
       <li><b>Story event: Sprawl Showdown</b><span>November 15 to 30. Take your MyPLAYER one-on-one against other players' MyPLAYERs. The player with the most wins gets Adapt free, or 50,000 coins if they already have him. Open Events.</span></li>
       <li><b>New look</b><span>Solid menus, a new main menu, tidier setup screens with Play always in reach, a cleaner phone layout, and smoother in-game effects: score pops, a real net swish and a clearer scoreboard.</span></li>
-      <li><b>Events glow</b><span>The Events button glows with a LIVE tag whenever an event is going on.</span></li>
+      <li><b>Watch the puddles</b><span>In story games, turbo through a slick spot and you slip and lose the ball. Walk through, or make the other team chase you into one.</span></li>
+      <li><b>Events glow</b><span>The Events button glows with a LIVE tag whenever an event is going on, and SOON when one is about to start.</span></li>
       <li><b>Jersey designs</b><span>Mastery jersey rewards are now full designs: pinstripes, side panels, fades, drips, camo and stars.</span></li>
       <li><b>Real three-point rules</b><span>A shot counts by where your feet left the floor. Jump from behind the line and it is a three, even if you drift inside.</span></li>
     </ul>
@@ -2318,6 +2320,11 @@ function updatePlayer(p,dt){
   p.abCd=Math.max(0,p.abCd-dt);for(const k in p.fx){p.fx[k].t-=dt;if(p.fx[k].t<=0)delete p.fx[k];}
   if(p.juke>0){p.juke-=dt;const f=Math.exp(-3.5*dt);p.vx*=f;p.vy*=f;}
   if(p.stumble>0)p.stumble-=dt;
+  p.slipCd=Math.max(0,(p.slipCd||0)-dt);
+  if(phase==='play'&&p.sprinting&&p.z===0&&!(p.stumble>0)&&!p.dunk&&!p.shot&&!p.slipCd&&Math.hypot(p.vx,p.vy)>2.6&&storyHaz()&&inZone('slick',p.x,p.y)){
+    if(!p.inSlick){p.inSlick=true;p.slipGo=!isCPU(p)||Math.random()<0.4;p.slipT=0;}
+    if(p.slipGo){p.slipT+=dt;if(p.slipT>0.1)slipFall(p);}
+  }else if(!(storyHaz()&&inZone('slick',p.x,p.y)))p.inSlick=false;
   if(p.en!==undefined&&phase==='play')p.en=Math.max(0.15,p.en-dt*(p.team===0?0.0034:(tour&&tour.live?0.0012:0.0022))*(p.sprinting?2.2:1));
   if(!p.sprinting&&!p.pressing){p.stamina=Math.min(1,p.stamina+dt*0.22*(p.en!==undefined?0.55+0.45*p.en:1));if(p.exhausted&&p.stamina>0.3)p.exhausted=false;}
   if(p.blockAt>=0&&tNow>=p.blockAt){p.blockAt=-1;if(p.z<=0&&!p.stumble&&!p.dunk){p.vz=4.2;p.blocking=0.7;}}
@@ -2788,9 +2795,8 @@ function lkLvl(p){try{return p&&p.arch&&p.arch.adapt&&typeof adk==='function'?ad
 function lookOn(){return true;}
 function myTeamIdx(){return (typeof pvp!=='undefined'&&pvp&&role==='guest')?1:0;}
 let LOOK_STY=null;
-/* story mode: the plain look. No mastery gear; your MyPLAYER keeps hair, beard and shoes but no accessories */
-function lookStory(name){const B=lookBase(name);if(name!=='YOU')return B;if(LOOK_STY&&LOOK_STY.src===B)return LOOK_STY.out;const o=Object.assign({},B);
-  ['band','hat','hatBrim','hatBand','hatBand2','goggles','phones','scope','sleeve','sleeveArm','wrist','wristBoth','knee','kneeLeg','socks'].forEach(k=>{delete o[k];});LOOK_STY={src:B,out:o};return o;}
+/* story mode: no mastery gear. Your MyPLAYER wears the style you picked */
+function lookStory(name){return lookBase(name);}
 function storyLive(){return typeof story!=='undefined'&&!!story&&!!story.live;}
 function lookForPlayer(p){if(!p||!p.name||!lookOn())return null;if(storyLive())return lookStory(typeof custom!=='undefined'&&custom&&p.name===custom.name?'YOU':p.name);if(p.lk)return p.lk;if(typeof custom!=='undefined'&&custom&&p.name===custom.name)return lookOf('YOU');return p.team===myTeamIdx()?lookOf(p.name):lookBase(p.name);}
 /* ---- in-game head: hair, headwear and face gear on the small court figures ---- */
@@ -4219,8 +4225,8 @@ function drawTeamEnergy(){
   });
   if(BC){
     x+=gap-4;ctx.fillStyle='rgba(255,255,255,.1)';ctx.fillRect(x-4,y+8,1,H-16);
-    ctx.textAlign='left';ctx.font='800 9px Arial,sans-serif';ctx.fillStyle='#9aa3c7';ctx.fillText('BENCH',x,y+11);
-    ctx.textAlign='right';ctx.fillText(storyAutoOn()?'AUTO SUBS ON':'PAUSE TO SUB',x+BC*BW-6,y+11);
+    ctx.textAlign='left';ctx.font='800 9px Arial,sans-serif';ctx.fillStyle='#9aa3c7';ctx.fillText(BC>1?'BENCH':(storyAutoOn()?'BENCH · AUTO':'BENCH'),x,y+11);
+    if(BC>1){ctx.textAlign='right';ctx.fillText(storyAutoOn()?'AUTO SUBS ON':'PAUSE TO SUB',x+BC*BW-6,y+11);}
     bench.forEach((m,i)=>{const cx2=x+Math.floor(i/2)*BW,cy2=y+(i%2?36:19),en=m.en,w2=BW-8;
       ctx.textAlign='left';ctx.font='700 10px Arial,sans-serif';ctx.fillStyle=en>=0.8?'#dfe4ff':'#9aa3c7';
       let nm=m.row[1];while(nm.length>3&&ctx.measureText(nm).width>w2-18)nm=nm.slice(0,-1);ctx.fillText(nm,cx2,cy2+8);
@@ -4956,7 +4962,7 @@ const TUT=[
  {t:'COINS, SHOP AND CODES',b:'<p>You earn coins from games and tournaments. Spend them in the <b>Shop</b> on new players. They come in five rarities: <b>Common, Rare, Epic, Legendary</b> and <b>Mythic</b>. Mythics unlock after you win 10 tournaments.</p><p>Every game earns XP, and leveling up gives bonus coins and new ranks. Check <b>Events</b> for special challenges with big rewards, and open <b>Codes</b> to redeem free rewards.</p>'},
  {t:'SAVE YOUR PROGRESS',b:'<p>Right now you are playing as a guest. Your progress saves on this device. Tap <b>Log in</b> at the top of the menu to create an account, and your coins, players and titles will be kept under your name.</p><p>Ready? Try the hands-on practice, or head straight to a game.</p>'}
 ];
-const GAME_VER='3.0.1';
+const GAME_VER='3.0.2';
 const DEV_VER='3.0';let tutI=0,tutChecked=false;
 function tutRender(){
   const s=TUT[tutI],last=tutI===TUT.length-1;
@@ -5252,7 +5258,7 @@ function sdPick(){const mine=custom?custom.name:'';let list=(sdPool||[]).filter(
 function sdPortrait(cv,c){if(!cv||!c)return;const g=cv.getContext('2d'),W=cv.width,H=cv.height;g.clearRect(0,0,W,H);
   try{ART.figure(g,W*0.5,H*0.5+H*2.2*0.94,H*2.2,1,lookCustom(c),{skin:c.skin,num:c.num,jc:'#2b2d3a',jt:'#ff5ee0',sc:'#1b1d26',name:c.name},'stand',{t:0,pose:{lean:0,aF:[-14,10],aB:[-20,8],neck:-4}});}catch(e){}}
 function sdCard(){
-  const R=sdRec(),now=Date.now(),open=sdOpen(),ended=!devOn&&now>=SD.end;let h='<div class="pc sdcard r-special'+(evGlowOn()&&open?' evlive':'')+'" style="--evc:#ff5ee0"><div class="pn"><b>'+SD.title+'</b><span class="rb" style="color:#ff5ee0">'+(devOn?'Story event · dev preview':(ended?'Ended':'Story event'))+'</span></div>';
+  const R=sdRec(),now=Date.now(),open=sdOpen(),ended=!devOn&&now>=SD.end;let h='<div class="pc sdcard r-special'+(evGlowOn()&&(open||(now<SD.start&&SD.start-now<7*864e5))?' evlive':'')+'" style="--evc:#ff5ee0"><div class="pn"><b>'+SD.title+'</b><span class="rb" style="color:#ff5ee0">'+(devOn?'Story event · dev preview':(ended?'Ended':'Story event'))+'</span></div>';
   h+='<p>'+SD.when+'. Take your MyPLAYER one-on-one against other players\' MyPLAYERs, played by the computer. 3-minute games on All-Star. Every win counts.</p>';
   h+='<p class="ab"><b>Prize:</b> the player with the most wins gets <b>Adapt</b> free, or <b>'+SD.coins.toLocaleString()+' coins</b> if they already have him. Ties go to whoever reached the total first.</p>';
   h+='<p><b>'+(devOn?'Dev build: playable now. Wins go on a test leaderboard with no prize. The real event runs '+SD.when+'.':(ended?'Ended '+SD.endTxt+'.':(now<SD.start?'Starts November 15 ('+fmtLeft(SD.start-now)+').':'Ends '+SD.endTxt+' ('+fmtLeft(SD.end-now)+' left).')))+'</b></p>';
@@ -5293,8 +5299,9 @@ async function sdClaim(){
 
 /* an event counts as going on while you can still play it or earn its reward */
 function evGlowOn(){return true;}
-function evLive(){if(sdOn()&&sdOpen())return true;const now=Date.now();return EVENTS.some(e=>owned.indexOf(e.reward)<0&&!(e.end&&now>=e.end));}
-function evGlow(){try{$('evBtn').classList.toggle('live',evGlowOn()&&evLive());}catch(e){}}
+function evLive(){const now=Date.now();if(sdOn()&&sdOpen())return true;return EVENTS.some(e=>!(e.end&&now>=e.end));}
+function evSoon(){const now=Date.now();return sdOn()&&now<SD.start&&SD.start-now<7*864e5;}
+function evGlow(){try{const b=$('evBtn'),l=evGlowOn()&&evLive(),sn=evGlowOn()&&!l&&evSoon();b.classList.toggle('live',l||sn);b.classList.toggle('soon',sn);}catch(e){}}
 setInterval(evGlow,4000);setTimeout(evGlow,300);
 function evRender(){
   evGlow();
@@ -7326,6 +7333,15 @@ function storyGame(g){
   return {g:g,ci:ci,gi:gi,boss:boss,title:C.title,where:C.where,diff:C.diffs[gi],len:boss?(ci>=2?240:180):120,haz:haz,
     opp:{name:t[0],c:col,d:dk,a:ac,desc:'',style:C.style,roster:roster},dlg:(C.dlg[gi]||{})};
 }
+function slipFall(p){
+  p.stumble=1.1;p.slipCd=2.5;p.slipGo=false;p.sprinting=false;p.juke=0;
+  const v=Math.hypot(p.vx,p.vy)||1,ux=p.vx/v,uy=p.vy/v;
+  try{addVfx('dust',p.x,p.y,0,0,0.5);}catch(e){}
+  if(p.hasBall&&ball.state==='held'&&ball.holder===p){const b=ball;b.holder=null;p.hasBall=false;b.state='loose';b.fromShot=false;b.scored=false;b.x=p.x+ux*0.5;b.y=p.y+uy*0.5;b.z=0.7;b.vx=ux*(3+Math.random()*2)+(Math.random()-0.5)*2;b.vy=uy*(3+Math.random()*2)+(Math.random()-0.5)*2;b.vz=2.2;p.stealCd=Math.max(p.stealCd||0,1.2);
+    popup('SLIPPED! LOOSE BALL','#8fd6ff',p);}
+  else popup('SLIPPED!','#8fd6ff',p);
+  p.vx*=0.35;p.vy*=0.35;
+}
 function storyHaz(){if(dch('nohaz'))return null;return story&&story.live&&story.zones?story.zones:null;}
 function storyZones(h){
   if(!h)return null;const z=[];const rnd2=(a,b)=>a+Math.random()*(b-a);
@@ -9263,7 +9279,7 @@ function cineMatch(d){
   $('cmLine').classList.toggle('hide',!LU||!LU.bench.length);$('cmLine').onclick=()=>subsOpen('lineup',d);
   plate($('cmB'),d.opp.name,d.opp.c,d.opp.d,d.opp.a,th);
   const chips=[DIFF[d.diff].name,fmt(d.len)+' game',d.where];
-  if(d.haz&&(d.haz.slick||d.haz.crack))chips.push('Slick spots and cracked pavement');else chips.push('Clean court');
+  if(d.haz&&(d.haz.slick||d.haz.crack))chips.push('Slick spots (turbo through one and you slip) and cracked pavement');else chips.push('Clean court');
   const ch=$('cmChips');ch.innerHTML='';chips.forEach(t=>{const s=document.createElement('span');s.textContent=t;ch.appendChild(s);});
   $('cmGo').onclick=()=>{const o=CN.o;cineClose();o.done&&o.done();};
   $('cmBack').onclick=()=>{const o=CN.o;cineClose();o.back&&o.back();};
